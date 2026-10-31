@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<!--
+  Warraq (ورّاق) — your personal novel & book library.
+  Single-file app: no dependencies, no build step, all data stays in your browser.
+  Source and live site: https://github.com/Elhendawy-1/-Warraq
+-->
+<html lang="en" data-theme="neutral">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Warraq (ورّاق) — a personal novel and book library: track reading progress, organize custom collections, and keep your reading goals organized. Bilingual Arabic and English. All data stays in your browser.">
+<link rel="icon" type="image/jpeg" href="../assets/logo.jpg">
+<title>Warraq (ورّاق)</title>
+<style>
+:root,[data-theme=neutral]{--bg:#f4f0e6;--card:#fffdf8;--tx:#2e2a22;--mut:#7b7466;--ac:#5f8a68;--on:#fff;--bd:#e2dac8;--sb:#e9e1cd;--sbt:#3a352b;--ft:Georgia,"Times New Roman",serif}
+[data-theme=elegant]{--bg:#fbeff0;--card:#fffaf8;--tx:#47323f;--mut:#9a7a8e;--ac:#b8588a;--on:#fff;--bd:#f0d6e0;--sb:linear-gradient(180deg,#f6d9e6,#e4d8f5);--sbt:#4a3347;--ft:"Palatino Linotype",Palatino,Georgia,serif}
+[data-theme=modern]{--bg:#e8ecf2;--card:#fff;--tx:#1d2433;--mut:#667085;--ac:#1f3a64;--on:#fff;--bd:#d5dbe6;--sb:#14213a;--sbt:#e6ebf5;--ft:"Segoe UI",Helvetica,Arial,sans-serif}
+[data-theme=dark]{--bg:#12141a;--card:#1b1e27;--tx:#e8e6e1;--mut:#9a98a3;--ac:#8fb7ff;--on:#10131a;--bd:#2c303c;--sb:#0c0e13;--sbt:#d9d7d2;--ft:Georgia,serif}
+*{box-sizing:border-box}html,body{margin:0}
+body{font:15px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif;background:var(--bg);color:var(--tx);overflow-x:hidden}
+h1,h2,h3{font-family:var(--ft);margin:0;line-height:1.2}h1{font-size:1.7rem}h2{font-size:1.2rem;margin:26px 0 12px}h3{font-size:1rem}
+p{margin:0}.mut{color:var(--mut)}.sm{font-size:.82rem}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--ac);outline-offset:2px}
+#app{display:flex;min-height:100vh}
+aside{width:250px;flex:none;background:var(--sb);color:var(--sbt);position:sticky;top:0;height:100vh;overflow:auto;padding:16px 10px}
+.brand{font:700 1.15rem var(--ft);padding:6px 10px 14px;display:flex;align-items:center;gap:8px}
+.brand img{width:26px;height:26px;border-radius:50%;flex:none;object-fit:cover}
+.nv{display:flex;align-items:center;gap:10px;width:100%;border:0;background:none;color:inherit;padding:9px 10px;border-radius:10px;cursor:pointer;text-align:start;min-height:42px}
+.nv:hover{background:#ffffff30}.nv[aria-current=page]{background:var(--ac);color:var(--on)}
+.nv span:nth-child(2){flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.nv em{font-style:normal;font-size:.78rem;opacity:.75}
+.sh{font-size:.78rem;opacity:.7;padding:14px 10px 4px}
+main{flex:1;min-width:0;padding:22px;max-width:1180px;margin:0 auto}
+.top{display:none}#bd{display:none}
+.hd{display:flex;align-items:center;gap:14px;margin-bottom:16px;flex-wrap:wrap}.hd>div{flex:1;min-width:160px}
+.big{font-size:1.7rem;width:52px;height:52px;border-radius:14px;display:grid;place-items:center}
+.btn{border:1px solid var(--bd);background:var(--card);padding:8px 14px;border-radius:10px;cursor:pointer;min-height:40px}
+.btn:hover{border-color:var(--ac)}.btn.pri{background:var(--ac);color:var(--on);border-color:var(--ac)}.btn.dng{color:#c0392b;border-color:#c0392b66}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:14px;box-shadow:0 2px 8px #0000000f}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px}
+.stat{padding:14px}.stat b{display:block;font:700 1.7rem var(--ft)}
+.tb{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;align-items:center}
+.tb input[type=search]{flex:1;min-width:180px}
+input:not([type=checkbox]):not([type=color]),select,textarea{width:100%;background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:9px 11px;min-height:40px}
+.tb select{width:auto}.chk{display:flex;gap:6px;align-items:center}
+.seg{display:flex}.seg button{border:1px solid var(--bd);background:var(--card);padding:8px 12px;cursor:pointer;min-height:40px}.seg button:first-child{border-start-start-radius:10px;border-end-start-radius:10px}.seg button:last-child{border-start-end-radius:10px;border-end-end-radius:10px}.seg [aria-pressed=true]{background:var(--ac);color:var(--on)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:14px}
+.bk{cursor:pointer;overflow:hidden;display:block}.bk:hover{border-color:var(--ac)}
+.cv{display:block;width:100%;aspect-ratio:2/3;object-fit:cover;background:var(--bd)}
+.ph{background:linear-gradient(135deg,hsl(var(--h),42%,42%),hsl(calc(var(--h) + 40),48%,30%));color:#fff;display:grid;place-items:center;padding:10px;text-align:center;font:600 .85rem var(--ft);overflow:hidden}
+.bi{padding:10px}.bi h3{font-size:.95rem}.st{color:#e0a800;letter-spacing:1px}.ex{display:none}
+.bar{height:8px;border-radius:6px;background:var(--bd);margin:6px 0;overflow:hidden}.bar i{display:block;height:100%;background:var(--ac);border-radius:6px;transition:width .4s}
+.dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-inline-end:5px}
+.list{display:flex;flex-direction:column;gap:10px}.list .bk{display:flex}.list .cv{width:70px;flex:none;aspect-ratio:2/3}.list .bi{flex:1;min-width:0}.list .ex{display:block}
+.row2{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:12px}
+.cr{display:flex;gap:12px;padding:10px}.cr .cv{width:64px;flex:none;border-radius:8px}.cr>div{flex:1;min-width:0}
+.sc{padding:12px;display:flex;gap:10px;align-items:center;cursor:pointer;border:1px solid var(--bd);background:var(--card);border-radius:14px;width:100%;text-align:start}
+.bars{display:flex;gap:8px;align-items:flex-end;height:130px;padding:12px}.bars>div{flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;height:100%;font-size:.75rem;gap:2px}.bars i{display:block;width:100%;background:var(--ac);border-radius:6px 6px 0 0;min-height:2px}
+.hb{display:grid;grid-template-columns:110px 1fr 30px;gap:8px;align-items:center;margin:6px 0;font-size:.85rem}
+.empty{text-align:center;padding:50px 16px}.empty h2{margin-top:0}.empty .btn{margin-top:14px}
+.row{display:flex;align-items:center;gap:6px;padding:8px 10px;border-bottom:1px solid var(--bd);flex-wrap:wrap}.row .grow{flex:1;min-width:140px}
+.row .btn{padding:4px 10px;min-height:36px}
+.tag{font-size:.72rem;background:var(--ac);color:var(--on);border-radius:8px;padding:1px 7px}
+.themes{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px}.themes .btn[aria-pressed=true]{background:var(--ac);color:var(--on)}
+dialog{border:0;border-radius:18px;padding:0;width:min(680px,calc(100vw - 16px));max-height:calc(100dvh - 16px);background:var(--card);color:var(--tx);box-shadow:0 12px 50px #0006}
+dialog::backdrop{background:#0008}.db{padding:18px;overflow:auto;max-height:calc(100dvh - 16px)}
+.fg{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px;margin:10px 0}.fg label,.wide{display:flex;flex-direction:column;gap:3px;font-size:.85rem}.wide{grid-column:1/-1}
+details{border:1px solid var(--bd);border-radius:12px;padding:8px 12px;margin:8px 0}summary{cursor:pointer;font-weight:600;min-height:32px}
+.acts{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px;justify-content:flex-end}
+.det{display:flex;gap:16px;flex-wrap:wrap}.det .cv{width:150px;border-radius:10px;flex:none}.det>div{flex:1;min-width:200px}
+.dl{display:grid;grid-template-columns:auto 1fr;gap:3px 12px;font-size:.88rem;margin:10px 0}.dl dt{color:var(--mut)}.dl dd{margin:0}
+.ic2{display:flex;flex-wrap:wrap;gap:4px}.ic2 button{font-size:1.2rem;width:42px;height:42px;border:1px solid var(--bd);background:var(--card);border-radius:10px;cursor:pointer}.ic2 [aria-pressed=true]{outline:3px solid var(--ac)}
+#toast{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);z-index:99;display:flex;flex-direction:column;gap:6px;align-items:center;width:max-content;max-width:92vw}
+#toast div{background:var(--tx);color:var(--bg);padding:10px 16px;border-radius:12px;box-shadow:0 4px 16px #0004}
+
+:root{--r:14px;--h:44px;--bd2:color-mix(in srgb,var(--tx) 30%,var(--bd));--ring:0 0 0 3px color-mix(in srgb,var(--ac) 28%,transparent);--sh:0 1px 2px #0000000d,0 6px 18px #0000000f}
+.card{border-radius:var(--r);box-shadow:var(--sh)}
+.btn{min-height:var(--h);border-radius:12px;padding:8px 16px;transition:background .15s,border-color .15s,box-shadow .15s;display:inline-flex;align-items:center;justify-content:center;gap:8px}
+.btn:hover{background:color-mix(in srgb,var(--ac) 10%,var(--card))}.btn.pri:hover{background:var(--ac);filter:brightness(1.08)}.btn.ib{padding:0;width:var(--h);flex:none}
+.i{width:18px;height:18px;flex:none}
+input:not([type=checkbox]):not([type=color]):not([type=file]),select,textarea{min-height:var(--h);border-radius:12px;border:1px solid var(--bd2);padding:10px 14px;transition:border-color .15s,box-shadow .15s;color:var(--tx)}
+input:hover:not([type=checkbox]),select:hover,textarea:hover{border-color:var(--ac)}
+input:focus,select:focus,textarea:focus{outline:0;border-color:var(--ac);box-shadow:var(--ring)}
+input:required:user-invalid{border-color:#c0392b}:disabled{opacity:.5;cursor:not-allowed}
+select{appearance:none;padding-inline-end:40px;cursor:pointer;background:var(--card) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2.4' stroke-linecap='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") no-repeat right 12px center/18px}
+[dir=rtl] select{background-position:left 12px center}textarea{line-height:1.7;resize:vertical}
+input[type=checkbox]{appearance:none;width:24px;height:24px;margin:0;flex:none;border:2px solid var(--bd2);border-radius:8px;background:var(--card) center/15px no-repeat;cursor:pointer;transition:background .15s,border-color .15s}
+input[type=checkbox]:checked{background-color:var(--ac);border-color:var(--ac);background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23fff' stroke-width='3.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m5 12 5 5 9-10'/%3E%3C/svg%3E")}
+[data-theme=dark] input[type=checkbox]:checked{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2310131a' stroke-width='3.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m5 12 5 5 9-10'/%3E%3C/svg%3E")}
+input[type=checkbox]:focus-visible{box-shadow:var(--ring);outline:0}
+label:has(>input[type=checkbox]){flex-direction:row!important;align-items:center;gap:10px;min-height:var(--h);cursor:pointer;font-size:.95rem}
+.bar2{display:flex;flex-wrap:wrap;gap:10px 12px;align-items:center;padding:12px;background:var(--card);border:1px solid var(--bd);border-radius:18px;box-shadow:var(--sh);margin-bottom:18px}
+.srch{position:relative;flex:1 1 280px}.srch>.i{position:absolute;inset-inline-start:14px;top:50%;translate:0 -50%;color:var(--mut);pointer-events:none}
+.srch input{padding-inline:44px 44px}.srch input::-webkit-search-cancel-button{display:none}
+.clr{position:absolute;inset-inline-end:6px;top:50%;translate:0 -50%;width:36px;height:36px;border:0;border-radius:50%;background:none;color:var(--mut);cursor:pointer;display:grid;place-items:center}.clr:hover{background:var(--bd)}.clr[hidden]{display:none}
+.grp{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.grp select{width:auto;min-width:136px}
+.chip{display:inline-flex;align-items:center;gap:6px;min-height:var(--h);padding:0 16px;border-radius:999px;border:1px solid var(--bd2);background:var(--card);cursor:pointer;transition:background .15s}
+.chip[aria-pressed=true]{background:var(--ac);color:var(--on);border-color:var(--ac)}.chip[aria-pressed=true] svg{fill:currentColor}
+.seg button{min-width:var(--h)}
+.fh{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}
+.fc{border:1px solid var(--bd);border-radius:16px;padding:14px;margin:10px 0;background:color-mix(in srgb,var(--bg) 40%,var(--card))}
+details.fc{padding:0}details.fc>summary{display:flex;align-items:center;gap:10px;padding:10px 14px;min-height:var(--h);list-style:none}details.fc>summary::-webkit-details-marker{display:none}
+details.fc>summary b{flex:1}details.fc>summary::after{content:"";width:9px;height:9px;border:solid var(--mut);border-width:0 2px 2px 0;rotate:45deg;transition:rotate .2s}details.fc[open]>summary::after{rotate:-135deg}
+details.fc>.fg{padding:0 14px 14px;margin:0}.ci{display:grid;place-items:center;width:34px;height:34px;border-radius:10px;background:color-mix(in srgb,var(--ac) 14%,transparent);color:var(--ac);flex:none}
+.big-in input{font:600 1.15rem var(--ft);min-height:52px}
+.cvrow{display:flex;gap:14px;align-items:flex-start;flex-wrap:wrap}.cvp{position:relative;width:104px;aspect-ratio:2/3;border-radius:10px;background:var(--bd);display:grid;place-items:center;color:var(--mut);overflow:hidden;flex:none}
+.cvp img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}.cvc{flex:1;min-width:210px;display:flex;flex-direction:column;gap:10px}
+.vh{position:absolute;width:1px;height:1px;opacity:0;overflow:hidden}.drop{display:flex;flex-direction:column;align-items:center;gap:2px;padding:18px 12px;border:2px dashed var(--bd2);border-radius:14px;cursor:pointer;text-align:center;color:var(--mut);transition:border-color .15s,background .15s}
+.drop:hover,.drop.on,.vh:focus-visible+.drop{border-color:var(--ac);background:color-mix(in srgb,var(--ac) 8%,transparent)}.vh:focus-visible+.drop{box-shadow:var(--ring)}.drop b{color:var(--tx)}
+.acts.sticky{position:sticky;bottom:-18px;background:var(--card);padding:12px 0 4px;margin-top:8px}
+.sgrid{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));align-items:start}
+.sc2{background:var(--card);border:1px solid var(--bd);border-radius:18px;box-shadow:var(--sh);padding:16px}.sc2 header{display:flex;gap:12px;align-items:center;margin-bottom:8px}.sc2 h2{margin:0;font-size:1.1rem}
+.set{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:12px 0;border-top:1px solid var(--bd)}.set:first-of-type{border-top:0}.set .ctl select{min-width:180px}
+.pills{display:flex;gap:8px;flex-wrap:wrap}.pill[aria-pressed=true]{background:var(--ac);color:var(--on);border-color:var(--ac)}.sw{width:14px;height:14px;border-radius:50%;border:2px solid #fff8;flex:none}
+.danger{border:1px solid #c0392b55;border-radius:14px;padding:12px;margin-top:8px}.note{margin:4px 0}.big.mini{width:36px;height:36px;font-size:1.1rem}.sc2 .row{padding-inline:0}
+dialog{border-radius:20px}.db{padding:18px 20px}
+@media(max-width:767px){.grp{width:100%}.grp select{flex:1 1 130px}.set .ctl,.set .ctl select{width:100%}.bar2{padding:10px}}
+html[lang=ar] body{font-family:"Segoe UI",Tahoma,"Noto Sans Arabic",Cairo,Tajawal,system-ui,sans-serif;line-height:1.75}
+html[lang=ar][data-theme]{--ft:Tahoma,"Segoe UI","Noto Sans Arabic",Cairo,sans-serif}
+h1,h2,h3,p,dd,.bi{overflow-wrap:anywhere}
+@media(min-width:768px) and (max-width:1023px){aside{width:200px}main{padding:18px}}
+@media(max-width:767px){
+aside{position:fixed;z-index:30;inset-inline-start:0;top:0;width:280px;transform:translateX(-100%);transition:transform .25s}
+[dir=rtl] aside{transform:translateX(100%)}.nv-open aside,[dir=rtl] .nv-open aside{transform:none}.nv-open #bd{display:block;position:fixed;inset:0;background:#0006;z-index:20}
+.top{display:flex;align-items:center;gap:10px;position:sticky;top:0;z-index:10;background:var(--card);border-bottom:1px solid var(--bd);padding:8px 12px}.top b{flex:1;font-family:var(--ft)}
+main{padding:14px}.grid{grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px}h1{font-size:1.4rem}.hd .btn.pri{width:100%}}
+.seg button{display:grid;place-items:center;padding:0}
+@media(min-width:1280px){.bar2 .grp{border-inline-start:1px solid var(--bd);padding-inline-start:12px}}
+.card.bk{transition:border-color .15s,box-shadow .15s}.card.bk:hover{box-shadow:0 2px 4px #0000000d,0 10px 24px #00000018}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div id="app">
+<aside aria-label="Main navigation"><div class="brand">Warraq</div><nav id="nav"></nav></aside>
+<div id="bd" data-act="menu"></div>
+<div style="flex:1;min-width:0">
+<div class="top"><button class="btn" data-act="menu" aria-label="Open menu">☰</button><b id="ttl">Warraq</b><button class="btn pri" data-act="add" aria-label="Add book">＋</button></div>
+<main id="main"></main>
+</div></div>
+<dialog id="dlg" aria-label="Dialog"></dialog>
+<dialog id="cfm" aria-label="Confirm"></dialog>
+<input type="file" id="imp" accept="application/json,.json" hidden>
+<div id="toast" role="status" aria-live="polite"></div>
+<script>
+"use strict";
+/* ===== Localization (English / Arabic) ===== */
+let LANG='en';
+const AR={"Warraq": "ورّاق", "Main navigation": "القائمة الرئيسية", "Open menu": "فتح القائمة", "Add book": "إضافة كتاب", "Dashboard": "لوحة التحكم", "My Library": "مكتبتي", "Sections": "الأقسام", "More": "المزيد", "Statistics": "الإحصائيات", "Settings": "الإعدادات", "Welcome back": "مرحبًا بعودتك", "Your reading life at a glance.": "نظرة سريعة على رحلتك مع القراءة.", "＋ Add book": "＋ إضافة كتاب", "Total books": "إجمالي الكتب", "Currently reading": "أقرأ حاليًا", "Completed": "مكتملة", "Want to read": "أريد قراءتها", "Want to buy": "أريد شراءها", "Favorites": "المفضلة", "Pages read": "الصفحات المقروءة", "Reading progress overview": "نظرة عامة على تقدم القراءة", "{0} of {1} pages across books with a page count ({2}%)": "{0} من {1} صفحة في الكتب التي لها عدد صفحات ({2}%)", "Continue reading": "متابعة القراءة", "Page {0} of {1} · {2}%": "الصفحة {0} من {1} · {2}%", "Update progress": "تحديث التقدم", "Nothing in progress. Start a book from your library.": "لا توجد كتب قيد القراءة. ابدأ كتابًا من مكتبتك.", "Recently added": "أُضيفت مؤخرًا", "Recently completed": "اكتملت مؤخرًا", "Reading activity": "نشاط القراءة", "Books completed per month": "الكتب المكتملة شهريًا", "{0} books": "{0} كتاب", "Every book you own, want or love.": "كل كتاب تملكه أو تريده أو تحبه.", "Search title, author or genre": "ابحث بالعنوان أو المؤلف أو النوع", "Search books": "البحث عن الكتب", "All sections": "كل الأقسام", "Filter by section": "تصفية حسب القسم", "Any status": "أي حالة", "Filter by status": "تصفية حسب الحالة", "Sort by": "ترتيب حسب", "Newest added": "الأحدث إضافة", "A to Z": "أبجديًا", "Rating": "التقييم", "Progress": "التقدم", "View": "العرض", "Grid view": "عرض شبكي", "List view": "عرض قائمة", "No matching books": "لم يتم العثور على كتب", "Try a different search or clear the filters.": "جرّب بحثًا مختلفًا أو أزل عوامل التصفية.", "Your reading journey starts here.": "رحلتك مع القراءة تبدأ من هنا.", "Nothing in “{0}” yet.": "لا توجد كتب في «{0}» بعد.", "Your library is empty.": "مكتبتك فارغة.", "Add your first book.": "أضف أول كتاب لك.", "Unknown author": "مؤلف غير معروف", "{0} pages": "{0} صفحة", "Favorite": "مفضل", "Calculated live from your library.": "تُحسب مباشرة من بيانات مكتبتك.", "Average rating": "متوسط التقييم", "Total spent": "إجمالي الإنفاق", "Books completed, last 12 months": "الكتب المكتملة خلال آخر 12 شهرًا", "By status": "حسب الحالة", "By genre": "حسب النوع", "Add books to see genres.": "أضف كتبًا لعرض الأنواع.", "No genre": "بدون نوع", "Language": "اللغة", "Numbers": "الأرقام", "Western digits (1234)": "أرقام غربية (1234)", "Arabic-Indic digits (١٢٣٤)": "أرقام هندية (١٢٣٤)", "Theme": "المظهر", "Neutral": "محايد", "Elegant": "أنيق", "Modern": "عصري", "Dark mode": "الوضع الداكن", "Default section for new books": "القسم الافتراضي للكتب الجديدة", "Default": "افتراضي", "(hidden from menu)": "(مخفي من القائمة)", "Move {0} up": "نقل {0} للأعلى", "Move {0} down": "نقل {0} للأسفل", "Edit": "تعديل", "Delete": "حذف", "＋ New section": "＋ قسم جديد", "Backup and restore": "النسخ الاحتياطي والاستعادة", "Export library (JSON)": "تصدير المكتبة (JSON)", "Import backup": "استيراد نسخة احتياطية", "Erase everything": "مسح كل شيء", "storageNote": "<b>بياناتك محفوظة في هذا المتصفح فقط.</b> فتح هذا الملف في متصفح أو جهاز آخر سيبدأ بمكتبة فارغة، ولا تتم أي مزامنة تلقائية. لنقل مكتبتك، صدّر ملف نسخة احتياطية ثم استورده هناك.", "Edit book": "تعديل الكتاب", "Add a book": "إضافة كتاب", "Title *": "العنوان *", "Author": "المؤلف", "Genre": "النوع", "Section": "القسم", "Reading status": "حالة القراءة", "Description": "الوصف", "Cover image": "صورة الغلاف", "Image URL": "رابط الصورة", "Or upload a picture": "أو ارفع صورة", "Cover preview": "معاينة الغلاف", "Remove cover": "إزالة الغلاف", "Reading": "قيد القراءة", "Total pages": "إجمالي الصفحات", "Current page": "الصفحة الحالية", "Date started": "تاريخ البدء", "Date completed": "تاريخ الإكمال", "Personal rating": "التقييم الشخصي", "No rating": "بدون تقييم", "Publication": "النشر", "Publication year": "سنة النشر", "Publisher": "الناشر", "Purchase": "الشراء", "Purchase status": "حالة الشراء", "Price": "السعر", "Purchase date": "تاريخ الشراء", "Notes": "الملاحظات", "Personal notes": "ملاحظات شخصية", "Cancel": "إلغاء", "Save book": "حفظ الكتاب", "Save": "حفظ", "Not started": "لم تبدأ", "On hold": "مؤجلة", "Dropped": "متروكة", "Not purchased": "لم يُشترَ", "Purchased": "تم الشراء", "Gift": "هدية", "Borrowed": "مستعار", "Status": "الحالة", "Pages": "الصفحات", "Year": "السنة", "Added": "تاريخ الإضافة", "Started": "تاريخ البدء", "Move to section": "نقل إلى قسم", "♥ Favorited": "♥ في المفضلة", "♡ Add to favorites": "♡ أضف إلى المفضلة", "Update page": "تحديث الصفحة", "Mark completed": "تحديد كمكتمل", "Close": "إغلاق", "Edit section": "تعديل القسم", "New section": "قسم جديد", "Name *": "الاسم *", "Color": "اللون", "Icon": "الأيقونة", "Behavior": "السلوك", "Save section": "حفظ القسم", "Show in main menu": "إظهار في القائمة الرئيسية", "Default for new books": "افتراضي للكتب الجديدة", "Untitled": "بدون عنوان", "No special behavior": "بدون سلوك خاص", "Marks books as Reading": "يحوّل الكتب إلى «قيد القراءة»", "Marks books as Completed": "يحوّل الكتب إلى «مكتملة»", "Counts as Want to Read": "يُحتسب ضمن «أريد قراءتها»", "Counts as Want to Buy": "يُحتسب ضمن «أريد شراءها»", "Marks books as On hold": "يحوّل الكتب إلى «مؤجلة»", "Marks books as Dropped": "يحوّل الكتب إلى «متروكة»", "Backup downloaded": "تم تنزيل النسخة الاحتياطية", "Import failed: {0}": "فشل الاستيراد: {0}", "Not a valid library file": "ملف المكتبة غير صالح", "The file has no sections": "لا يحتوي الملف على أقسام", "this is not a valid library backup.": "هذا ليس ملف نسخة احتياطية صالحًا.", "Import library": "استيراد المكتبة", "This file has <b>{0} books</b> and <b>{1} sections</b>. Merge adds only what is missing from your library. Replace deletes your current library first.": "يحتوي هذا الملف على <b>{0} كتاب</b> و<b>{1} قسم</b>. الدمج يضيف فقط ما ليس موجودًا في مكتبتك، أما الاستبدال فيحذف مكتبتك الحالية أولًا.", "Merge": "دمج", "Replace": "استبدال", "Library imported": "تم استيراد المكتبة", "Storage is full or blocked. Export a backup now.": "مساحة التخزين ممتلئة أو محظورة. صدّر نسخة احتياطية الآن.", "Saved data could not be read. A copy was kept and a fresh library started.": "تعذّرت قراءة البيانات المحفوظة. تم الاحتفاظ بنسخة منها وبدء مكتبة جديدة.", "of {0} pages": "من {0} صفحة", "page number": "رقم الصفحة", "Marked as completed 🎉": "تم تحديد الكتاب كمكتمل 🎉", "Finished! Marked as completed 🎉": "أحسنت! تم إكمال الكتاب 🎉", "Delete book?": "حذف الكتاب؟", "“{0}” will be removed permanently.": "سيتم حذف «{0}» نهائيًا.", "Book deleted": "تم حذف الكتاب", "Keep at least one section": "يجب الإبقاء على قسم واحد على الأقل", "Delete section?": "حذف القسم؟", "“{0}” will be removed. {1}": "سيتم حذف «{0}». {1}", "{0} book(s) will move to your default section.": "سيتم نقل {0} كتاب إلى القسم الافتراضي.", "It has no books.": "لا يحتوي على كتب.", "Erase everything?": "مسح كل شيء؟", "All books and sections will be deleted. Export a backup first if unsure.": "سيتم حذف كل الكتب والأقسام. صدّر نسخة احتياطية أولًا إن لم تكن متأكدًا.", "Library erased": "تم مسح المكتبة", "Book saved": "تم حفظ الكتاب", "Section saved": "تم حفظ القسم", "Book moved": "تم نقل الكتاب", "Image too large (max 8 MB)": "الصورة كبيرة جدًا (الحد الأقصى 8 ميجابايت)", "Could not read that image": "تعذّرت قراءة هذه الصورة", "Please fill out this field.": "يرجى ملء هذا الحقل.", "Cover of {0}": "غلاف {0}", "No cover for {0}": "لا يوجد غلاف لـ {0}", "Reading progress {0}%": "تقدم القراءة {0}%", "{0} of 5 stars": "{0} من 5 نجوم", "Currently Reading": "أقرأ حاليًا", "Books you are reading right now": "الكتب التي تقرؤها الآن", "Completed Books": "الكتب المكتملة", "Finished reads": "قراءات انتهيت منها", "Want to Read": "أريد قراءتها", "Your reading wishlist": "قائمة رغباتك في القراءة", "Want to Buy": "أريد شراءها", "Books to get next": "كتب تنوي اقتناءها", "On Hold": "مؤجلة", "Paused for now": "متوقفة مؤقتًا", "Dropped / Abandoned": "متروكة / مهجورة", "Not for me": "لم تناسبني", "All-time favorites": "المفضلة على الإطلاق", "Optional": "اختياري", "Clear search": "مسح البحث", "Filters": "عوامل التصفية", "Discard changes?": "تجاهل التغييرات؟", "You have unsaved changes. Close without saving?": "لديك تغييرات غير محفوظة. هل تريد الإغلاق دون حفظ؟", "Discard": "تجاهل", "Keep editing": "متابعة التحرير", "Choose a cover image": "اختر صورة الغلاف", "or drag and drop it here": "أو اسحبها وأفلتها هنا", "Reading progress": "تقدم القراءة", "Purchase information": "معلومات الشراء", "Rating and notes": "التقييم والملاحظات", "Appearance": "المظهر العام", "Choose how the library looks.": "اختر شكل المكتبة.", "Choose the interface language.": "اختر لغة الواجهة.", "Library preferences": "تفضيلات المكتبة", "Defaults used when browsing and adding books.": "القيم الافتراضية عند التصفح وإضافة الكتب.", "Default view": "العرض الافتراضي", "Default sorting": "الترتيب الافتراضي", "Create, rename, reorder or delete your sections.": "أنشئ أقسامك أو أعد تسميتها أو رتّبها أو احذفها.", "Data management": "إدارة البيانات", "Back up your library or move it to another device.": "انسخ مكتبتك احتياطيًا أو انقلها إلى جهاز آخر.", "Danger zone": "منطقة الخطر", "Deletes every book and section from this browser.": "يحذف كل الكتب والأقسام من هذا المتصفح.", "About": "حول التطبيق", "Data format version {0}": "إصدار تنسيق البيانات {0}", "Digits used for numbers and dates.": "الأرقام المستخدمة في الأعداد والتواريخ.", "Your data stays in this browser.": "تبقى بياناتك في هذا المتصفح."};
+const EN={"storageNote": "<b>Your data is stored only in this browser.</b> Opening this file in another browser or on another device starts an empty library; nothing syncs automatically. To move your library, export a backup file and import it there."};
+function T(s,...a){return (LANG==='ar'?AR[s]:EN[s]??s)?.replace(/\{(\d)\}/g,(m,i)=>nf(a[i]))??s}
+const loc=()=>S.prefs.digits==='ar'?'ar-EG':'ar-EG-u-nu-latn';
+const nf=n=>LANG==='ar'&&typeof n==='number'?new Intl.NumberFormat(loc()).format(n):n;
+const fd=d=>{if(!d||LANG!=='ar')return d;const x=new Date(d+'T00:00:00');return isNaN(x)?d:x.toLocaleDateString(loc(),{year:'numeric',month:'long',day:'numeric'})};
+const tr=o=>new Proxy(o,{get:(a,k)=>typeof a[k]==='string'?T(a[k]):a[k]});
+const sn=s=>s.dflt?T(s.name):s.name,sd=s=>s.dflt?T(s.desc):s.desc;
+function applyStatic(){$('aside').setAttribute('aria-label',T('Main navigation'));$('.brand').innerHTML=`<img src="${LOGO}" alt="" onerror="this.remove()">${T('Warraq')}`;document.title=T('Warraq');
+  $('.top button').setAttribute('aria-label',T('Open menu'));$('.top .pri').setAttribute('aria-label',T('Add book'))}
+
+/* ===== Constants & helpers ===== */
+const KEY='novelLibrary.v1',VER=1,LOGO='../assets/logo.jpg';
+const THEMES=tr({neutral:'Neutral',elegant:'Elegant',modern:'Modern',dark:'Dark mode'});
+const STAT=tr({unread:'Not started',reading:'Reading',completed:'Completed',hold:'On hold',dropped:'Dropped'});
+const PUR=tr({no:'Not purchased',yes:'Purchased',gift:'Gift',borrowed:'Borrowed'});
+const ROLES=tr({'':'No special behavior',reading:'Marks books as Reading',completed:'Marks books as Completed',toread:'Counts as Want to Read',tobuy:'Counts as Want to Buy',hold:'Marks books as On hold',dropped:'Marks books as Dropped'});
+const ICONS=['📖','📚','✅','🔖','🛒','⏸️','🚫','⭐','🌙','🔥','🧙','💌','🎁','🔁','☀️','🕵️','🚀','🌸','🏆','🇪🇬'];
+const BK={title:'',author:'',cover:'',desc:'',genre:'',section:'',status:'unread',pages:0,page:0,prev:0,year:'',publisher:'',isbn:'',lang:'',price:'',pdate:'',purchase:'no',rating:0,notes:'',fav:false,added:'',started:'',completed:''};
+const $=(s,r=document)=>r.querySelector(s);
+const uid=()=>Math.random().toString(36).slice(2,9)+Date.now().toString(36);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const today=()=>new Date().toISOString().slice(0,10);
+const pct=b=>b.pages>0?Math.min(100,Math.round(b.page/b.pages*1000)/10):(b.status==='completed'?100:0);
+const pagesRead=b=>b.status==='completed'?(b.pages||b.page):b.page;
+const stars=n=>'★'.repeat(n)+'☆'.repeat(5-n);
+const nz=s=>String(s||'').toLowerCase().normalize('NFKD').replace(/[\u0300-\u036f\u064B-\u065F\u0670\u0640]/g,'').replace(/[إأآٱ]/g,'ا').replace(/ى/g,'ي').replace(/ة/g,'ه');
+const hue=t=>[...t].reduce((a,c)=>a+c.charCodeAt(0),0)%360;
+
+/* ===== Storage service (versioned, validated) ===== */
+function defaults(){
+  const mk=(name,icon,color,role,desc)=>({id:uid(),name,icon,color,role,desc,nav:true,dflt:true});
+  const s=[mk('Currently Reading','📖','#3b82f6','reading','Books you are reading right now'),mk('Completed Books','✅','#16a34a','completed','Finished reads'),mk('Want to Read','🔖','#a855f7','toread','Your reading wishlist'),mk('Want to Buy','🛒','#d97706','tobuy','Books to get next'),mk('On Hold','⏸️','#64748b','hold','Paused for now'),mk('Dropped / Abandoned','🚫','#ef4444','dropped','Not for me'),mk('Favorites','⭐','#ec4899','','All-time favorites')];
+  return {v:VER,sections:s,books:[],prefs:{theme:'neutral',view:'grid',defSec:s[2].id,lang:'en',digits:'latn'}};
+}
+const DEF=Object.fromEntries(defaults().sections.map(s=>[s.name,s.desc]));
+function normalize(d){
+  if(!d||typeof d!=='object'||!Array.isArray(d.sections)||!Array.isArray(d.books))throw new Error(T('Not a valid library file'));
+  const secs=d.sections.filter(s=>s&&typeof s==='object'&&s.id&&s.name).map(s=>({id:String(s.id),name:String(s.name).slice(0,60),desc:String(s.desc||'').slice(0,200),icon:String(s.icon||'📖').slice(0,8),color:/^#[0-9a-f]{6}$/i.test(s.color)?s.color:'#5f8a68',nav:s.nav!==false,role:ROLES[s.role]!==undefined?s.role:'',dflt:s.dflt!==undefined?!!s.dflt:DEF[s.name]===s.desc}));
+  if(!secs.length)throw new Error(T('The file has no sections'));
+  const ids=new Set(secs.map(s=>s.id)),p=d.prefs||{},defSec=ids.has(p.defSec)?p.defSec:secs[0].id;
+  const books=d.books.filter(b=>b&&typeof b==='object'&&String(b.title||'').trim()).map(b=>{
+    const o={...BK};
+    for(const k in BK){const t=typeof BK[k],v=b[k];if(t==='string')o[k]=String(v??'');else if(t==='number')o[k]=Math.max(0,Number(v)||0);else o[k]=!!v}
+    o.id=String(b.id||uid());if(!ids.has(o.section))o.section=defSec;if(!STAT[o.status])o.status='unread';if(!PUR[o.purchase])o.purchase='no';
+    o.rating=Math.min(5,Math.round(o.rating));o.added=o.added||today();return o});
+  return {v:VER,sections:secs,books,prefs:{theme:THEMES[p.theme]?p.theme:'neutral',view:p.view==='list'?'list':'grid',defSec,lang:p.lang==='ar'?'ar':'en',digits:p.digits==='ar'?'ar':'latn',sort:['added','az','rating','progress'].includes(p.sort)?p.sort:'added'}};
+}
+let recovered=false;
+const Store={
+  load(){try{const r=localStorage.getItem(KEY);if(!r)return defaults();return normalize(JSON.parse(r))}
+    catch(e){recovered=true;try{localStorage.setItem(KEY+'.corrupt',localStorage.getItem(KEY)||'')}catch(_){}return defaults()}},
+  save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){toast(T('Storage is full or blocked. Export a backup now.'))}}
+};
+let S=Store.load();LANG=S.prefs.lang;
+const UI={route:'dash',q:'',sec:'',st:'',fav:false,sort:S.prefs.sort||'added',open:null,dirty:false};
+
+/* ===== Section service ===== */
+const Sec={
+  get:id=>S.sections.find(s=>s.id===id),
+  count:id=>S.books.filter(b=>b.section===id).length,
+  add(d){const s={id:uid(),name:T('New section'),desc:'',icon:'📖',color:'#5f8a68',nav:true,role:'',...d};S.sections.push(s);return s},
+  remove(id){const rest=S.sections.filter(s=>s.id!==id);if(!rest.length)return false;
+    if(S.prefs.defSec===id)S.prefs.defSec=rest[0].id;
+    S.books.forEach(b=>{if(b.section===id)b.section=S.prefs.defSec});S.sections=rest;return true},
+  shift(id,d){const i=S.sections.findIndex(s=>s.id===id),j=i+d;if(j<0||j>=S.sections.length)return;[S.sections[i],S.sections[j]]=[S.sections[j],S.sections[i]]}
+};
+const roleStatus={reading:'reading',completed:'completed',hold:'hold',dropped:'dropped'};
+
+/* ===== Book service ===== */
+const Bk={
+  get:id=>S.books.find(b=>b.id===id),
+  del(id){S.books=S.books.filter(b=>b.id!==id)},
+  complete(b){if(b.status!=='completed'&&b.pages&&b.page<b.pages)b.prev=b.page;
+    if(b.pages)b.page=b.pages;b.status='completed';b.completed=today();b.started=b.started||today()},
+  move(id,sid){const b=Bk.get(id),s=Sec.get(sid);if(!b||!s)return;const was=b.status;b.section=sid;
+    if(s.role==='completed')Bk.complete(b);
+    else if(roleStatus[s.role]){b.status=roleStatus[s.role];
+      if(was==='completed'){b.page=b.prev||0;b.completed=''}
+      if(s.role==='reading')b.started=b.started||today()}},
+  finish(b){Bk.complete(b);const t=S.sections.find(s=>s.role==='completed');if(t)b.section=t.id},
+  setPage(b,p){b.page=Math.max(0,Math.min(b.pages||1e6,p));
+    if(b.pages&&b.page>=b.pages){Bk.finish(b);return true}
+    if(b.page>0&&b.status==='unread'){b.status='reading';b.started=b.started||today()}return false}
+};
+
+/* ===== UI utilities ===== */
+function toast(m){const t=document.createElement('div');t.textContent=m;$('#toast').append(t);setTimeout(()=>t.remove(),3200)}
+function ask({title,msg,btns,input}){
+  return new Promise(res=>{const c=$('#cfm');
+    c.innerHTML=`<form method="dialog" class="db"><h2 style="margin-top:0">${esc(title)}</h2><p class="mut">${msg}</p>${input?`<input id="cin" type="${input.type||'text'}" value="${esc(input.value??'')}" min="${input.min??''}" max="${input.max??''}" aria-label="${esc(title)}" style="margin-top:10px">`:''}<div class="acts">${btns.map(([v,t,c2])=>`<button class="btn ${c2||''}" value="${v}">${esc(t)}</button>`).join('')}</div></form>`;
+    c.onclose=()=>res({btn:c.returnValue||'x',val:$('#cin',c)?.value});c.returnValue='';c.showModal()})}
+const confirmDel=(title,msg)=>ask({title,msg,btns:[['ok',T('Delete'),'dng'],['x',T('Cancel')]]}).then(r=>r.btn==='ok');
+const dlg=$('#dlg');
+function openDlg(h){dlg.innerHTML=`<div class="db">${h}</div>`;if(!dlg.open)dlg.showModal()}
+dlg.addEventListener('close',()=>{UI.open=null;UI.dirty=false});
+dlg.addEventListener('click',e=>{if(e.target===dlg)closeForm()});
+function commit(){Store.save();render();if(UI.open&&dlg.open){Bk.get(UI.open)?showBook(UI.open):dlg.close()}}
+
+/* ===== Rendering: shared pieces ===== */
+const ph=b=>`<div class="cv ph" style="--h:${hue(b.title)}" role="img" aria-label="${T('No cover for {0}',esc(b.title))}"><span>${esc(b.title)}</span></div>`;
+const coverH=b=>b.cover?`<img class="cv" src="${esc(b.cover)}" data-id="${b.id}" alt="${T('Cover of {0}',esc(b.title))}" loading="lazy">`:ph(b);
+document.addEventListener('error',e=>{const i=e.target;if(i.tagName!=='IMG')return;
+  if(i.dataset.id&&Bk.get(i.dataset.id))i.outerHTML=ph(Bk.get(i.dataset.id));else if(i.id==='pv')i.hidden=true},true);
+const progBar=(b,p)=>`<div class="bar" role="progressbar" aria-valuenow="${p}" aria-valuemin="0" aria-valuemax="100" aria-label="${T('Reading progress {0}%',p)}"><i style="width:${p}%"></i></div>`;
+function card(b){
+  const s=Sec.get(b.section),p=pct(b),show=b.pages>0&&(b.status==='reading'||p>0);
+  return `<div class="card bk" role="button" tabindex="0" data-act="open" data-id="${b.id}">${coverH(b)}<div class="bi"><h3 dir="auto">${esc(b.title)}${b.fav?` <span title="${T('Favorite')}" aria-label="${T('Favorite')}">♥</span>`:''}</h3><p dir="auto" class="mut sm">${esc(b.author||T('Unknown author'))}</p>${b.rating?`<p class="st" aria-label="${T('{0} of 5 stars',b.rating)}">${stars(b.rating)}</p>`:''}${show?progBar(b,p):''}<p class="mut sm">${s?`<span class="dot" style="background:${s.color}"></span>${esc(sn(s))}`:''} · ${STAT[b.status]}${show?` · ${nf(p)}%`:''}</p><p class="ex mut sm">${esc([b.genre,b.pages?T('{0} pages',b.pages):''].filter(Boolean).join(' · '))}</p></div></div>`}
+const bars=a=>{const m=Math.max(1,...a.map(x=>x[1]));return `<div class="bars card" role="img" aria-label="${T('Books completed per month')}">${a.map(([l,v])=>`<div><b>${nf(v)}</b><i style="height:${v/m*80}%"></i><span>${l}</span></div>`).join('')}</div>`};
+function months(n){const a=[],d=new Date();d.setDate(1);for(let i=n-1;i>=0;i--){const x=new Date(d.getFullYear(),d.getMonth()-i,1),k=x.getFullYear()+'-'+String(x.getMonth()+1).padStart(2,'0');
+  a.push([x.toLocaleString(LANG==='ar'?loc():undefined,{month:'short'}),S.books.filter(b=>b.status==='completed'&&b.completed.slice(0,7)===k).length])}return a}
+const strip=(a,t)=>a.length?`<h2>${t}</h2><div class="grid">${a.map(card).join('')}</div>`:'';
+
+/* ===== Views ===== */
+function renderNav(){
+  const it=(r,i,t,c,col)=>`<button class="nv" data-act="go" data-r="${r}" ${UI.route===r?'aria-current="page"':''}><span aria-hidden="true">${i}</span><span dir="auto">${esc(t)}</span>${c!=null?`<em>${nf(c)}</em>`:''}</button>`;
+  $('#nav').innerHTML=it('dash','🏠',T('Dashboard'))+it('lib','📚',T('My Library'),S.books.length)+`<div class="sh">${T('Sections')}</div>`+S.sections.filter(s=>s.nav).map(s=>it('sec:'+s.id,s.icon,sn(s),Sec.count(s.id))).join('')+`<div class="sh">${T('More')}</div>`+it('stats','📊',T('Statistics'))+it('set','⚙️',T('Settings'))}
+function dash(){
+  const B=S.books,rd=B.filter(b=>b.status==='reading'),done=B.filter(b=>b.status==='completed');
+  const role=r=>B.filter(b=>Sec.get(b.section)?.role===r).length,pr=B.reduce((a,b)=>a+pagesRead(b),0),tp=B.reduce((a,b)=>a+(b.pages||0),0),op=tp?Math.min(100,Math.round(pr/tp*100)):0;
+  const st=[[T('Total books'),B.length],[T('Currently reading'),rd.length],[T('Completed'),done.length],[T('Want to read'),role('toread')],[T('Want to buy'),role('tobuy')],[T('Favorites'),B.filter(b=>b.fav).length],[T('Pages read'),pr]];
+  return `<div class="hd"><div><h1>${T('Welcome back')}</h1><p class="mut">${T('Your reading life at a glance.')}</p></div><button class="btn pri" data-act="add">${T('＋ Add book')}</button></div>
+  <div class="stats">${st.map(([l,v])=>`<div class="card stat"><b>${nf(v)}</b><span class="mut sm">${l}</span></div>`).join('')}</div>
+  <h2>${T('Reading progress overview')}</h2><div class="card" style="padding:14px">${progBar({},op)}<p class="sm mut">${T('{0} of {1} pages across books with a page count ({2}%)',pr,tp,op)}</p></div>
+  <h2>${T('Continue reading')}</h2>${rd.length?`<div class="row2">${rd.map(b=>{const p=pct(b);return `<div class="card cr"><div style="flex:none;width:64px" data-act="open" data-id="${b.id}">${coverH(b)}</div><div><h3 dir="auto">${esc(b.title)}</h3><p dir="auto" class="mut sm">${esc(b.author)}</p>${progBar(b,p)}<p class="sm">${T('Page {0} of {1} · {2}%',b.page,b.pages||'?',p)}</p><button class="btn" style="margin-top:6px" data-act="page" data-id="${b.id}">${T('Update progress')}</button></div></div>`}).join('')}</div>`:`<div class="card empty"><p>${T('Nothing in progress. Start a book from your library.')}</p></div>`}
+  ${strip(B.slice(-6).reverse(),T('Recently added'))}${strip([...done].sort((a,b)=>b.completed.localeCompare(a.completed)).slice(0,6),T('Recently completed'))}
+  <h2>${T('Reading activity')}</h2>${bars(months(6))}
+  <h2>${T('Sections')}</h2><div class="row2">${S.sections.map(s=>`<button class="sc" data-act="go" data-r="sec:${s.id}"><span class="big" style="background:${s.color}22;color:${s.color}">${s.icon}</span><span><b dir="auto">${esc(sn(s))}</b><br><span class="mut sm">${T('{0} books',Sec.count(s.id))}</span></span></button>`).join('')}</div>`}
+function lib(sid){
+  const s=sid&&Sec.get(sid),o=(v,t,sel)=>`<option value="${v}" ${sel?'selected':''}>${esc(t)}</option>`;
+  return `<div class="hd">${s?`<span class="big" style="background:${s.color}22;color:${s.color}">${s.icon}</span>`:''}<div><h1 dir="auto">${s?esc(sn(s)):T('My Library')}</h1><p class="mut">${s?esc(sd(s)):T('Every book you own, want or love.')}</p></div><button class="btn pri" data-act="add" data-sec="${sid||''}">${T('＋ Add book')}</button></div>
+  <div class="bar2" role="search"><div class="srch">${ico(IC.search)}<input id="q" type="search" dir="auto" placeholder="${T('Search title, author or genre')}" aria-label="${T('Search books')}" value="${esc(UI.q)}"><button type="button" class="clr" data-act="clrq" aria-label="${T('Clear search')}" ${UI.q?'':'hidden'}>${ico(IC.x)}</button></div>
+  <div class="grp" role="group" aria-label="${T('Filters')}">${sid?'':`<select data-f="sec" aria-label="${T('Filter by section')}">${o('',T('All sections'))}${S.sections.map(x=>o(x.id,sn(x),UI.sec===x.id)).join('')}</select>`}
+  <select data-f="st" aria-label="${T('Filter by status')}">${o('',T('Any status'))}${Object.entries(STAT).map(([k,v])=>o(k,v,UI.st===k)).join('')}</select>
+  <button type="button" class="chip" data-act="favf" aria-pressed="${UI.fav}">${ico(IC.heart)}${T('Favorites')}</button></div>
+  <div class="grp"><select data-f="sort" aria-label="${T('Sort by')}">${SORTS().map(([k,v])=>o(k,v,UI.sort===k)).join('')}</select>
+  <div class="seg" role="group" aria-label="${T('View')}"><button data-act="view" data-v="grid" aria-pressed="${S.prefs.view==='grid'}" aria-label="${T('Grid view')}">${ico(IC.grid)}</button><button data-act="view" data-v="list" aria-pressed="${S.prefs.view==='list'}" aria-label="${T('List view')}">${ico(IC.list)}</button></div></div></div>
+  <div id="res" aria-live="polite">${results()}</div>`}
+function results(){
+  const sid=UI.route.startsWith('sec:')?UI.route.slice(4):'',q=nz(UI.q.trim());
+  let a=[...S.books].reverse();
+  const total=sid?a.filter(b=>b.section===sid).length:a.length;
+  if(sid)a=a.filter(b=>b.section===sid);else if(UI.sec)a=a.filter(b=>b.section===UI.sec);
+  if(q)a=a.filter(b=>[b.title,b.author,b.genre].some(x=>nz(x).includes(q)));
+  if(UI.st)a=a.filter(b=>b.status===UI.st);if(UI.fav)a=a.filter(b=>b.fav);
+  if(UI.sort==='az')a.sort((x,y)=>x.title.localeCompare(y.title));
+  else if(UI.sort==='rating')a.sort((x,y)=>y.rating-x.rating);else if(UI.sort==='progress')a.sort((x,y)=>pct(y)-pct(x));
+  if(!a.length){const s=sid&&Sec.get(sid);
+    return total||(!sid&&S.books.length)?`<div class="card empty"><h2>${T('No matching books')}</h2><p class="mut">${T('Try a different search or clear the filters.')}</p></div>`
+    :`<div class="card empty"><h2>${T('Your reading journey starts here.')}</h2><p class="mut">${s?T('Nothing in “{0}” yet.',esc(sn(s))):T('Your library is empty.')} ${T('Add your first book.')}</p><button class="btn pri" data-act="add" data-sec="${sid}">${T('＋ Add book')}</button></div>`}
+  return `<div class="${S.prefs.view==='list'?'list':'grid'}">${a.map(card).join('')}</div>`}
+function stats(){
+  const B=S.books,done=B.filter(b=>b.status==='completed'),rated=B.filter(b=>b.rating),g={};
+  B.forEach(b=>{const k=b.genre.trim()||T('No genre');g[k]=(g[k]||0)+1});const gs=Object.entries(g).sort((a,b)=>b[1]-a[1]).slice(0,8),gm=gs[0]?gs[0][1]:1;
+  const spent=B.reduce((a,b)=>a+(parseFloat(b.price)||0),0);
+  const st=[[T('Total books'),B.length],[T('Completed'),done.length],[T('Pages read'),B.reduce((a,b)=>a+pagesRead(b),0)],[T('Average rating'),rated.length?(rated.reduce((a,b)=>a+b.rating,0)/rated.length).toFixed(1):'–'],[T('Total spent'),spent||'–']];
+  return `<div class="hd"><div><h1>${T('Statistics')}</h1><p class="mut">${T('Calculated live from your library.')}</p></div></div>
+  <div class="stats">${st.map(([l,v])=>`<div class="card stat"><b>${nf(v)}</b><span class="mut sm">${l}</span></div>`).join('')}</div>
+  <h2>${T('Books completed, last 12 months')}</h2>${bars(months(12))}
+  <h2>${T('By status')}</h2><div class="card" style="padding:12px">${Object.entries(STAT).map(([k,v])=>{const n=B.filter(b=>b.status===k).length;return `<div class="hb"><span>${v}</span>${progBar({},B.length?Math.round(n/B.length*100):0)}<b>${nf(n)}</b></div>`}).join('')}</div>
+  <h2>${T('By genre')}</h2><div class="card" style="padding:12px">${gs.length?gs.map(([k,n])=>`<div class="hb"><span>${esc(k)}</span>${progBar({},Math.round(n/gm*100))}<b>${nf(n)}</b></div>`).join(''):`<p class="mut">${T('Add books to see genres.')}</p>`}</div>`}
+function settings(){
+  const sw={neutral:'#5f8a68',elegant:'#b8588a',modern:'#1f3a64',dark:'#8fb7ff'};
+  const set=(l,d,c)=>`<div class="set"><div><b>${T(l)}</b>${d?`<p class="mut sm">${T(d)}</p>`:''}</div><div class="ctl">${c}</div></div>`;
+  const card=(ic,ti,ds,body)=>`<section class="sc2"><header><span class="ci">${ic}</span><div><h2>${T(ti)}</h2><p class="mut sm">${T(ds)}</p></div></header>${body}</section>`;
+  const pill=(act,at,val,on,label,lg)=>`<button type="button" class="btn pill" data-act="${act}" data-${at}="${val}" aria-pressed="${on}" ${lg?`lang="${lg}"`:''}>${label}</button>`;
+  const sel=(f,val,opts)=>`<select data-f="${f}" aria-label="${T(f==='defSec'?'Default section for new books':'Default sorting')}">${opts.map(([k,t])=>`<option value="${k}" ${val===k?'selected':''}>${esc(t)}</option>`).join('')}</select>`;
+  return `<div class="hd"><div><h1>${T('Settings')}</h1></div></div><div class="sgrid">
+  ${card('🎨','Appearance','Choose how the library looks.',set('Theme','',`<div class="pills">${Object.entries(THEMES).map(([k,v])=>`<button type="button" class="btn pill" data-act="theme" data-t="${k}" aria-pressed="${S.prefs.theme===k}"><i class="sw" style="background:${sw[k]}"></i>${esc(v)}</button>`).join('')}</div>`))}
+  ${card('🌐','Language','Choose the interface language.',set('Language','',`<div class="pills">${pill('lang','l','ar',S.prefs.lang==='ar','العربية','ar')}${pill('lang','l','en',S.prefs.lang==='en','English','en')}</div>`)+(S.prefs.lang==='ar'?set('Numbers','Digits used for numbers and dates.',`<div class="pills">${pill('digits','d','latn',S.prefs.digits!=='ar',T('Western digits (1234)'))}${pill('digits','d','ar',S.prefs.digits==='ar',T('Arabic-Indic digits (١٢٣٤)'))}</div>`):''))}
+  ${card('📚','Library preferences','Defaults used when browsing and adding books.',set('Default section for new books','',sel('defSec',S.prefs.defSec,S.sections.map(s=>[s.id,s.icon+' '+sn(s)])))+set('Default view','',`<div class="pills">${pill('view','v','grid',S.prefs.view==='grid',T('Grid view'))}${pill('view','v','list',S.prefs.view==='list',T('List view'))}</div>`)+set('Default sorting','',sel('defSort',S.prefs.sort,SORTS())))}
+  ${card('🗂️','Sections','Create, rename, reorder or delete your sections.',S.sections.map((s,i)=>`<div class="row"><span class="big mini" style="background:${s.color}22;color:${s.color}">${s.icon}</span><div class="grow"><b dir="auto">${esc(sn(s))}</b> ${S.prefs.defSec===s.id?`<span class="tag">${T('Default')}</span>`:''}${s.nav?'':` <span class="mut sm">${T('(hidden from menu)')}</span>`}<br><span class="mut sm">${T('{0} books',Sec.count(s.id))}</span></div><button class="btn" data-act="sup" data-id="${s.id}" aria-label="${T('Move {0} up',esc(sn(s)))}" ${i?'':'disabled'}>▲</button><button class="btn" data-act="sdn" data-id="${s.id}" aria-label="${T('Move {0} down',esc(sn(s)))}" ${i<S.sections.length-1?'':'disabled'}>▼</button><button class="btn" data-act="sedit" data-id="${s.id}">${T('Edit')}</button><button class="btn dng" data-act="sdel" data-id="${s.id}">${T('Delete')}</button></div>`).join('')+`<div class="set"><button class="btn pri" data-act="sedit">${T('＋ New section')}</button></div>`)}
+  ${card('💾','Data management','Back up your library or move it to another device.',`<p class="sm note">${T('storageNote')}</p><div class="set"><div class="pills"><button class="btn pri" data-act="export">${T('Export library (JSON)')}</button><button class="btn" data-act="import">${T('Import backup')}</button></div></div><div class="set danger"><div><b>${T('Danger zone')}</b><p class="mut sm">${T('Deletes every book and section from this browser.')}</p></div><button class="btn dng" data-act="reset">${T('Erase everything')}</button></div>`)}
+  ${card('ℹ️','About','Your data stays in this browser.',`<div class="set"><div><b>${T('Warraq')}</b><p class="mut sm">${T('Data format version {0}',VER)}</p></div></div>`)}</div>`}
+function render(){
+  LANG=S.prefs.lang;const H=document.documentElement;H.dataset.theme=S.prefs.theme;H.lang=LANG;H.dir=LANG==='ar'?'rtl':'ltr';applyStatic();renderNav();
+  const r=UI.route;let h,t=T('Warraq');
+  if(r.startsWith('sec:')&&Sec.get(r.slice(4))){h=lib(r.slice(4));t=sn(Sec.get(r.slice(4)))}
+  else if(r==='lib'){h=lib();t=T('My Library')}else if(r==='stats'){h=stats();t=T('Statistics')}else if(r==='set'){h=settings();t=T('Settings')}
+  else{UI.route='dash';h=dash();t=T('Dashboard');renderNav()}
+  $('#main').innerHTML=h;$('#ttl').textContent=t}
+
+/* ===== Book forms & details ===== */
+function bookDlg(b,secId){
+  UI.dirty=false;
+  const v=b||{...BK,section:secId&&Sec.get(secId)?secId:S.prefs.defSec};
+  const fld=(k,l,t='text',x='')=>`<label>${T(l)}<input name="${k}" type="${t}" dir="${t==='text'?'auto':'ltr'}" value="${esc(v[k]||'')}" ${x}></label>`;
+  const sel=(k,l,o)=>`<label>${T(l)}<select name="${k}">${o.map(([a,x])=>`<option value="${a}" ${String(v[k])===String(a)?'selected':''}>${esc(x)}</option>`).join('')}</select></label>`;
+  const card=(ic,ti,open,body)=>`<details class="fc" ${open?'open':''}><summary><span class="ci">${ico(ic)}</span><b>${T(ti)}</b><span class="mut sm">${T('Optional')}</span></summary><div class="fg">${body}</div></details>`;
+  const p=pct(v);
+  openDlg(`<form id="bf"><div class="fh"><h2>${T(b?'Edit book':'Add a book')}</h2><button type="button" class="btn ib" data-act="close" aria-label="${T('Close')}">${ico(IC.x)}</button></div><input type="hidden" name="id" value="${b?b.id:''}">
+  <section class="fc"><div class="fg"><label class="wide big-in">${T('Title *')}<input name="title" required dir="auto" placeholder="${T('e.g. Dune')}" value="${esc(v.title)}" autofocus></label>
+  ${sel('section','Section',S.sections.map(s=>[s.id,s.icon+' '+sn(s)]))}${sel('status','Reading status',Object.entries(STAT))}${fld('author','Author')}${fld('genre','Genre')}
+  <label class="wide">${T('Description')}<textarea dir="auto" name="desc" rows="3">${esc(v.desc)}</textarea></label></div></section>
+  ${card(IC.upload,'Cover image',!!v.cover,`<div class="wide cvrow"><div class="cvp">${ico(IC.upload)}<img id="pv" alt="${T('Cover preview')}" ${v.cover?`src="${esc(v.cover)}"`:'hidden'}></div><div class="cvc"><input type="hidden" name="cover" id="cvh" value="${esc(v.cover)}"><input type="file" id="cvf" class="vh" accept="image/*"><label for="cvf" class="drop">${ico(IC.upload)}<b id="dropt">${T(v.cover?'Replace cover image':'Choose a cover image')}</b><span class="mut sm">${T('or drag and drop it here')}</span></label>
+  <label>${T('Image URL')}<input id="cvu" type="url" dir="ltr" placeholder="https://…" value="${v.cover&&!v.cover.startsWith('data:')?esc(v.cover):''}"></label><div><button type="button" class="btn" data-act="rmcover">${T('Remove cover')}</button></div></div></div>`)}
+  ${card(IC.book,'Reading progress',v.status==='reading'||!!(v.pages||v.page||v.started||v.completed),`${fld('pages','Total pages','number','min="0"')}${fld('page','Current page','number','min="0"')}${fld('started','Date started','date')}${fld('completed','Date completed','date')}<div class="wide"><div class="bar" id="fpb"><i style="width:${p}%"></i></div><p class="sm mut" id="fpt">${nf(p)}%</p></div>`)}
+  ${card(IC.cart,'Purchase information',v.purchase!=='no'||!!(v.price||v.pdate),`${sel('purchase','Purchase status',Object.entries(PUR))}${fld('price','Price','number','step="any" min="0"')}${fld('pdate','Purchase date','date')}`)}
+  ${card(IC.note,'Rating and notes',!!(v.notes||v.rating||v.fav),`${sel('rating','Personal rating',[[0,T('No rating')],...[1,2,3,4,5].map(n=>[n,stars(n)])])}<label><input type="checkbox" name="fav" ${v.fav?'checked':''}> ${T('Favorite')}</label><label class="wide">${T('Personal notes')}<textarea dir="auto" name="notes" rows="5">${esc(v.notes)}</textarea></label>`)}
+  <div class="acts sticky"><button type="button" class="btn" data-act="close">${T('Cancel')}</button><button class="btn pri" type="submit">${T('Save book')}</button></div></form>`)}
+function saveForm(f){
+  const d=Object.fromEntries(new FormData(f)),n=k=>Math.max(0,Number(d[k])||0),old=d.id?Bk.get(d.id):null,b=old||{...BK,id:uid(),added:today()};
+  ['title','author','genre','cover','desc','price','pdate','notes','started','completed'].forEach(k=>b[k]=String(d[k]||'').trim());
+  Object.assign(b,{section:d.section,status:d.status,purchase:d.purchase,pages:n('pages'),page:n('page'),rating:Math.min(5,n('rating')),fav:!!d.fav});
+  if(b.pages&&b.page>b.pages)b.page=b.pages;
+  if(b.status==='completed'){b.completed=b.completed||today();if(b.pages)b.page=b.pages}
+  if(b.status==='reading')b.started=b.started||today();
+  if(!old)S.books.push(b);return b}
+function showBook(id){
+  const b=Bk.get(id);if(!b)return;UI.open=id;const s=Sec.get(b.section),p=pct(b),row=(k,v)=>v?`<dt>${k}</dt><dd>${esc(v)}</dd>`:'';
+  openDlg(`<div class="det">${coverH(b)}<div><h2 dir="auto" style="margin:0">${esc(b.title)}</h2><p dir="auto" class="mut">${esc(b.author||T('Unknown author'))}</p>${b.rating?`<p class="st" aria-label="${T('{0} of 5 stars',b.rating)}">${stars(b.rating)}</p>`:''}
+  ${(b.pages||b.status==='reading')?`${progBar(b,p)}<p class="sm">${T('Page {0} of {1} · {2}%',b.page,b.pages||'?',p)}</p>`:''}
+  <dl class="dl">${row(T('Section'),s?s.icon+' '+sn(s):'')}${row(T('Status'),STAT[b.status])}${row(T('Genre'),b.genre)}${row(T('Pages'),b.pages||'')}${row(T('Year'),b.year)}${row(T('Publisher'),b.publisher)}${row('ISBN',b.isbn)}${row(T('Language'),b.lang)}${row(T('Purchase'),PUR[b.purchase]+(b.price?' · '+b.price:'')+(b.pdate?' · '+fd(b.pdate):''))}${row(T('Added'),fd(b.added))}${row(T('Started'),fd(b.started))}${row(T('Completed'),fd(b.completed))}</dl></div></div>
+  ${b.desc?`<h3>${T('Description')}</h3><p dir="auto">${esc(b.desc).replace(/\n/g,'<br>')}</p>`:''}${b.notes?`<h3 style="margin-top:12px">${T('Notes')}</h3><p dir="auto">${esc(b.notes).replace(/\n/g,'<br>')}</p>`:''}
+  <label class="sm mut" style="display:block;margin-top:12px">${T('Move to section')} <select data-act="move" data-id="${b.id}">${S.sections.map(x=>`<option value="${x.id}" ${x.id===b.section?'selected':''}>${esc(x.icon+' '+sn(x))}</option>`).join('')}</select></label>
+  <div class="acts" style="justify-content:flex-start"><button class="btn" data-act="fav" data-id="${b.id}" aria-pressed="${b.fav}">${b.fav?T('♥ Favorited'):T('♡ Add to favorites')}</button>${b.status!=='completed'?`<button class="btn" data-act="page" data-id="${b.id}">${T('Update page')}</button><button class="btn" data-act="done" data-id="${b.id}">${T('Mark completed')}</button>`:''}<button class="btn" data-act="edit" data-id="${b.id}">${T('Edit')}</button><button class="btn dng" data-act="del" data-id="${b.id}">${T('Delete')}</button><button class="btn" data-act="close">${T('Close')}</button></div>`)}
+function secDlg(id){
+  const s=id?Sec.get(id):{name:'',desc:'',icon:'📖',color:'#5f8a68',nav:true,role:''};
+  openDlg(`<form id="sf"><h2 style="margin-top:0">${id?T('Edit section'):T('New section')}</h2><input type="hidden" name="id" value="${id||''}">
+  <div class="fg"><label>${T('Name *')}<input dir="auto" name="name" required maxlength="60" value="${esc(sn(s))}"></label><label>${T('Color')}<input type="color" name="color" value="${s.color}" style="width:100%;height:42px"></label>
+  <label class="wide">${T('Description')}<input dir="auto" name="desc" maxlength="200" value="${esc(sd(s))}"></label>
+  <div class="wide">${T('Icon')}<input type="hidden" name="icon" id="sic" value="${esc(s.icon)}"><div class="ic2">${ICONS.map(x=>`<button type="button" data-act="pickicon" data-i="${x}" aria-pressed="${x===s.icon}" aria-label="Icon ${x}">${x}</button>`).join('')}</div></div>
+  <label class="wide">${T('Behavior')}<select name="role">${Object.entries(ROLES).map(([k,v])=>`<option value="${k}" ${s.role===k?'selected':''}>${v}</option>`).join('')}</select></label>
+  <label style="flex-direction:row;align-items:center;gap:8px"><input type="checkbox" name="nav" ${s.nav?'checked':''}> ${T('Show in main menu')}</label>
+  <label style="flex-direction:row;align-items:center;gap:8px"><input type="checkbox" name="def" ${S.prefs.defSec===id?'checked':''}> ${T('Default for new books')}</label></div>
+  <div class="acts"><button type="button" class="btn" data-act="close">${T('Cancel')}</button><button class="btn pri">${T('Save section')}</button></div></form>`)}
+
+/* ===== Import / export ===== */
+function exportLib(){
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify({app:T('Warraq'),exported:new Date().toISOString(),...S},null,1)],{type:'application/json'}));
+  a.download=`warraq-backup-${today()}.json`;document.body.append(a);a.click();a.remove();toast(T('Backup downloaded'))}
+async function importLib(file){
+  let d;try{d=normalize(JSON.parse(await file.text()))}catch(e){return toast(T('Import failed: {0}',e instanceof SyntaxError?T('this is not a valid library backup.'):e.message))}
+  const r=await ask({title:T('Import library'),msg:T('This file has <b>{0} books</b> and <b>{1} sections</b>. Merge adds only what is missing from your library. Replace deletes your current library first.',d.books.length,d.sections.length),btns:[['merge',T('Merge'),'pri'],['replace',T('Replace'),'dng'],['x',T('Cancel')]]});
+  if(r.btn==='replace')S=d;
+  else if(r.btn==='merge'){const sid=new Set(S.sections.map(s=>s.id)),bid=new Set(S.books.map(b=>b.id));
+    d.sections.forEach(s=>{if(!sid.has(s.id))S.sections.push(s)});d.books.forEach(b=>{if(!bid.has(b.id))S.books.push(b)})}
+  else return;
+  Store.save();render();toast(T('Library imported'))}
+
+/* ===== Actions (event delegation) ===== */
+const A={
+  go(t){UI.route=t.dataset.r;Object.assign(UI,{q:'',sec:'',st:'',fav:false});document.body.classList.remove('nv-open');if(dlg.open)dlg.close();render();scrollTo(0,0)},
+  menu(){document.body.classList.toggle('nv-open')},
+  add(t){bookDlg(null,t.dataset.sec||(UI.route.startsWith('sec:')?UI.route.slice(4):''))},
+  open(t){showBook(t.dataset.id)},edit(t){bookDlg(Bk.get(t.dataset.id))},close(){closeForm()},
+  view(t){S.prefs.view=t.dataset.v;commit()},
+  fav(t){const b=Bk.get(t.dataset.id);b.fav=!b.fav;commit()},
+  done(t){Bk.finish(Bk.get(t.dataset.id));commit();toast(T('Marked as completed 🎉'))},
+  async page(t){const b=Bk.get(t.dataset.id),r=await ask({title:T('Update progress'),msg:esc(b.title)+' ('+(b.pages?T('of {0} pages',b.pages):T('page number'))+')',input:{type:'number',value:b.page,min:0,max:b.pages||''},btns:[['ok',T('Save'),'pri'],['x',T('Cancel')]]});
+    if(r.btn!=='ok')return;const fin=Bk.setPage(b,Number(r.val)||0);commit();if(fin)toast(T('Finished! Marked as completed 🎉'))},
+  async del(t){const b=Bk.get(t.dataset.id);if(await confirmDel(T('Delete book?'),T('“{0}” will be removed permanently.',esc(b.title)))){Bk.del(b.id);dlg.close();commit();toast(T('Book deleted'))}},
+  theme(t){S.prefs.theme=t.dataset.t;commit()},
+  rmcover(){UI.dirty=true;$('#cvh').value='';$('#cvu').value='';$('#cvf').value='';$('#pv').hidden=true;syncCover()},
+  sedit(t){secDlg(t.dataset.id)},sup(t){Sec.shift(t.dataset.id,-1);commit()},sdn(t){Sec.shift(t.dataset.id,1);commit()},
+  async sdel(t){const s=Sec.get(t.dataset.id);if(S.sections.length<2)return toast(T('Keep at least one section'));
+    const n=Sec.count(s.id);if(await confirmDel(T('Delete section?'),T('“{0}” will be removed. {1}',esc(sn(s)),n?T('{0} book(s) will move to your default section.',n):T('It has no books.')))){
+      if(UI.route==='sec:'+s.id)UI.route='set';Sec.remove(s.id);commit()}},
+  pickicon(t){$('#sic').value=t.dataset.i;dlg.querySelectorAll('.ic2 button').forEach(x=>x.setAttribute('aria-pressed',x===t))},
+  export:exportLib,import(){$('#imp').click()},
+  async reset(){if(await confirmDel(T('Erase everything?'),T('All books and sections will be deleted. Export a backup first if unsure.'))){S=defaults();UI.route='dash';Store.save();render();toast(T('Library erased'))}}
+};
+document.addEventListener('click',e=>{const t=e.target.closest('[data-act]');if(!t||t.tagName==='SELECT')return;if(t.dataset.act==='menu'||A[t.dataset.act]){e.stopPropagation();A[t.dataset.act](t)}});
+document.addEventListener('keydown',e=>{if((e.key==='Enter'||e.key===' ')&&e.target.matches('[role=button][data-act]')){e.preventDefault();A[e.target.dataset.act](e.target)}});
+document.addEventListener('change',e=>{const t=e.target;
+  if(t.dataset.act==='move'){Bk.move(t.dataset.id,t.value);commit();toast(T('Book moved'))}
+  else if(t.dataset.f){if(t.dataset.f==='defSec'){S.prefs.defSec=t.value;commit()}else if(t.dataset.f==='defSort'){S.prefs.sort=UI.sort=t.value;commit()}else{UI[t.dataset.f]=t.type==='checkbox'?t.checked:t.value;$('#res').innerHTML=results()}}
+  else if(t.id==='cvf'&&t.files[0])readCover(t.files[0]);
+  else if(t.id==='imp'&&t.files[0]){importLib(t.files[0]);t.value=''}});
+document.addEventListener('input',e=>{const t=e.target;
+  if(t.id==='q'){UI.q=t.value;$('.clr').hidden=!t.value;$('#res').innerHTML=results()}
+  else if(t.id==='cvu'){$('#cvh').value=t.value.trim();const p=$('#pv');p.hidden=!t.value.trim();p.src=t.value.trim();syncCover()}});
+document.addEventListener('submit',e=>{const f=e.target,fid=f.getAttribute&&f.getAttribute('id');
+  if(fid==='bf'){e.preventDefault();const b=saveForm(f);UI.open=null;dlg.close();commit();toast(T('Book saved'));UI.open=null}
+  else if(fid==='sf'){e.preventDefault();const d=Object.fromEntries(new FormData(f));
+    const s=d.id?Sec.get(d.id):Sec.add({});const keep=s.dflt&&d.name.trim()===sn(s)&&d.desc.trim()===sd(s),o=[s.name,s.desc];Object.assign(s,{name:d.name.trim()||T('Untitled'),desc:d.desc.trim(),icon:d.icon||'📖',color:d.color,role:d.role,nav:!!d.nav});if(keep)[s.name,s.desc]=o;else s.dflt=false;
+    if(d.def)S.prefs.defSec=s.id;dlg.close();commit();toast(T('Section saved'))}});
+function syncCover(){const t=$('#dropt');if(t)t.textContent=T($('#cvh').value?'Replace cover image':'Choose a cover image')}
+function readCover(file){
+  if(file.size>8e6)return toast(T('Image too large (max 8 MB)'));
+  const r=new FileReader();r.onload=()=>{const im=new Image();im.onload=()=>{
+    const k=Math.min(1,400/im.width),c=document.createElement('canvas');c.width=im.width*k;c.height=im.height*k;c.getContext('2d').drawImage(im,0,0,c.width,c.height);
+    const u=c.toDataURL('image/jpeg',.8);$('#cvh').value=u;$('#cvu').value='';const p=$('#pv');p.src=u;p.hidden=false;syncCover()};
+    im.onerror=()=>toast(T('Could not read that image'));im.src=r.result};r.readAsDataURL(file)}
+
+Object.assign(A,{lang(t){S.prefs.lang=t.dataset.l;commit()},digits(t){S.prefs.digits=t.dataset.d;commit()}});
+document.addEventListener('invalid',e=>e.target.setCustomValidity(T('Please fill out this field.')),true);
+document.addEventListener('input',e=>e.target.setCustomValidity&&e.target.setCustomValidity(''));
+const ico=p=>`<svg class="i" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${p}</svg>`;
+const IC={search:'<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>',x:'<path d="M6 6l12 12M18 6 6 18"/>',heart:'<path d="M12 21s-7-4.5-9-9a5 5 0 0 1 9-3 5 5 0 0 1 9 3c-2 4.5-9 9-9 9z"/>',upload:'<path d="M12 16V4m0 0-4 4m4-4 4 4M4 20h16"/>',book:'<path d="M4 5a2 2 0 0 1 2-2h14v16H6a2 2 0 0 0-2 2zM4 19V5"/>',cart:'<circle cx="9" cy="20" r="1.5"/><circle cx="18" cy="20" r="1.5"/><path d="M3 4h2l2.5 11h11L21 7H6"/>',note:'<path d="M5 3h14v18H5zM9 8h6M9 12h6M9 16h3"/>',grid:'<rect x="4" y="4" width="6.5" height="6.5" rx="1.5"/><rect x="13.5" y="4" width="6.5" height="6.5" rx="1.5"/><rect x="4" y="13.5" width="6.5" height="6.5" rx="1.5"/><rect x="13.5" y="13.5" width="6.5" height="6.5" rx="1.5"/>',list:'<path d="M9 6h11M9 12h11M9 18h11M4.5 6h.01M4.5 12h.01M4.5 18h.01"/>'};
+Object.assign(AR,{'e.g. Dune':'مثال: أرض زيكولا','Replace cover image':'استبدال صورة الغلاف'});
+const SORTS=()=>[['added',T('Newest added')],['az',T('A to Z')],['rating',T('Rating')],['progress',T('Progress')]];
+async function closeForm(){
+  if(UI.dirty&&dlg.querySelector('#bf')){const r=await ask({title:T('Discard changes?'),msg:T('You have unsaved changes. Close without saving?'),btns:[['ok',T('Discard'),'dng'],['x',T('Keep editing')]]});if(r.btn!=='ok')return}
+  UI.dirty=false;dlg.close()}
+dlg.addEventListener('cancel',e=>{if(UI.dirty&&dlg.querySelector('#bf')){e.preventDefault();closeForm()}});
+Object.assign(A,{
+  favf(t){UI.fav=!UI.fav;t.setAttribute('aria-pressed',UI.fav);$('#res').innerHTML=results()},
+  clrq(){UI.q='';const q=$('#q');q.value='';q.focus();$('.clr').hidden=true;$('#res').innerHTML=results()}});
+['input','change'].forEach(ev=>document.addEventListener(ev,e=>{if(e.target.closest&&e.target.closest('#bf'))UI.dirty=true}));
+document.addEventListener('input',e=>{const t=e.target;if(t.form&&t.form.getAttribute('id')==='bf'&&(t.name==='page'||t.name==='pages')){
+  const f=t.form,pg=+f.pages.value||0,c=+f.page.value||0,v=pg?Math.min(100,Math.round(c/pg*1000)/10):0;$('#fpb i').style.width=v+'%';$('#fpt').textContent=nf(v)+'%'}});
+document.addEventListener('dragover',e=>{if(e.target.closest&&e.target.closest('.drop')){e.preventDefault();e.target.closest('.drop').classList.add('on')}});
+document.addEventListener('dragleave',e=>{if(e.target.closest&&e.target.closest('.drop'))e.target.closest('.drop').classList.remove('on')});
+document.addEventListener('drop',e=>{if(e.target.closest&&e.target.closest('.drop')){e.preventDefault();e.target.closest('.drop').classList.remove('on');const f=e.dataTransfer.files[0];if(f&&f.type.startsWith('image/')){UI.dirty=true;readCover(f)}}});
+/* ===== Init ===== */
+render();
+if(recovered)toast(T('Saved data could not be read. A copy was kept and a fresh library started.'));
+</script>
+</body>
+</html>
