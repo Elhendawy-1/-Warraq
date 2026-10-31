@@ -182,16 +182,19 @@ function defaults(){
   return {v:VER,sections:s,books:[],prefs:{theme:'neutral',view:'grid',defSec:s[2].id,lang:'en',digits:'latn'}};
 }
 const DEF=Object.fromEntries(defaults().sections.map(s=>[s.name,s.desc]));
-function normalize(d){
+function normalize(d,warn){
   if(!d||typeof d!=='object'||!Array.isArray(d.sections)||!Array.isArray(d.books))throw new Error(T('Not a valid library file'));
-  const secs=d.sections.filter(s=>s&&typeof s==='object'&&s.id&&s.name).map(s=>({id:String(s.id),name:String(s.name).slice(0,60),desc:String(s.desc||'').slice(0,200),icon:String(s.icon||'📖').slice(0,8),color:/^#[0-9a-f]{6}$/i.test(s.color)?s.color:'#5f8a68',nav:s.nav!==false,role:ROLES[s.role]!==undefined?s.role:'',dflt:s.dflt!==undefined?!!s.dflt:DEF[s.name]===s.desc}));
+  warn=warn||{};
+  const rawSecs=d.sections.filter(s=>s&&typeof s==='object'&&s.id&&s.name),secs=rawSecs.map(s=>({id:String(s.id),name:String(s.name).slice(0,60),desc:String(s.desc||'').slice(0,200),icon:String(s.icon||'📖').slice(0,8),color:/^#[0-9a-f]{6}$/i.test(s.color)?s.color:'#5f8a68',nav:s.nav!==false,role:ROLES[s.role]!==undefined?s.role:'',dflt:s.dflt!==undefined?!!s.dflt:DEF[s.name]===s.desc}));
+  warn.sections=d.sections.length-rawSecs.length;
   if(!secs.length)throw new Error(T('The file has no sections'));
   const ids=new Set(secs.map(s=>s.id)),p=d.prefs||{},defSec=ids.has(p.defSec)?p.defSec:secs[0].id;
-  const books=d.books.filter(b=>b&&typeof b==='object'&&String(b.title||'').trim()).map(b=>{
+  const rawBooks=d.books.filter(b=>b&&typeof b==='object'&&String(b.title||'').trim()),books=rawBooks.map(b=>{
     const o={...BK};
     for(const k in BK){const t=typeof BK[k],v=b[k];if(t==='string')o[k]=String(v??'');else if(t==='number')o[k]=Math.max(0,Number(v)||0);else o[k]=!!v}
     o.id=String(b.id||uid());if(!ids.has(o.section))o.section=defSec;if(!STAT[o.status])o.status='unread';if(!PUR[o.purchase])o.purchase='no';
     o.rating=Math.min(5,Math.round(o.rating));o.added=o.added||today();return o});
+  warn.books=d.books.length-rawBooks.length;
   return {v:VER,sections:secs,books,prefs:{theme:THEMES[p.theme]?p.theme:'neutral',view:p.view==='list'?'list':'grid',defSec,lang:p.lang==='ar'?'ar':'en',digits:p.digits==='ar'?'ar':'latn',sort:['added','az','rating','progress'].includes(p.sort)?p.sort:'added'}};
 }
 let recovered=false;
@@ -219,12 +222,15 @@ const roleStatus={reading:'reading',completed:'completed',hold:'hold',dropped:'d
 const Bk={
   get:id=>S.books.find(b=>b.id===id),
   del(id){S.books=S.books.filter(b=>b.id!==id)},
-  complete(b){if(b.status!=='completed'&&b.pages&&b.page<b.pages)b.prev=b.page;
-    if(b.pages)b.page=b.pages;b.status='completed';b.completed=today();b.started=b.started||today()},
+  complete(b){if(b.status!=='completed'){b.prev=b.page;   /* remember exact last reading position for undo */
+    if(b.pages)b.page=b.pages;b.completed=today();b.started=b.started||today()}
+    b.status='completed'},
+  reopen(b,st='reading'){if(b.status!=='completed')return;b.status=st;  /* undo completion: restore saved position */
+    b.page=Math.max(0,Math.min(b.pages||1e6,b.prev||0));b.completed=''},
   move(id,sid){const b=Bk.get(id),s=Sec.get(sid);if(!b||!s)return;const was=b.status;b.section=sid;
     if(s.role==='completed')Bk.complete(b);
-    else if(roleStatus[s.role]){b.status=roleStatus[s.role];
-      if(was==='completed'){b.page=b.prev||0;b.completed=''}
+    else if(roleStatus[s.role]){const r=roleStatus[s.role];
+      if(was==='completed')Bk.reopen(b,r);else b.status=r;
       if(s.role==='reading')b.started=b.started||today()}},
   finish(b){Bk.complete(b);const t=S.sections.find(s=>s.role==='completed');if(t)b.section=t.id},
   setPage(b,p){b.page=Math.max(0,Math.min(b.pages||1e6,p));
@@ -258,6 +264,7 @@ const bars=a=>{const m=Math.max(1,...a.map(x=>x[1]));return `<div class="bars ca
 function months(n){const a=[],d=new Date();d.setDate(1);for(let i=n-1;i>=0;i--){const x=new Date(d.getFullYear(),d.getMonth()-i,1),k=x.getFullYear()+'-'+String(x.getMonth()+1).padStart(2,'0');
   a.push([x.toLocaleString(LANG==='ar'?loc():undefined,{month:'short'}),S.books.filter(b=>b.status==='completed'&&b.completed.slice(0,7)===k).length])}return a}
 const strip=(a,t)=>a.length?`<h2>${t}</h2><div class="grid">${a.map(card).join('')}</div>`:'';
+const byAdded=a=>a.map((b,i)=>[b,i]).sort((x,y)=>(y[0].added||'').localeCompare(x[0].added||'')||y[1]-x[1]).map(x=>x[0]);
 
 /* ===== Views ===== */
 function renderNav(){
@@ -271,7 +278,7 @@ function dash(){
   <div class="stats">${st.map(([l,v])=>`<div class="card stat"><b>${nf(v)}</b><span class="mut sm">${l}</span></div>`).join('')}</div>
   <h2>${T('Reading progress overview')}</h2><div class="card" style="padding:14px">${progBar({},op)}<p class="sm mut">${T('{0} of {1} pages across books with a page count ({2}%)',pr,tp,op)}</p></div>
   <h2>${T('Continue reading')}</h2>${rd.length?`<div class="row2">${rd.map(b=>{const p=pct(b);return `<div class="card cr"><div style="flex:none;width:64px" data-act="open" data-id="${b.id}">${coverH(b)}</div><div><h3 dir="auto">${esc(b.title)}</h3><p dir="auto" class="mut sm">${esc(b.author)}</p>${progBar(b,p)}<p class="sm">${T('Page {0} of {1} · {2}%',b.page,b.pages||'?',p)}</p><button class="btn" style="margin-top:6px" data-act="page" data-id="${b.id}">${T('Update progress')}</button></div></div>`}).join('')}</div>`:`<div class="card empty"><p>${T('Nothing in progress. Start a book from your library.')}</p></div>`}
-  ${strip(B.slice(-6).reverse(),T('Recently added'))}${strip([...done].sort((a,b)=>b.completed.localeCompare(a.completed)).slice(0,6),T('Recently completed'))}
+  ${strip(byAdded(S.books).slice(0,6),T('Recently added'))}${strip([...done].sort((a,b)=>b.completed.localeCompare(a.completed)).slice(0,6),T('Recently completed'))}
   <h2>${T('Reading activity')}</h2>${bars(months(6))}
   <h2>${T('Sections')}</h2><div class="row2">${S.sections.map(s=>`<button class="sc" data-act="go" data-r="sec:${s.id}"><span class="big" style="background:${s.color}22;color:${s.color}">${s.icon}</span><span><b dir="auto">${esc(sn(s))}</b><br><span class="mut sm">${T('{0} books',Sec.count(s.id))}</span></span></button>`).join('')}</div>`}
 function lib(sid){
@@ -286,7 +293,7 @@ function lib(sid){
   <div id="res" aria-live="polite">${results()}</div>`}
 function results(){
   const sid=UI.route.startsWith('sec:')?UI.route.slice(4):'',q=nz(UI.q.trim());
-  let a=[...S.books].reverse();
+  let a=byAdded(S.books);
   const total=sid?a.filter(b=>b.section===sid).length:a.length;
   if(sid)a=a.filter(b=>b.section===sid);else if(UI.sec)a=a.filter(b=>b.section===UI.sec);
   if(q)a=a.filter(b=>[b.title,b.author,b.genre].some(x=>nz(x).includes(q)));
@@ -345,14 +352,21 @@ function bookDlg(b,secId){
   ${card(IC.book,'Reading progress',v.status==='reading'||!!(v.pages||v.page||v.started||v.completed),`${fld('pages','Total pages','number','min="0"')}${fld('page','Current page','number','min="0"')}${fld('started','Date started','date')}${fld('completed','Date completed','date')}<div class="wide"><div class="bar" id="fpb"><i style="width:${p}%"></i></div><p class="sm mut" id="fpt">${nf(p)}%</p></div>`)}
   ${card(IC.cart,'Purchase information',v.purchase!=='no'||!!(v.price||v.pdate),`${sel('purchase','Purchase status',Object.entries(PUR))}${fld('price','Price','number','step="any" min="0"')}${fld('pdate','Purchase date','date')}`)}
   ${card(IC.note,'Rating and notes',!!(v.notes||v.rating||v.fav),`${sel('rating','Personal rating',[[0,T('No rating')],...[1,2,3,4,5].map(n=>[n,stars(n)])])}<label><input type="checkbox" name="fav" ${v.fav?'checked':''}> ${T('Favorite')}</label><label class="wide">${T('Personal notes')}<textarea dir="auto" name="notes" rows="5">${esc(v.notes)}</textarea></label>`)}
-  <div class="acts sticky"><button type="button" class="btn" data-act="close">${T('Cancel')}</button><button class="btn pri" type="submit">${T('Save book')}</button></div></form>`)}
+  <div class="acts sticky"><button type="button" class="btn" data-act="close">${T('Cancel')}</button><button class="btn pri" type="submit">${T('Save book')}</button></div></form>`);
+  const fbf=$('#bf');fbf.op=String(v.page||0);fbf.wasC=''; /* remember the page this dialog opened with: in-dialog completed→reading flips restore it */
+}
 function saveForm(f){
   const d=Object.fromEntries(new FormData(f)),n=k=>Math.max(0,Number(d[k])||0),old=d.id?Bk.get(d.id):null,b=old||{...BK,id:uid(),added:today()};
   ['title','author','genre','cover','desc','price','pdate','notes','started','completed'].forEach(k=>b[k]=String(d[k]||'').trim());
-  Object.assign(b,{section:d.section,status:d.status,purchase:d.purchase,pages:n('pages'),page:n('page'),rating:Math.min(5,n('rating')),fav:!!d.fav});
-  if(b.pages&&b.page>b.pages)b.page=b.pages;
-  if(b.status==='completed'){b.completed=b.completed||today();if(b.pages)b.page=b.pages}
-  if(b.status==='reading')b.started=b.started||today();
+  const st=d.status,pages=n('pages');let page=n('page');
+  if(pages&&page>pages)page=pages;
+  const completing=st==='completed'&&(!old||old.status!=='completed');   /* entering completion now */
+  const undoing=!!old&&old.status==='completed'&&st!=='completed';       /* leaving completion now */
+  if(completing){if(old&&old.pages&&old.page<old.pages)b.prev=old.page;if(pages)page=pages}
+  if(undoing){if(page===old.pages&&old.prev>0&&old.prev<old.pages)page=Math.min(old.prev,pages||old.prev);b.completed=''}
+  Object.assign(b,{section:d.section,status:st,purchase:d.purchase,pages,page,rating:Math.min(5,n('rating')),fav:!!d.fav});
+  if(completing){b.completed=b.completed||today();b.started=b.started||today()}
+  if(st==='reading')b.started=b.started||today();
   if(!old)S.books.push(b);return b}
 function showBook(id){
   const b=Bk.get(id);if(!b)return;UI.open=id;const s=Sec.get(b.section),p=pct(b),row=(k,v)=>v?`<dt>${k}</dt><dd>${esc(v)}</dd>`:'';
@@ -378,7 +392,8 @@ function exportLib(){
   const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify({app:T('Warraq'),exported:new Date().toISOString(),...S},null,1)],{type:'application/json'}));
   a.download=`warraq-backup-${today()}.json`;document.body.append(a);a.click();a.remove();toast(T('Backup downloaded'))}
 async function importLib(file){
-  let d;try{d=normalize(JSON.parse(await file.text()))}catch(e){return toast(T('Import failed: {0}',e instanceof SyntaxError?T('this is not a valid library backup.'):e.message))}
+  let d,skip={books:0,sections:0};try{d=normalize(JSON.parse(await file.text()),skip)}catch(e){return toast(T('Import failed: {0}',e instanceof SyntaxError?T('this is not a valid library backup.'):e.message))}
+  if(skip.books+skip.sections)toast(T('Import skipped {0} invalid record(s).',skip.books+skip.sections))
   const r=await ask({title:T('Import library'),msg:T('This file has <b>{0} books</b> and <b>{1} sections</b>. Merge adds only what is missing from your library. Replace deletes your current library first.',d.books.length,d.sections.length),btns:[['merge',T('Merge'),'pri'],['replace',T('Replace'),'dng'],['x',T('Cancel')]]});
   if(r.btn==='replace')S=d;
   else if(r.btn==='merge'){const sid=new Set(S.sections.map(s=>s.id)),bid=new Set(S.books.map(b=>b.id));
@@ -411,7 +426,11 @@ const A={
 document.addEventListener('click',e=>{const t=e.target.closest('[data-act]');if(!t||t.tagName==='SELECT')return;if(t.dataset.act==='menu'||A[t.dataset.act]){e.stopPropagation();A[t.dataset.act](t)}});
 document.addEventListener('keydown',e=>{if((e.key==='Enter'||e.key===' ')&&e.target.matches('[role=button][data-act]')){e.preventDefault();A[e.target.dataset.act](e.target)}});
 document.addEventListener('change',e=>{const t=e.target;
-  if(t.dataset.act==='move'){Bk.move(t.dataset.id,t.value);commit();toast(T('Book moved'))}
+  if(t.name==='status'&&t.form&&t.form.getAttribute('id')==='bf'){const f=t.form,bid=f.querySelector('[name=id]').value,ob=bid?Bk.get(bid):null,pg=f.querySelector('[name=page]'),pgs=+f.querySelector('[name=pages]').value||0;
+    if(t.value==='completed'){f.wasC='1';if(pgs&&+pg.value!==pgs){pg.value=pgs;pg.dispatchEvent(new Event('input',{bubbles:true}))}}
+    else if(ob&&ob.status==='completed'){pg.value=Math.min(ob.prev||0,pgs||ob.prev||0);pg.dispatchEvent(new Event('input',{bubbles:true}))}
+    else if(f.wasC==='1'){const op=+f.op||0;pg.value=Math.min(op,pgs||op);pg.dispatchEvent(new Event('input',{bubbles:true}))}}
+  else if(t.dataset.act==='move'){Bk.move(t.dataset.id,t.value);commit();toast(T('Book moved'))}
   else if(t.dataset.f){if(t.dataset.f==='defSec'){S.prefs.defSec=t.value;commit()}else if(t.dataset.f==='defSort'){S.prefs.sort=UI.sort=t.value;commit()}else{UI[t.dataset.f]=t.type==='checkbox'?t.checked:t.value;$('#res').innerHTML=results()}}
   else if(t.id==='cvf'&&t.files[0])readCover(t.files[0]);
   else if(t.id==='imp'&&t.files[0]){importLib(t.files[0]);t.value=''}});
@@ -436,7 +455,7 @@ document.addEventListener('invalid',e=>e.target.setCustomValidity(T('Please fill
 document.addEventListener('input',e=>e.target.setCustomValidity&&e.target.setCustomValidity(''));
 const ico=p=>`<svg class="i" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${p}</svg>`;
 const IC={search:'<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>',x:'<path d="M6 6l12 12M18 6 6 18"/>',heart:'<path d="M12 21s-7-4.5-9-9a5 5 0 0 1 9-3 5 5 0 0 1 9 3c-2 4.5-9 9-9 9z"/>',upload:'<path d="M12 16V4m0 0-4 4m4-4 4 4M4 20h16"/>',book:'<path d="M4 5a2 2 0 0 1 2-2h14v16H6a2 2 0 0 0-2 2zM4 19V5"/>',cart:'<circle cx="9" cy="20" r="1.5"/><circle cx="18" cy="20" r="1.5"/><path d="M3 4h2l2.5 11h11L21 7H6"/>',note:'<path d="M5 3h14v18H5zM9 8h6M9 12h6M9 16h3"/>',grid:'<rect x="4" y="4" width="6.5" height="6.5" rx="1.5"/><rect x="13.5" y="4" width="6.5" height="6.5" rx="1.5"/><rect x="4" y="13.5" width="6.5" height="6.5" rx="1.5"/><rect x="13.5" y="13.5" width="6.5" height="6.5" rx="1.5"/>',list:'<path d="M9 6h11M9 12h11M9 18h11M4.5 6h.01M4.5 12h.01M4.5 18h.01"/>'};
-Object.assign(AR,{'e.g. Dune':'مثال: أرض زيكولا','Replace cover image':'استبدال صورة الغلاف'});
+Object.assign(AR,{'e.g. Dune':'مثال: أرض زيكولا','Replace cover image':'استبدال صورة الغلاف','Import skipped {0} invalid record(s).':'تم تجاهل {0} من السجلات غير الصالحة أثناء الاستيراد.'});
 const SORTS=()=>[['added',T('Newest added')],['az',T('A to Z')],['rating',T('Rating')],['progress',T('Progress')]];
 async function closeForm(){
   if(UI.dirty&&dlg.querySelector('#bf')){const r=await ask({title:T('Discard changes?'),msg:T('You have unsaved changes. Close without saving?'),btns:[['ok',T('Discard'),'dng'],['x',T('Keep editing')]]});if(r.btn!=='ok')return}
@@ -447,7 +466,9 @@ Object.assign(A,{
   clrq(){UI.q='';const q=$('#q');q.value='';q.focus();$('.clr').hidden=true;$('#res').innerHTML=results()}});
 ['input','change'].forEach(ev=>document.addEventListener(ev,e=>{if(e.target.closest&&e.target.closest('#bf'))UI.dirty=true}));
 document.addEventListener('input',e=>{const t=e.target;if(t.form&&t.form.getAttribute('id')==='bf'&&(t.name==='page'||t.name==='pages')){
-  const f=t.form,pg=+f.pages.value||0,c=+f.page.value||0,v=pg?Math.min(100,Math.round(c/pg*1000)/10):0;$('#fpb i').style.width=v+'%';$('#fpt').textContent=nf(v)+'%'}});
+  const f=t.form,pg=+f.pages.value||0;let c=+f.page.value||0;
+  if(pg&&c>pg){f.page.value=pg;c=pg}
+  const v=pg?Math.min(100,Math.round(c/pg*1000)/10):0;$('#fpb i').style.width=v+'%';$('#fpt').textContent=nf(v)+'%'}});
 document.addEventListener('dragover',e=>{if(e.target.closest&&e.target.closest('.drop')){e.preventDefault();e.target.closest('.drop').classList.add('on')}});
 document.addEventListener('dragleave',e=>{if(e.target.closest&&e.target.closest('.drop'))e.target.closest('.drop').classList.remove('on')});
 document.addEventListener('drop',e=>{if(e.target.closest&&e.target.closest('.drop')){e.preventDefault();e.target.closest('.drop').classList.remove('on');const f=e.dataTransfer.files[0];if(f&&f.type.startsWith('image/')){UI.dirty=true;readCover(f)}}});

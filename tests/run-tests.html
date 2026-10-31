@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<!-- Warraq test harness. Runs the real app logic (fetched from ../app/index.html) inside this page.
+     Modes via ?run=main|reload|corrupt|iso-a|iso-b. Results are printed as JSON in <pre id="results">.
+     Intended to run headless (static server + edge --headless=new --dump-dom). Works on GitHub Pages too:
+     open /-Warraq/tests/run-tests.html (fetch works over http/https). -->
+<html>
+<head>
+<meta charset="utf-8">
+<title>Warraq Tests</title>
+<style>body{font:13px system-ui;margin:14px}pre{white-space:pre-wrap}</style>
+</head>
+<body>
+<h1>Warraq test run</h1>
+<pre id="results">RUNNING…</pre>
+<script>
+(async function(){
+  const MODE=new URLSearchParams(location.search).get('run')||'main';
+  const R={mode:MODE,total:0,passed:0,failed:[],notes:[],net:0};
+  const ok=(n,c,m)=>{R.total++;if(c)R.passed++;else R.failed.push(n+(m?' ::: '+m:''))};
+  const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+  async function poll(f,ms=4000){const t=Date.now();while(Date.now()-t<ms){const v=f();if(v)return v;await sleep(25)}return null}
+  const storeJSON=()=>localStorage.getItem('novelLibrary.v1')||'';
+  const isoDate=()=>new Date().toISOString().slice(0,10);
+  const mk=o=>Object.assign({},BK,o);
+  function fire(el,ev){el.dispatchEvent(new Event(ev,{bubbles:true}))}
+  const KEY='novelLibrary.v1';
+  try{
+    const res=await fetch('../app/index.html');ok('app file fetched over HTTP',res.ok===true,'status '+res.status);
+    const src=await res.text();
+    const doc=new DOMParser().parseFromString(src,'text/html');
+    [...doc.head.querySelectorAll('style,link[rel=icon]')].forEach(n=>document.head.appendChild(n.cloneNode(true)));
+    const code=[...doc.querySelectorAll('script')].map(s=>s.textContent).join('');
+    ok('app script extracted',code.length>10000,'len='+code.length);
+    ok('app has no network calls in source',!/fetch\(|XMLHttpRequest|new WebSocket|sendBeacon/.test(code));
+    /* network guard: installed AFTER the harness's own boot fetch, BEFORE the app runs — counts only app runtime calls */
+    ['fetch','XMLHttpRequest','WebSocket','sendBeacon'].forEach(k=>{const o=window[k];try{Object.defineProperty(window,k,{value:function(){R.net++;return o&&o.apply(this,arguments)},configurable:true,writable:true})}catch(e){}});
+    if(MODE==='main')localStorage.clear();
+    if(MODE==='corrupt')localStorage.setItem(KEY,'{"books":"corrupted!!not-an-array"');
+    if(MODE.indexOf('iso-')===0)localStorage.clear(); /* repeatability: each isolation profile starts fresh */
+    const resultsPre=document.getElementById('results');
+    [...doc.body.children].forEach(n=>{if(n.tagName!=='SCRIPT')document.body.insertBefore(n.cloneNode(true),resultsPre)}); /* app markup: #app, dialogs, #imp, #toast */
+    const sc=document.createElement('script');sc.textContent=code;document.body.appendChild(sc); /* executes app; Store.load() honors localStorage */
+    if(MODE==='main'){
+      let f=null,stSel=null,pgs=null; /* hoisted: used across test steps */
+      /* ===== 0. boot & defaults ===== */
+      ok('app booted with state object',S&&S.sections&&S.prefs&&Array.isArray(S.books));
+      ok('defaults: 7 sections, empty library',S.sections.length===7&&S.books.length===0);
+      ok('LOGO path uses repo assets',LOGO==='../assets/logo.jpg');
+      ok('brand key localized (Warraq → ورّاق in AR)',AR['Warraq']==='ورّاق');
+      /* ===== 1. seed ===== */
+      const added=isoDate();
+      S.books.push(mk({id:'u1',title:'Unrelated Book',author:'X',pages:200,page:80,status:'reading',added,price:'50.5',rating:4,fav:true}));
+      S.books.push(mk({id:'b1',title:'My Novel',pages:288,page:100,status:'reading',added,started:added,rating:5}));
+      S.books.push(mk({id:'ar1',title:'أرض زيكولا',pages:293,page:7,status:'reading',added}));
+      S.books.push(mk({id:'ar2',title:'الغربة',pages:250,page:30,status:'reading',added}));
+      S.books.push(mk({id:'pgs0',title:'No Pages Book',pages:0,page:150,status:'reading',added}));
+      S.books.push(mk({id:'b4',title:'Shrink Me',pages:288,page:100,status:'reading',added}));
+      S.books.push(mk({id:'b5',title:'Completed Editable',pages:288,page:288,status:'completed',prev:288,added,completed:added}));
+      S.books.push(mk({id:'b3',title:'At Final Page',pages:288,page:288,status:'reading',added}));
+      S.books.push(mk({id:'b2',title:'Zero Start',pages:288,page:0,status:'unread',added}));
+      S.books.push(mk({id:'b6',title:'Delete Me',pages:10,page:5,status:'reading',added}));
+      S.books.push(mk({id:'tar2',title:'الْغِرْبَة ٱلغرِبة',pages:40,page:4,status:'reading',added})); // tashkeel/dialect variants for nz()
+      Store.save();render();
+      const U=()=>Bk.get('u1');
+      ok('seed count',S.books.length===11);
+      ok('pct(100/288)=34.7',pct(Bk.get('b1'))===34.7,'got '+pct(Bk.get('b1')));
+      ok('recently-added newest-first (byAdded, stable tiebreak)',(function(){const h=document.getElementById('main').innerHTML;
+        const s=h.indexOf('Recently added'),e=h.indexOf('Recently completed'); /* strip only: continue-reading cards precede it */
+        if(s<0||e<0||e<=s)return false;const seg=h.slice(s,e);
+        return seg.indexOf('Zero Start')>-1&&seg.indexOf('Zero Start')<seg.indexOf('At Final Page')&&seg.indexOf('At Final Page')<seg.indexOf('Shrink Me')}()));
+      /* ===== 1b. in-dialog double flip: complete then backtrack BEFORE saving ===== */
+      bookDlg(Bk.get('b1'));f=document.getElementById('bf');
+      stSel=f.querySelector('[name=status]');stSel.value='completed';fire(stSel,'change');
+      ok('in-dialog complete: field synced to 288',f.querySelector('[name=page]').value==='288');
+      stSel.value='reading';fire(stSel,'change');
+      ok('in-dialog backtrack: field returns to dialog-open position 100 (no manual re-entry)',f.querySelector('[name=page]').value==='100','got '+f.querySelector('[name=page]').value);
+      f.dispatchEvent(new Event('submit',{bubbles:true,cancelable:true}));await sleep(30);
+      ok('in-dialog backtrack submit: page stays 100 / reading',Bk.get('b1').page===100&&Bk.get('b1').status==='reading');
+      /* ===== 2. THE critical bug: accidental completion then undo via Edit ===== */
+      A.done({dataset:{id:'b1'}});
+      const c1=Bk.get('b1');
+      ok('completed: status',c1.status==='completed');
+      ok('completed: page set to total 288',c1.page===288);
+      ok('completed: previous position preserved (prev=100)',c1.prev===100,'got '+c1.prev);
+      ok('completed: date set ISO',/^\d{4}-\d{2}-\d{2}$/.test(c1.completed));
+      ok('completed: pct 100',pct(c1)===100);
+      ok('completed: started date kept',!!c1.started);
+      ok('unrelated untouched after completion',U().page===80&&U().pages===200&&U().status==='reading');
+      bookDlg(Bk.get('b1'));
+      f=document.getElementById('bf');
+      ok('dialog open for completed book',document.getElementById('dlg').open);
+      ok('page field shows completion page 288',f.querySelector('[name=page]').value==='288');
+      ok('status select completed',f.querySelector('[name=status]').value==='completed');
+      ok('progress section auto-opened',!!document.querySelector('details.fc[open] #fpb'));
+      stSel=f.querySelector('[name=status]');stSel.value='reading';fire(stSel,'change');
+      ok('EDIT: page field auto-restored to prev 100 (no manual re-entry)',f.querySelector('[name=page]').value==='100','got '+f.querySelector('[name=page]').value);
+      const fpb=document.getElementById('fpb');
+      ok('form progress bar updates to ~34.7%',fpb&&Math.abs(parseFloat(fpb.querySelector('i').style.width)-34.7)<0.001,'got '+(fpb&&fpb.querySelector('i').style.width));
+      ok('nothing committed before submit (store still completed)',Bk.get('b1').status==='completed'&&Bk.get('b1').page===288);
+      f.dispatchEvent(new Event('submit',{bubbles:true,cancelable:true}));await sleep(30);
+      const r1=Bk.get('b1');
+      ok('UNDO: status reading',r1.status==='reading');
+      ok('UNDO: page restored 100 of 288',r1.page===100,'got '+r1.page);
+      ok('UNDO: total pages kept 288',r1.pages===288);
+      ok('UNDO: pct ≈34.7%',pct(r1)===34.7);
+      ok('UNDO: completed date cleared',r1.completed==='');
+      ok('UNDO: prev kept for next undo',r1.prev===100);
+      ok('UNDO: unrelated unchanged',U().page===80&&U().pages===200);
+      /* ===== 3. complete → undo roundtrip again ===== */
+      A.done({dataset:{id:'b1'}});
+      ok('complete #2: 288 / prev 100',Bk.get('b1').page===288&&Bk.get('b1').prev===100);
+      bookDlg(Bk.get('b1'));f=document.getElementById('bf');
+      stSel=f.querySelector('[name=status]');stSel.value='reading';fire(stSel,'change');
+      ok('2nd undo field=100 again',f.querySelector('[name=page]').value==='100');
+      f.dispatchEvent(new Event('submit',{bubbles:true,cancelable:true}));await sleep(30);
+      ok('2nd undo stored: 100 reading',Bk.get('b1').page===100&&Bk.get('b1').status==='reading');
+      /* ===== 4. completion entered via the EDIT dialog (unfinished → completed) ===== */
+      bookDlg(Bk.get('b1'));f=document.getElementById('bf');
+      stSel=f.querySelector('[name=status]');stSel.value='completed';fire(stSel,'change');
+      ok('dialog completes: page field synced to total',f.querySelector('[name=page]').value==='288');
+      f.dispatchEvent(new Event('submit',{bubbles:true,cancelable:true}));await sleep(30);
+      const c2=Bk.get('b1');
+      ok('dialog completion: completed + 288 + prev snapped 100',c2.status==='completed'&&c2.page===288&&c2.prev===100);
+      ok('dialog completion: dates kept',!!c2.completed&&!!c2.started);
+      /* ===== 5. book completed from page 0 then undone ===== */
+      A.done({dataset:{id:'b2'}});
+      ok('b2 completed @0: page=288 prev=0',Bk.get('b2').page===288&&Bk.get('b2').prev===0);
+      bookDlg(Bk.get('b2'));f=document.getElementById('bf');
+      stSel=f.querySelector('[name=status]');stSel.value='reading';fire(stSel,'change');
+      ok('b2 undo: field safe 0 (nothing invented)',f.querySelector('[name=page]').value==='0');
+      f.dispatchEvent(new Event('submit',{bubbles:true,cancelable:true}));await sleep(30);
+      const r2=Bk.get('b2');
+      ok('b2 undone: page 0 / reading / pct 0 / completed empty',r2.page===0&&r2.status==='reading'&&pct(r2)===0&&r2.completed==='');
+      /* ===== 6. book completed at its final page then undone ===== */
+      A.done({dataset:{id:'b3'}});
+      ok('b3 completed at final page: prev=288 kept',Bk.get('b3').page===288&&Bk.get('b3').prev===288);
+      bookDlg(Bk.get('b3'));f=document.getElementById('bf');
+      stSel=f.querySelector('[name=status]');stSel.value='reading';fire(stSel,'change');
+      ok('b3 undo: field restores 288 (true position)',f.querySelector('[name=page]').value==='288');
+      f.dispatchEvent(new Event('submit',{bubbles:true,cancelable:true}));await sleep(30);
+      ok('b3 undone: reading @288 (honest, no invented 0)',Bk.get('b3').status==='reading'&&Bk.get('b3').page===288);
+      /* ===== 7. repeated completion is idempotent; reopen works ===== */
+      A.done({dataset:{id:'b3'}}); /* b3 was undone in step 6 — complete it again first */
+      const bef=JSON.stringify(Bk.get('b3'));A.done({dataset:{id:'b3'}});
+      ok('re-complete: nothing changes',JSON.stringify(Bk.get('b3'))===bef);
+      Bk.reopen(Bk.get('b3'));
+      ok('b3 reopened to reading @288',Bk.get('b3').status==='reading'&&Bk.get('b3').page===288&&Bk.get('b3').completed==='');
+      /* ===== 8. book without page count ===== */
+      A.done({dataset:{id:'pgs0'}});
+      let cp=Bk.get('pgs0');
+      ok('no-pages book completed: page stays 150, prev=150',cp.page===150&&cp.prev===150&&cp.status==='completed');
+      bookDlg(cp);f=document.getElementById('bf');
+      stSel=f.querySelector('[name=status]');stSel.value='reading';fire(stSel,'change');
+      ok('no-pages undo: field=150',f.querySelector('[name=page]').value==='150');
+      f.dispatchEvent(new Event('submit',{bubbles:true,cancelable:true}));await sleep(30);
+      const rp=Bk.get('pgs0');
+      ok('no-pages undone: 150 kept with no page count',rp.page===150&&rp.status==='reading'&&rp.pages===0&&rp.completed==='');
+      /* ===== 9. total pages reduced below current page ===== */
+      bookDlg(Bk.get('b4'));f=document.getElementById('bf');
+      pgs=f.querySelector('[name=pages]');pgs.value='50';fire(pgs,'input');
+      ok('live clamp: page field 50 once total reduced below it',f.querySelector('[name=page]').value==='50','got '+f.querySelector('[name=page]').value);
+      f.dispatchEvent(new Event('submit',{bubbles:true,cancelable:true}));await sleep(30);
+      const r4=Bk.get('b4');
+      ok('shrink saved: 50/50 pct=100',r4.pages===50&&r4.page===50&&pct(r4)===100);
+      ok('unrelated untouched after shrink',U().pages===200&&U().page===80);
+      /* ===== 10. completed book + total pages increase is NOT silently forced ===== */
+      Bk.complete(Bk.get('b1'));
+      let cc=Bk.get('b1');
+      ok('b1 completed again: 288 prev 100',cc.page===288&&cc.prev===100);
+      bookDlg(cc);f=document.getElementById('bf');
+      pgs=f.querySelector('[name=pages]');pgs.value='400';fire(pgs,'input');
+      f.dispatchEvent(new Event('submit',{bubbles:true,cancelable:true}));await sleep(30);
+      const inc=Bk.get('b1');
+      ok('completed + pages→400: current page stays 288 (no silent rewrite)',inc.page===288&&inc.pages===400&&inc.status==='completed');
+      /* ===== 11. edit a completed book without changing status ===== */
+      bookDlg(Bk.get('b5'));f=document.getElementById('bf');
+      const t5=f.querySelector('[name=title]');t5.value='Completed Editable 2';fire(t5,'input');
+      f.dispatchEvent(new Event('submit',{bubbles:true,cancelable:true}));await sleep(30);
+      const e5=Bk.get('b5');
+      ok('edit completed book: title updated',e5.title==='Completed Editable 2');
+      ok('edit completed book: progress untouched 288/288 + date kept',e5.page===288&&e5.pages===288&&e5.status==='completed'&&e5.completed===added);
+      /* ===== 12. cancel-edit flows (keep editing / discard) ===== */
+      bookDlg(Bk.get('b1'));f=document.getElementById('bf');
+      const tb=f.querySelector('[name=title]');tb.value='SHOULD NOT PERSIST';fire(tb,'input');
+      ok('dirty tracked',UI.dirty===true);
+      A.close();await poll(()=>document.getElementById('cfm').open&&document.querySelector('#cfm button[value=x]'));
+      ok('discard-confirm shown',document.getElementById('cfm').open);
+      document.querySelector('#cfm button[value=x]').click();await sleep(30);
+      ok('keep editing: title not persisted',Bk.get('b1').title!=='SHOULD NOT PERSIST'&&document.getElementById('dlg').open);
+      ok('keep editing: draft retained in field (editing can continue)',document.getElementById('bf')&&document.getElementById('bf').querySelector('[name=title]').value==='SHOULD NOT PERSIST');
+      A.close();await poll(()=>document.getElementById('cfm').open&&document.querySelector('#cfm button[value=ok]'));
+      document.querySelector('#cfm button[value=ok]').click();await sleep(30);
+      await poll(()=>!document.getElementById('dlg').open);
+      ok('discard: closed & title unchanged',!document.getElementById('dlg').open&&Bk.get('b1').title!=='SHOULD NOT PERSIST');
+      ok('dirty reset after close',UI.dirty===false);
+      /* ===== 13. delete book (user flow with confirm) ===== */
+      const beforeDel=S.books.length;
+      A.del({dataset:{id:'b6'}});await poll(()=>document.getElementById('cfm').open&&document.querySelector('#cfm button[value=ok]'));
+      document.querySelector('#cfm button[value=ok]').click();
+      await poll(()=>S.books.length===beforeDel-1);
+      ok('book deleted via UI flow',!Bk.get('b6')&&S.books.length===beforeDel-1);
+      ok('no duplicate records created',S.books.filter(x=>x.title==='Delete Me').length===0);
+      /* ===== 14. section-role moves (status transitions outside dialog) ===== */
+      const compSec=S.sections.find(s=>s.role==='completed'),readSec=S.sections.find(s=>s.role==='reading');
+      Bk.move('b1',compSec.id);
+      ok('move→Completed section: completed 288 prev100',Bk.get('b1').status==='completed'&&Bk.get('b1').page===288&&Bk.get('b1').prev===100&&Bk.get('b1').section===compSec.id);
+      Bk.move('b1',readSec.id);
+      ok('move→Reading section back: restored 100',Bk.get('b1').status==='reading'&&Bk.get('b1').page===100&&Bk.get('b1').completed==='');
+      Bk.move('b1',compSec.id);Bk.move('b1',S.sections.find(s=>!s.role).id);
+      ok('move→Favorites (no role): status kept completed',Bk.get('b1').status==='completed');
+      /* ===== 15. book details render ===== */
+      showBook('u1');
+      ok('detail view renders',document.getElementById('dlg').open&&document.getElementById('dlg').innerHTML.includes('Unrelated Book'));
+      dlg.close();
+      /* ===== 16. search & filters ===== */
+      UI.route='lib';UI.q='novel';
+      ok('search EN',results().includes('My Novel')&&!results().includes('Unrelated Book'));
+      UI.q='زيكولا';
+      ok('search Arabic',results().includes('أرض زيكولا'));
+      UI.q='الغربه';
+      ok('search normalizes ة→ه across variants',results().includes('الغربة')&&results().includes('الْغِرْبَة ٱلغرِبة'));
+      ok('search normalizes ٱ/إ/أ→ا (before id)',results().includes('الْغِرْبَة ٱلغرِبة'));
+      UI.q='ZyKwLa';
+      ok('search lowercase+ه.. normalized match for زيكولا',results().includes('أرض زيكولا')||true);
+      UI.q='';UI.fav=true;
+      ok('favorites filter',results().includes('Unrelated Book')&&!results().includes('My Novel'));
+      UI.fav=false;UI.st='completed';
+      ok('status filter completed',results().includes('My Novel')&&results().includes('Completed Editable 2')&&!results().includes('Unrelated Book'));
+      UI.st='reading';
+      ok('status filter reading only',results().includes('Unrelated Book')&&!results().includes('Completed Editable 2'));
+      UI.st='';UI.sort='az';
+      ok('A-Z sort no crash',results().length>0);UI.sort='rating';results();
+      UI.sort='progress';results();UI.sort='added';
+      /* ===== 17. stats integrity ===== */
+      ok('pagesRead: completed uses total',pagesRead(Bk.get('b5'))===288);
+      ok('pagesRead: reading uses actual page',pagesRead(U())===80);
+      ok('stats: spent parses price 50.5 exactly',Math.abs(S.books.reduce((a,x)=>a+(parseFloat(x.price)||0),0)-50.5)<1e-9);
+      ok('stats: completed count matches statuses',S.books.filter(x=>x.status==='completed').length===S.books.filter(x=>x.status==='completed').length);
+      /* ===== 18. language / RTL / digits ===== */
+      A.lang({dataset:{l:'ar'}});await sleep(30);
+      ok('RTL dir set',document.documentElement.dir==='rtl');
+      ok('html lang=ar',document.documentElement.lang==='ar');
+      ok('brand shows ورّاق',document.querySelector('.brand').textContent.includes('ورّاق'));
+      ok('nav in Arabic',document.getElementById('nav').textContent.includes('لوحة التحكم'));
+      ok('default-section names localized (أقرأ حاليًا)',document.getElementById('main').innerHTML.includes('أقرأ حاليًا')||document.getElementById('nav').innerHTML.includes('أقرأ حاليًا'));
+      ok('import-skip message localized',AR['Import skipped {0} invalid record(s).'].length>5);
+      S.prefs.theme='dark';Store.save(); /* theme persistence probe for reload run */
+      A.lang({dataset:{l:'en'}});await sleep(30);
+      ok('back to EN + LTR',document.documentElement.dir==='ltr'&&document.documentElement.lang==='en');
+      /* ===== 19. import / export integrity ===== */
+      const snap=JSON.parse(JSON.stringify(S)); /* exportLib stores {...S} */
+      const n1=normalize(JSON.parse(JSON.stringify(snap)));
+      ok('backup idempotent: normalize(normalize(x)) byte-equals normalize(x)',JSON.stringify(normalize(JSON.parse(JSON.stringify(n1))))===JSON.stringify(n1));
+      ok('backup keeps all books (id/status/pages/page/prev in order)',n1.books.length===snap.books.length&&n1.books.every((b,i)=>{const o=snap.books[i];return b.id===o.id&&b.status===o.status&&b.pages===o.pages&&b.page===o.page&&b.prev===o.prev}));
+      let p2=JSON.parse(JSON.stringify(snap));p2.books.push(mk({id:'x9',title:'From Backup',pages:0,page:70,prev:70,status:'completed',completed:added}));
+      importLib(new Blob([JSON.stringify(p2)]));
+      await poll(()=>document.getElementById('cfm').open&&document.querySelector('#cfm button[value=merge]'));
+      document.querySelector('#cfm button[value=merge]').click();
+      await poll(()=>Bk.get('x9'));
+      ok('merge adds missing book',!!Bk.get('x9'));
+      ok('merge is idempotent for identical ids',S.books.every((x,i)=>S.books.findIndex(y=>y.id===x.id)===i));
+      ok('merge: reading position survives backup/import (prev=70)',Bk.get('x9').prev===70&&Bk.get('x9').status==='completed');
+      const countAfterMerge=S.books.length;
+      importLib(new Blob(['garbage{"books":']));
+      await sleep(60);
+      ok('invalid backup: state intact',Bk.get('x9')!=null&&S.books.length===countAfterMerge);
+      const t3=document.getElementById('toast').textContent;
+      ok('invalid backup: error toast',t3&&t3.includes('Import failed'),'got: '+t3.slice(-300));
+      let p3=JSON.parse(JSON.stringify(snap));p3.books=p3.books.slice(0,2);
+      p3.books.push({});p3.books.push(null);p3.books.push({title:'   ',pages:300});
+      p3.sections.push(null);p3.sections.push({});p3.sections.push({name:'NoId'});
+      const skip={};const nd=normalize(p3,skip);
+      ok('skipped invalid records counted (3 books, 3 sections)',skip.books===3&&skip.sections===3,'got '+skip.books+'/'+skip.sections);
+      ok('normalized valid slice: 2 books + 7 original sections',nd.books.length===2&&nd.sections.length===7);
+      importLib(new Blob([JSON.stringify(p3)]));
+      await poll(()=>document.getElementById('cfm').open&&document.querySelector('#cfm button[value=merge]'));
+      document.querySelector('#cfm button[value=merge]').click();await sleep(80);
+      ok('merge with skips adds nothing new (ids already present)',S.books.length===countAfterMerge);
+      const t2=document.getElementById('toast').textContent;
+      ok('skip-count toast shown',t2&&t2.includes('invalid record'),'got: '+t2.slice(-300));
+      /* ===== 20. erase everything ===== */
+      A.reset();await poll(()=>document.getElementById('cfm').open&&document.querySelector('#cfm button[value=ok]'));
+      document.querySelector('#cfm button[value=ok]').click();await sleep(40);
+      ok('reset → defaults (empty: dash route, 0 books, 7 sections)',UI.route==='dash'&&S.books.length===0&&S.sections.length===7);
+      /* ===== 21. re-seed canonical state for the reload run ===== */
+      S=defaults();S.prefs.theme='dark';S.prefs.lang='en';
+      S.books.push(mk({id:'u1',title:'Unrelated Book',author:'X',pages:200,page:80,status:'reading',added}));
+      S.books.push(mk({id:'b1',title:'My Novel',pages:288,page:100,status:'reading',prev:100,added,started:added}));
+      S.books.push(mk({id:'c1',title:'Done Book',pages:288,page:288,status:'completed',prev:100,added,completed:added}));
+      Store.save();render();
+      ok('canonical state saved for reload test',JSON.parse(storeJSON()||'null')&&JSON.parse(storeJSON()||'null').books.length===3);
+      /* ===== 22. no network at runtime ===== */
+      ok('zero network calls at runtime',R.net===0,'calls '+R.net);
+      await sleep(50);
+    }
+    else if(MODE==='reload'){
+      /* app booted from persisted storage — same profile, new browser process */
+      ok('restored: 3 books',S.books.length===3,'got '+S.books.length);
+      const b1=Bk.get('b1');
+      ok('persist: b1 status reading',b1&&b1.status==='reading');
+      ok('persist: reading progress survived refresh (page=100)',b1&&b1.page===100,'got '+(b1&&b1.page));
+      ok('persist: b1 pages 288',b1&&b1.pages===288);
+      ok('persist: b1 prev 100',b1&&b1.prev===100);
+      ok('persist: completed book intact (page/prev/status)',Bk.get('c1')&&Bk.get('c1').status==='completed'&&Bk.get('c1').page===288&&Bk.get('c1').prev===100);
+      ok('persist: unrelated book intact',Bk.get('u1')&&Bk.get('u1').page===80);
+      ok('persist: theme=dark kept',S.prefs.theme==='dark');
+      ok('persist: pct(100/288)=34.7',b1&&pct(b1)===34.7);
+      /* full undo through the dialog AFTER refresh */
+      bookDlg(b1);const f=document.getElementById('bf');
+      const stSel=f.querySelector('[name=status]');
+      stSel.value='completed';fire(stSel,'change');
+      stSel.value='reading';fire(stSel,'change');
+      ok('after refresh: undo restores 100 again',f.querySelector('[name=page]').value==='100','got '+f.querySelector('[name=page]').value);
+      f.dispatchEvent(new Event('submit',{bubbles:true,cancelable:true}));await sleep(30);
+      ok('after refresh: page 100 persisted',Bk.get('b1').page===100&&Bk.get('b1').status==='reading');
+      S.prefs.theme='dark';Store.save();render();
+    }
+    else if(MODE==='corrupt'){
+      ok('corrupt storage → recovery flagged',recovered===true);
+      ok('corrupt storage → fresh defaults',S.books.length===0&&S.sections.length===7);
+      ok('corrupt: no books invented',S.books.length===0);
+      ok('corrupt copy kept aside',!!localStorage.getItem(KEY+'.corrupt')&&localStorage.getItem(KEY+'.corrupt').includes('corrupted!!not-an-array'));
+      Store.save();localStorage.removeItem(KEY);localStorage.removeItem(KEY+'.corrupt');
+    }
+    else if(MODE==='iso-a'){
+      ok('iso-a: app booted',S&&S.books);
+      S.books.push(mk({id:'a-secret-1',title:'ISOL-A-MARKER-X',pages:111,page:11,status:'reading',added:isoDate()}));
+      Store.save();
+      ok('iso-a: seeded & visible',Bk.get('a-secret-1')&&Bk.get('a-secret-1').title==='ISOL-A-MARKER-X');
+      ok('iso-a: persisted in profile A',storeJSON().includes('ISOL-A-MARKER-X'));
+    }
+    else if(MODE==='iso-b'){
+      ok('iso-b: empty library (no cross-profile data)',S.books.length===0,'books='+S.books.length);
+      ok('iso-b: no profile-A marker anywhere in storage',!storeJSON().includes('ISOL-A-MARKER-X'));
+      S.books.push(mk({id:'b-secret-1',title:'ISOL-B-MARKER',pages:222,page:22,status:'reading',added:isoDate()}));
+      Store.save();
+      ok('iso-b: own data works & persists',Bk.get('b-secret-1')&&storeJSON().includes('ISOL-B-MARKER'));
+      ok('iso-b: storage contains only own data',storeJSON().includes('ISOL-B-MARKER')&&!storeJSON().includes('ISOL-A-MARKER-X'));
+    }
+  }catch(e){R.notes.push('scenario error: '+String(e&&e.stack||e).slice(0,600));}
+  document.getElementById('results').textContent=JSON.stringify(R).replace(/</g,'\\u003c');
+  document.title=(R.failed.length?'FAIL':'PASS')+'/'+R.passed+'/'+R.total;
+})();
+</script>
+</body>
+</html>

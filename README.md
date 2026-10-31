@@ -40,6 +40,7 @@ In classical Arabic, a *warrāq* (ورّاق) was the bookseller and keeper of b
 ### 📖 Books
 - Rich details: title, author, genre, year, publisher, ISBN, language, description, and personal notes
 - **Reading progress**: total pages, current page with a live progress bar, and automatic completion when you reach the last page
+- **Completion is reversible**: marking a book as completed remembers the page you were on; undo the completion from *Edit book* and your previous reading position (and percentage) is restored automatically
 - **Cover images**: upload a file, drag & drop, or paste a URL — covers are auto-compressed and books without a cover get a tasteful generated placeholder
 - Purchase information (purchased, gift, borrowed) with price and date
 - Personal 1–5 ⭐ rating, favorite flag, and start/finish dates
@@ -62,7 +63,8 @@ In classical Arabic, a *warrāq* (ورّاق) was the bookseller and keeper of b
 ## 💾 Your data & privacy
 
 - Everything is stored **only in your browser** (localStorage) — no accounts, no tracking, no servers
-- **Export** your library as a JSON backup from *Settings*, and **import** it on another browser or device (choose *merge* or *replace*)
+- Data is scoped to this site (origin) **inside the browser profile you use** — separate browser profiles (Chrome profiles, Edge profiles, incognito, different browsers) each hold their own separate library; there is no cross-user or cross-device sharing, but also no account system or sync
+- **Export** your library as a JSON backup from *Settings*, and **import** it on another browser or device (choose *merge* or *replace*) — this is the way to move data between users or devices
 - If saved data ever becomes unreadable, Warraq keeps the corrupted copy aside and starts a fresh library — nothing is silently lost
 - Opening the app on another device or browser starts an empty library; use the backup file to move your data
 
@@ -79,12 +81,38 @@ In classical Arabic, a *warrāq* (ورّاق) was the bookseller and keeper of b
 ```
 .
 ├── app/
-│   └── index.html    # The Warraq application (single HTML file)
+│   └── index.html      # The Warraq application (single HTML file)
 ├── assets/
-│   └── logo.jpg      # Project logo
-├── index.html        # GitHub Pages entry point (redirects to app/)
+│   └── logo.jpg        # Project logo
+├── tests/
+│   └── run-tests.html  # Self-running test harness (works locally and on GitHub Pages)
+├── index.html          # GitHub Pages entry point (redirects to app/)
 └── README.md
 ```
+
+## 🧪 Tests
+
+The repository ships a self-contained test harness, `tests/run-tests.html`, that loads the **real** app file over HTTP, executes it, and drives it through realistic scenarios (dialog flows, form submissions, persistence). It reports per-assertion results as JSON.
+
+Coverage includes the critical reading-status workflow (288-page book marked completed at page 100 → edit → back to *Currently Reading* → page restored to 100 of 288, ≈34.7%), undo-completion edge cases (page 0, final page, no page count, repeated completion, in-dialog complete-then-backtrack), dialog keep-editing/discard flows, section-behavior moves, search/filter/sort, statistics, EN/AR + RTL switching, backup round-trips and invalid-record handling, erase-everything, corruption recovery, **persistence after refresh** (same browser profile), and **two-profile isolation** (separate browser profiles see only their own data). A built-in guard also verifies the app makes zero network calls at runtime.
+
+Five modes run in order against the same profiles:
+
+| Mode      | What it proves |
+|-----------|----------------|
+| `main`    | Full logic suite (104 assertions) + seeds canonical state for the refresh test |
+| `reload`  | Restarts the browser on the same profile — progress, status and settings survive |
+| `corrupt` | Corrupted stored JSON → clean recovery, corrupt copy kept aside |
+| `iso-a` / `iso-b` | Two separate browser profiles: B boots with an **empty** library and never sees A's data |
+
+Run them locally (any static server + any Chromium browser):
+
+```
+node server.cjs . 8931        # serve the repo root
+# open http://127.0.0.1:8931/tests/run-tests.html?run=main  (then ?run=reload, corrupt, iso-a, iso-b)
+```
+
+Or simply run them against GitHub Pages: <https://elhendawy-1.github.io/-Warraq/tests/run-tests.html?run=main>
 
 ## 🛠️ Under the hood
 
