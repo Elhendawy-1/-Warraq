@@ -69,7 +69,16 @@ details{border:1px solid var(--bd);border-radius:12px;padding:8px 12px;margin:8p
 .acts{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px;justify-content:flex-end}
 .det{display:flex;gap:16px;flex-wrap:wrap}.det .cv{width:150px;border-radius:10px;flex:none}.det>div{flex:1;min-width:200px}
 .dl{display:grid;grid-template-columns:auto 1fr;gap:3px 12px;font-size:.88rem;margin:10px 0}.dl dt{color:var(--mut)}.dl dd{margin:0}
-.ic2{display:flex;flex-wrap:wrap;gap:4px}.ic2 button{font-size:1.2rem;width:42px;height:42px;border:1px solid var(--bd);background:var(--card);border-radius:10px;cursor:pointer}.ic2 [aria-pressed=true]{outline:3px solid var(--ac)}
+.ic2{display:flex;flex-wrap:wrap;gap:6px;max-height:160px;overflow-y:auto;padding:6px;border:1px solid var(--bd);border-radius:10px;background:var(--bg)}
+.ic2 button{font-size:1.25rem;width:42px;height:42px;border:1px solid var(--bd);background:var(--card);border-radius:8px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;transition:transform .1s,border-color .1s;color:var(--tx)}
+.ic2 button:hover{border-color:var(--ac);transform:scale(1.06)}
+.ic2 [aria-pressed=true]{outline:3px solid var(--ac);background:color-mix(in srgb,var(--ac) 20%,transparent)}
+.cur-icon-input{font-size:1.6rem;width:52px;height:44px;text-align:center;border-radius:10px;border:2px solid var(--ac);background:var(--card);padding:0;cursor:text;color:var(--tx)}
+.cur-icon-input:focus{outline:none;border-color:var(--ac);box-shadow:0 0 0 3px color-mix(in srgb,var(--ac) 28%,transparent)}
+.ic-btn-wrap{position:relative;display:inline-flex}
+.del-ic-btn{position:absolute;top:-4px;right:-4px;width:18px!important;height:18px!important;min-width:0!important;padding:0!important;font-size:11px!important;line-height:1!important;border-radius:50%!important;background:#ef4444!important;color:#fff!important;border:none!important;cursor:pointer;opacity:0.75;display:flex;align-items:center;justify-content:center;z-index:2}
+.del-ic-btn:hover{opacity:1;transform:scale(1.15)}
+[dir="rtl"] .del-ic-btn{right:auto;left:-4px}
 #toast{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);z-index:99;display:flex;flex-direction:column;gap:6px;align-items:center;width:max-content;max-width:92vw}
 #toast div{background:var(--tx);color:var(--bg);padding:10px 16px;border-radius:12px;box-shadow:0 4px 16px #0004}
 
@@ -175,7 +184,8 @@ const AR={"Warraq": "ورّاق", "Main navigation": "القائمة الرئي�
 "Remove from series": "إزالة من السلسلة", "Remove “{0}” from this series? The book stays in your library.": "إزالة «{0}» من هذه السلسلة؟ يبقى الكتاب في مكتبتك.", "Delete series?": "حذف السلسلة؟", "“{0}” series will be deleted. Books stay in your library.": "سيتم حذف سلسلة «{0}». تبقى الكتب في مكتبتك.",
 "Book added to series": "تمت إضافة الكتاب إلى السلسلة", "Book removed from series": "تمت إزالة الكتاب من السلسلة", "Series saved": "تم حفظ السلسلة", "Series deleted": "تم حذف السلسلة", "Save series": "حفظ السلسلة", "e.g. Harry Potter": "مثال: هاري بوتر",
 "Back": "رجوع", "This file also contains <b>{0} series</b>.": "يحتوي الملف أيضًا على <b>{0} من السلاسل</b>.", "Books in series": "كتب السلسلة", "Remove": "إزالة",
-"Every book in your library is already in this series.": "كل كتب مكتبتك موجودة بالفعل في هذه السلسلة.", "Across this series: {0} of {1} pages read ({2}%)": "في هذه السلسلة: قُرئت {0} من {1} صفحة ({2}%)"};
+"Every book in your library is already in this series.": "كل كتب مكتبتك موجودة بالفعل في هذه السلسلة.", "Across this series: {0} of {1} pages read ({2}%)": "في هذه السلسلة: قُرئت {0} من {1} صفحة ({2}%)",
+"Selected icon": "الأيقونة المحددة", "Selected icon - you can type or paste any emoji/text here": "الأيقونة المحددة - يمكنك كتابة أو لصق أي إيموجي أو رمز هنا", "Add custom icon or emoji…": "أضف أيقونة أو إيموجي مخصص…", "Add custom icon": "إضافة أيقونة مخصصة", "Add": "إضافة", "Add icon to list": "إضافة الأيقونة إلى القائمة", "Or choose from available icons:": "أو اختر من الأيقونات المتاحة:", "Remove icon": "إزالة الأيقونة", "Icon added!": "تمت إضافة الأيقونة!", "Cover image preview (optional)": "معاينة صورة الغلاف (اختياري)"};
 const EN={"storageNote": "<b>Your data is stored only in this browser.</b> Opening this file in another browser or on another device starts an empty library; nothing syncs automatically. To move your library, export a backup file and import it there."};
 function T(s,...a){return (LANG==='ar'?AR[s]:EN[s]??s)?.replace(/\{(\d)\}/g,(m,i)=>nf(a[i]))??s}
 const loc=()=>S.prefs.digits==='ar'?'ar-EG':'ar-EG-u-nu-latn';
@@ -192,7 +202,30 @@ const THEMES=tr({neutral:'Neutral',elegant:'Elegant',modern:'Modern',dark:'Dark 
 const STAT=tr({unread:'Not started',reading:'Reading',completed:'Completed',hold:'On hold',dropped:'Dropped'});
 const PUR=tr({no:'Not purchased',yes:'Purchased',gift:'Gift',borrowed:'Borrowed'});
 const ROLES=tr({'':'No special behavior',reading:'Marks books as Reading',completed:'Marks books as Completed',toread:'Counts as Want to Read',tobuy:'Counts as Want to Buy',hold:'Marks books as On hold',dropped:'Marks books as Dropped'});
-const ICONS=['📖','📚','✅','🔖','🛒','⏸️','🚫','⭐','🌙','🔥','🧙','💌','🎁','🔁','☀️','🕵️','🚀','🌸','🏆','🇪🇬'];
+const DEF_ICONS=['📖','📚','✅','🔖','🛒','⏸️','🚫','⭐','🌙','🔥','🧙','💌','🎁','🔁','☀️','🕵️','🚀','🌸','🏆','🇪🇬'];
+const ICONS=DEF_ICONS;
+function allIcons(){return Array.from(new Set([...((typeof S!=='undefined'&&S&&S.customIcons)||[]),...DEF_ICONS]))}
+function iconGridHtml(cur){
+  const list=allIcons(),customSet=new Set((typeof S!=='undefined'&&S&&S.customIcons)||[]);
+  return list.map(i=>{
+    const isCustom=customSet.has(i),isPressed=(i===cur);
+    return `<span class="ic-btn-wrap"><button type="button" data-act="pickicon" data-i="${esc(i)}" aria-pressed="${isPressed}" aria-label="Icon ${esc(i)}" title="${esc(i)}">${esc(i)}</button>${isCustom?`<button type="button" class="del-ic-btn" data-act="delcustomicon" data-i="${esc(i)}" title="${T('Remove icon')}" aria-label="${T('Remove icon')}">×</button>`:''}</span>`;
+  }).join('');
+}
+function iconPickerHtml(cur){
+  const curIcon=cur||'📚';
+  return `<div class="wide icon-picker-section">
+  <label style="font-weight:600;margin-bottom:8px;display:block">${T('Icon')}</label>
+  <div style="display:flex;gap:10px;align-items:center;margin-bottom:10px;flex-wrap:wrap">
+    <input name="icon" id="sic" class="cur-icon-input" maxlength="16" dir="auto" value="${esc(curIcon)}" placeholder="📚" aria-label="${T('Selected icon')}" title="${T('Selected icon - you can type or paste any emoji/text here')}">
+    <div style="display:flex;gap:6px;flex:1;min-width:200px">
+      <input id="new_ic" type="text" dir="auto" maxlength="16" placeholder="${T('Add custom icon or emoji…')}" aria-label="${T('Add custom icon')}">
+      <button type="button" class="btn sm" data-act="addcustomicon" title="${T('Add icon to list')}">＋ ${T('Add')}</button>
+    </div>
+  </div>
+  <div class="mut sm" style="margin-bottom:6px">${T('Or choose from available icons:')}</div>
+  <div class="ic2" id="ic_grid">${iconGridHtml(curIcon)}</div></div>`;
+}
 const BK={title:'',author:'',cover:'',desc:'',genre:'',section:'',status:'unread',pages:0,page:0,prev:0,year:'',publisher:'',isbn:'',lang:'',price:'',pdate:'',purchase:'no',rating:0,notes:'',fav:false,added:'',started:'',completed:''};
 const $=(s,r=document)=>r.querySelector(s);
 const uid=()=>Math.random().toString(36).slice(2,9)+Date.now().toString(36);
@@ -208,13 +241,13 @@ const hue=t=>[...t].reduce((a,c)=>a+c.charCodeAt(0),0)%360;
 function defaults(){
   const mk=(name,icon,color,role,desc)=>({id:uid(),name,icon,color,role,desc,nav:true,dflt:true});
   const s=[mk('Currently Reading','📖','#3b82f6','reading','Books you are reading right now'),mk('Completed Books','✅','#16a34a','completed','Finished reads'),mk('Want to Read','🔖','#a855f7','toread','Your reading wishlist'),mk('Want to Buy','🛒','#d97706','tobuy','Books to get next'),mk('On Hold','⏸️','#64748b','hold','Paused for now'),mk('Dropped / Abandoned','🚫','#ef4444','dropped','Not for me'),mk('Favorites','⭐','#ec4899','','All-time favorites')];
-  return {v:VER,sections:s,series:[],books:[],prefs:{theme:'neutral',view:'grid',defSec:s[2].id,lang:'en',digits:'latn',sort:'added',ssort:'added'}};
+  return {v:VER,sections:s,series:[],books:[],customIcons:[],prefs:{theme:'neutral',view:'grid',defSec:s[2].id,lang:'en',digits:'latn',sort:'added',ssort:'added'}};
 }
 const DEF=Object.fromEntries(defaults().sections.map(s=>[s.name,s.desc]));
 function normalize(d,warn){
   if(!d||typeof d!=='object'||!Array.isArray(d.sections)||!Array.isArray(d.books))throw new Error(T('Not a valid library file'));
   warn=warn||{};
-  const rawSecs=d.sections.filter(s=>s&&typeof s==='object'&&s.id&&s.name),secs=rawSecs.map(s=>({id:String(s.id),name:String(s.name).slice(0,60),desc:String(s.desc||'').slice(0,200),icon:String(s.icon||'📖').slice(0,8),color:/^#[0-9a-f]{6}$/i.test(s.color)?s.color:'#5f8a68',nav:s.nav!==false,role:ROLES[s.role]!==undefined?s.role:'',dflt:s.dflt!==undefined?!!s.dflt:DEF[s.name]===s.desc}));
+  const rawSecs=d.sections.filter(s=>s&&typeof s==='object'&&s.id&&s.name),secs=rawSecs.map(s=>({id:String(s.id),name:String(s.name).slice(0,60),desc:String(s.desc||'').slice(0,200),icon:String(s.icon||'📖').slice(0,16),color:/^#[0-9a-f]{6}$/i.test(s.color)?s.color:'#5f8a68',nav:s.nav!==false,role:ROLES[s.role]!==undefined?s.role:'',dflt:s.dflt!==undefined?!!s.dflt:DEF[s.name]===s.desc}));
   warn.sections=d.sections.length-rawSecs.length;
   if(!secs.length)throw new Error(T('The file has no sections'));
   const ids=new Set(secs.map(s=>s.id)),p=d.prefs||{},defSec=ids.has(p.defSec)?p.defSec:secs[0].id;
@@ -238,11 +271,13 @@ function normalize(d,warn){
       mem.push({id:String(m.id),ord:Number(m.ord)||idx+1})});
     mem.sort((a,b)=>a.ord-b.ord);
     const sortedMem=mem.map((m,k)=>({id:m.id,ord:k+1}));
-    return {id:String(s.id),name:String(s.name).trim().slice(0,80),desc:String(s.desc||'').slice(0,300),cover:String(s.cover||'').slice(0,600),icon:String(s.icon||'📚').slice(0,8),added:String(s.added||today()).slice(0,10),books:sortedMem}});
+    return {id:String(s.id),name:String(s.name).trim().slice(0,80),desc:String(s.desc||'').slice(0,300),cover:String(s.cover||'').slice(0,600),icon:String(s.icon||'📚').slice(0,16),added:String(s.added||today()).slice(0,10),books:sortedMem}});
   warn.series=(Array.isArray(d.series)?d.series.length:0)-series.length;
   warn.members=memBad;
 
-  return {v:VER,sections:secs,series,books,prefs:{theme:THEMES[p.theme]?p.theme:'neutral',view:p.view==='list'?'list':'grid',defSec,lang:p.lang==='ar'?'ar':'en',digits:p.digits==='ar'?'ar':'latn',sort:['added','az','rating','progress'].includes(p.sort)?p.sort:'added',ssort:p.ssort==='az'?'az':'added'}};
+  const customIcons=Array.isArray(d.customIcons)?d.customIcons.map(x=>String(x||'').trim().slice(0,16)).filter(Boolean):[];
+
+  return {v:VER,sections:secs,series,books,customIcons:Array.from(new Set(customIcons)),prefs:{theme:THEMES[p.theme]?p.theme:'neutral',view:p.view==='list'?'list':'grid',defSec,lang:p.lang==='ar'?'ar':'en',digits:p.digits==='ar'?'ar':'latn',sort:['added','az','rating','progress'].includes(p.sort)?p.sort:'added',ssort:p.ssort==='az'?'az':'added'}};
 }
 let recovered=false;
 const Store={
@@ -515,7 +550,7 @@ function secDlg(id){
   openDlg(`<form id="sf"><h2 style="margin-top:0">${id?T('Edit section'):T('New section')}</h2><input type="hidden" name="id" value="${id||''}">
   <div class="fg"><label>${T('Name *')}<input dir="auto" name="name" required maxlength="60" value="${esc(sn(s))}"></label><label>${T('Color')}<input type="color" name="color" value="${s.color}" style="width:100%;height:42px"></label>
   <label class="wide">${T('Description')}<input dir="auto" name="desc" maxlength="200" value="${esc(sd(s))}"></label>
-  <div class="wide">${T('Icon')}<input type="hidden" name="icon" id="sic" value="${esc(s.icon)}"><div class="ic2">${ICONS.map(x=>`<button type="button" data-act="pickicon" data-i="${x}" aria-pressed="${x===s.icon}" aria-label="Icon ${x}">${x}</button>`).join('')}</div></div>
+  ${iconPickerHtml(s.icon||'📖')}
   <label class="wide">${T('Behavior')}<select name="role">${Object.entries(ROLES).map(([k,v])=>`<option value="${k}" ${s.role===k?'selected':''}>${v}</option>`).join('')}</select></label>
   <label style="flex-direction:row;align-items:center;gap:8px"><input type="checkbox" name="nav" ${s.nav?'checked':''}> ${T('Show in main menu')}</label>
   <label style="flex-direction:row;align-items:center;gap:8px"><input type="checkbox" name="def" ${S.prefs.defSec===id?'checked':''}> ${T('Default for new books')}</label></div>
@@ -527,9 +562,9 @@ function serDlg(id){
   openDlg(`<form id="xf"><h2 style="margin-top:0">${id?T('Edit series'):T('New series')}</h2><input type="hidden" name="id" value="${id||''}">
   <div class="fg"><label class="wide">${T('Series name')}<input dir="auto" name="name" required maxlength="80" value="${esc(x.name)}" placeholder="${T('e.g. Harry Potter')}" autofocus></label>
   <label class="wide">${T('Series description')}<textarea dir="auto" name="desc" rows="2" maxlength="300">${esc(x.desc||'')}</textarea></label>
-  <label>${T('Series cover URL')}<input id="scu" type="url" dir="ltr" placeholder="https://…" value="${x.cover&&!x.cover.startsWith('data:')?esc(x.cover):''}"></label>
-  <div style="display:flex;gap:12px;align-items:flex-start"><div class="sv" style="flex:none"><span class="big" style="--h:${hue(x.name||'📚')}"><img id="spv" alt="${T('Cover preview')}" ${x.cover?`src="${esc(x.cover)}"`:'hidden'}></span></div>
-  <div class="wide">${T('Icon')}<input type="hidden" name="icon" id="sic" value="${esc(x.icon||'📚')}"><div class="ic2">${ICONS.map(i=>`<button type="button" data-act="pickicon" data-i="${i}" aria-pressed="${i===(x.icon||'📚')}" aria-label="Icon ${i}">${i}</button>`).join('')}</div></div></div></div>
+  <label class="wide">${T('Series cover URL')}<input id="scu" type="url" dir="ltr" placeholder="https://…" value="${x.cover&&!x.cover.startsWith('data:')?esc(x.cover):''}"></label>
+  <div style="display:flex;gap:12px;align-items:center;margin-top:-6px;margin-bottom:8px"><div class="sv" style="flex:none"><span class="big" style="--h:${hue(x.name||'📚')}"><img id="spv" alt="${T('Cover preview')}" ${x.cover?`src="${esc(x.cover)}"`:'hidden'}></span></div><span class="mut sm">${T('Cover image preview (optional)')}</span></div>
+  ${iconPickerHtml(x.icon||'📚')}</div>
   <div class="acts"><button type="button" class="btn" data-act="close">${T('Cancel')}</button><button class="btn pri">${T('Save series')}</button></div></form>`)}
 function pickRows(x){
   const q=nz((UI.pq||'').trim()),cand=S.books.filter(b=>!Ser.inSeries(x,b.id)&&(!q||[b.title,b.author,b.genre].some(v=>nz(v).includes(q))));
@@ -564,7 +599,8 @@ async function importLib(file){
     if(!Array.isArray(S.series))S.series=[];
     d.series.forEach(sr=>{const mine=S.series.find(s=>s.id===sr.id);
       if(!mine)S.series.push({id:sr.id,name:sr.name,desc:sr.desc,cover:sr.cover,icon:sr.icon,added:sr.added,books:sr.books.filter(m=>bid.has(m.id))});
-      else{sr.books.forEach(m=>{if(bid.has(m.id)&&!Ser.inSeries(mine,m.id))mine.books.push({id:m.id,ord:m.ord})});Ser.renum(mine)}})}
+      else{sr.books.forEach(m=>{if(bid.has(m.id)&&!Ser.inSeries(mine,m.id))mine.books.push({id:m.id,ord:m.ord})});Ser.renum(mine)}});
+    if(Array.isArray(d.customIcons)){S.customIcons=Array.from(new Set([...(S.customIcons||[]),...d.customIcons]))}}
   else return;
   Store.save();render();toast(T('Library imported'))}
 
@@ -616,7 +652,19 @@ const A={
   async sdel(t){const s=Sec.get(t.dataset.id);if(S.sections.length<2)return toast(T('Keep at least one section'));
     const n=Sec.count(s.id);if(await confirmDel(T('Delete section?'),T('“{0}” will be removed. {1}',esc(sn(s)),n?T('{0} book(s) will move to your default section.',n):T('It has no books.')))){
       if(UI.route==='sec:'+s.id)UI.route='set';Sec.remove(s.id);commit()}},
-  pickicon(t){$('#sic').value=t.dataset.i;dlg.querySelectorAll('.ic2 button').forEach(x=>x.setAttribute('aria-pressed',x===t))},
+  pickicon(t){const v=t.dataset.i,sic=$('#sic');
+    if(sic){sic.value=v;sic.dispatchEvent(new Event('input',{bubbles:true}))}
+    dlg.querySelectorAll('.ic2 [data-act="pickicon"]').forEach(x=>x.setAttribute('aria-pressed',x===t?'true':'false'))},
+  addcustomicon(t){const inp=$('#new_ic')||$('#sic'),raw=(inp?inp.value:'').trim();if(!raw)return;
+    const val=raw.slice(0,16);if(!Array.isArray(S.customIcons))S.customIcons=[];
+    if(!S.customIcons.includes(val)){S.customIcons.unshift(val);Store.save()}
+    const sic=$('#sic');if(sic){sic.value=val;sic.dispatchEvent(new Event('input',{bubbles:true}))}
+    if($('#new_ic'))$('#new_ic').value='';
+    const grid=$('#ic_grid');if(grid)grid.innerHTML=iconGridHtml(val);toast(T('Icon added!'))},
+  delcustomicon(t){const val=t.dataset.i;if(!val)return;
+    S.customIcons=(S.customIcons||[]).filter(x=>x!==val);Store.save();
+    const sic=$('#sic'),cur=sic?sic.value:'';
+    const grid=$('#ic_grid');if(grid)grid.innerHTML=iconGridHtml(cur)},
   export:exportLib,import(){$('#imp').click()},
   async reset(){if(await confirmDel(T('Erase everything?'),T('All books and sections will be deleted. Export a backup first if unsure.'))){S=defaults();UI.route='dash';Store.save();try{history.replaceState({...snap(),depth:0},'');UI._hj=JSON.stringify(history.state)}catch(_){}render();toast(T('Library erased'))}},
   lang(t){S.prefs.lang=t.dataset.l;commit()},digits(t){S.prefs.digits=t.dataset.d;commit()},
@@ -642,7 +690,10 @@ const A={
   back(){if(history.state&&Number(history.state.depth)>0)history.back()}
 };
 document.addEventListener('click',e=>{const t=e.target.closest('[data-act]');if(!t||t.tagName==='SELECT')return;if(t.dataset.act==='menu'||A[t.dataset.act]){e.stopPropagation();A[t.dataset.act](t)}});
-document.addEventListener('keydown',e=>{if((e.key==='Enter'||e.key===' ')&&e.target.matches('[role=button][data-act]')){e.preventDefault();A[e.target.dataset.act](e.target)}});
+document.addEventListener('keydown',e=>{
+  if(e.key==='Enter'&&e.target&&e.target.id==='new_ic'){e.preventDefault();A.addcustomicon(e.target);return}
+  if((e.key==='Enter'||e.key===' ')&&e.target.matches('[role=button][data-act]')){e.preventDefault();A[e.target.dataset.act](e.target)}
+});
 document.addEventListener('change',e=>{const t=e.target;
   if(t.name==='status'&&t.form&&t.form.getAttribute('id')==='bf'){const f=t.form,bid=f.querySelector('[name=id]').value,ob=bid?Bk.get(bid):null,pg=f.querySelector('[name=page]'),pgs=+f.querySelector('[name=pages]').value||0;
     if(t.value==='completed'){f.wasC='1';if(pgs&&+pg.value!==pgs){pg.value=pgs;pg.dispatchEvent(new Event('input',{bubbles:true}))}}
@@ -658,17 +709,22 @@ document.addEventListener('input',e=>{const t=e.target;
   else if(t.id==='ssq'){UI.sq=t.value;const x=UI.route.startsWith('ser:')&&Ser.get(UI.route.slice(4)),c=$('#mres');if(x&&c)c.innerHTML=serRows(x)}
   else if(t.id==='sepq'){UI.pq=t.value;const x=Ser.get(UI.pser),pl=$('#plist');if(x&&pl)pl.innerHTML=pickRows(x)}
   else if(t.id==='scu'){const p=$('#spv'),u=t.value.trim();if(p){p.hidden=!u;p.src=u}}
-  else if(t.id==='cvu'){$('#cvh').value=t.value.trim();const p=$('#pv');p.hidden=!t.value.trim();p.src=t.value.trim();syncCover()}});
+  else if(t.id==='cvu'){$('#cvh').value=t.value.trim();const p=$('#pv');p.hidden=!t.value.trim();p.src=t.value.trim();syncCover()}
+  else if(t.id==='sic'){const v=t.value.trim();if(dlg&&dlg.open)dlg.querySelectorAll('.ic2 [data-act="pickicon"]').forEach(x=>x.setAttribute('aria-pressed',x.dataset.i===v?'true':'false'))}});
 document.addEventListener('submit',e=>{const f=e.target,fid=f.getAttribute&&f.getAttribute('id');
   if(fid==='bf'){e.preventDefault();const b=saveForm(f);
     if(pendSer){const ps=Ser.get(pendSer);if(ps&&!Ser.inSeries(ps,b.id))Ser.add(ps,b.id,pendPos);pendSer=null;pendPos=0}
     UI.open=null;UI.dirty=false;if(history.state&&history.state.dlg){history.replaceState({...snap(),dlg:null},'');UI._hj=JSON.stringify(history.state)}dlg.close();commit();toast(T('Book saved'))}
   else if(fid==='xf'){e.preventDefault();const d=Object.fromEntries(new FormData(f)),x=d.id?Ser.get(d.id):null,scu=$('#scu')?$('#scu').value.trim():'';
-    const val={name:d.name.trim()||T('Untitled'),desc:d.desc.trim(),icon:d.icon||'📚',cover:scu||(x&&x.cover&&x.cover.startsWith('data:')?x.cover:''),added:x?x.added:today()};
+    const ic=(d.icon||'').trim()||'📚';
+    if(ic&&!DEF_ICONS.includes(ic)&&!(S.customIcons||[]).includes(ic)){if(!Array.isArray(S.customIcons))S.customIcons=[];S.customIcons.unshift(ic);Store.save()}
+    const val={name:d.name.trim()||T('Untitled'),desc:d.desc.trim(),icon:ic,cover:scu||(x&&x.cover&&x.cover.startsWith('data:')?x.cover:''),added:x?x.added:today()};
     if(x)Object.assign(x,val);else S.series.push({id:uid(),...val,books:[]});
     dlg.close();commit();toast(T('Series saved'))}
   else if(fid==='sf'){e.preventDefault();const d=Object.fromEntries(new FormData(f));
-    const s=d.id?Sec.get(d.id):Sec.add({});const keep=s.dflt&&d.name.trim()===sn(s)&&d.desc.trim()===sd(s),o=[s.name,s.desc];Object.assign(s,{name:d.name.trim()||T('Untitled'),desc:d.desc.trim(),icon:d.icon||'📖',color:d.color,role:d.role,nav:!!d.nav});if(keep)[s.name,s.desc]=o;else s.dflt=false;
+    const ic=(d.icon||'').trim()||'📖';
+    if(ic&&!DEF_ICONS.includes(ic)&&!(S.customIcons||[]).includes(ic)){if(!Array.isArray(S.customIcons))S.customIcons=[];S.customIcons.unshift(ic);Store.save()}
+    const s=d.id?Sec.get(d.id):Sec.add({});const keep=s.dflt&&d.name.trim()===sn(s)&&d.desc.trim()===sd(s),o=[s.name,s.desc];Object.assign(s,{name:d.name.trim()||T('Untitled'),desc:d.desc.trim(),icon:ic,color:d.color,role:d.role,nav:!!d.nav});if(keep)[s.name,s.desc]=o;else s.dflt=false;
     if(d.def)S.prefs.defSec=s.id;dlg.close();commit();toast(T('Section saved'))}});
 function syncCover(){const t=$('#dropt');if(t)t.textContent=T($('#cvh').value?'Replace cover image':'Choose a cover image')}
 function readCover(file){

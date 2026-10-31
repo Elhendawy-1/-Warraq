@@ -358,6 +358,23 @@
       await poll(()=>document.getElementById('cfm').open&&document.querySelector('#cfm button[value=ok]'));
       document.querySelector('#cfm button[value=ok]').click();await sleep(30);
       ok('confirming discard closes dialog',!document.getElementById('dlg').open);
+      /* ===== 19d. custom icons management ===== */
+      serDlg();
+      const newIcInp=document.getElementById('new_ic');
+      newIcInp.value='🐉';
+      A.addcustomicon(newIcInp);
+      ok('custom icon 🐉 added to S.customIcons',(S.customIcons||[]).includes('🐉'));
+      ok('custom icon appears in allIcons()',allIcons().includes('🐉'));
+      ok('selected icon input updated',document.getElementById('sic').value==='🐉');
+      const xf=document.getElementById('xf');
+      xf.querySelector('[name=name]').value='Dragon Saga';
+      xf.querySelector('[name=icon]').value='🐉';
+      xf.dispatchEvent(new Event('submit',{bubbles:true,cancelable:true}));await sleep(30);
+      const dragSer=S.series.find(s=>s.name==='Dragon Saga');
+      ok('series created with custom icon 🐉',!!dragSer&&dragSer.icon==='🐉');
+      A.delcustomicon({dataset:{i:'🐉'}});
+      ok('custom icon 🐉 removed from S.customIcons',!(S.customIcons||[]).includes('🐉'));
+      ok('series preserves icon even if removed from active choices',dragSer.icon==='🐉');
       /* ===== 20. erase everything ===== */
       A.reset();await poll(()=>document.getElementById('cfm').open&&document.querySelector('#cfm button[value=ok]'));
       document.querySelector('#cfm button[value=ok]').click();await sleep(40);
