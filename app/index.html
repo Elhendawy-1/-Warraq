@@ -8,7 +8,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="description" content="Warraq (ورّاق) — a personal novel and book library: track reading progress, organize custom collections, and keep your reading goals organized. Bilingual Arabic and English. All data stays in your browser.">
+<meta name="description" content="Warraq (ورّاق) — a personal novel and book library: track reading progress, organize custom collections, book series, and keep your reading goals organized. Bilingual Arabic and English. All data stays in your browser.">
 <link rel="icon" type="image/jpeg" href="../assets/logo.jpg">
 <title>Warraq (ورّاق)</title>
 <style>
@@ -127,6 +127,26 @@ main{padding:14px}.grid{grid-template-columns:repeat(auto-fill,minmax(130px,1fr)
 .seg button{display:grid;place-items:center;padding:0}
 @media(min-width:1280px){.bar2 .grp{border-inline-start:1px solid var(--bd);padding-inline-start:12px}}
 .card.bk{transition:border-color .15s,box-shadow .15s}.card.bk:hover{box-shadow:0 2px 4px #0000000d,0 10px 24px #00000018}
+#bb svg, .back-btn svg{width:20px;height:20px}
+[dir=rtl] #bb svg, [dir=rtl] .back-btn svg{transform:scaleX(-1)}
+.back-btn{flex:none}
+.sv{display:flex;gap:14px;align-items:flex-start;flex-wrap:wrap}
+.sv .big{width:96px;height:96px;border-radius:14px;display:grid;place-items:center;font-size:2.6rem;overflow:hidden;flex:none}
+.sv .big img{width:100%;height:100%;object-fit:cover}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.chip2{background:var(--card);border:1px solid var(--bd);border-radius:999px;padding:4px 12px;font-size:.8rem;cursor:pointer;display:inline-flex;align-items:center;gap:4px}
+.chip2:hover{border-color:var(--ac)}
+.srow{display:flex;gap:10px;align-items:center;background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:8px 10px;margin-bottom:8px;width:100%;text-align:start}
+.srow[role=button],button.srow{cursor:pointer}
+.srow:hover{border-color:var(--ac)}
+.srow .pos{width:28px;height:28px;border-radius:999px;background:var(--bd);display:grid;place-items:center;font-weight:600;font-size:.8rem;flex:none}
+.srow .srt{width:42px;height:56px;border-radius:8px;display:grid;place-items:center;font-weight:700;font-style:normal;flex:none;background:hsl(var(--h,160) 32% 88%);color:hsl(var(--h,160) 40% 35%);overflow:hidden}
+.srow .srt img{width:100%;height:100%;object-fit:cover;border-radius:8px}
+[dir=rtl] .srow .pos{margin-inline-end:2px}
+.srow .grow{min-width:0;flex:1}
+.plist{display:flex;flex-direction:column;gap:8px;max-height:320px;overflow:auto;padding:2px;margin-top:10px}
+.mctl{display:flex;gap:4px;flex:none}
+.mctl .btn{padding:4px 8px;min-width:34px;min-height:34px}
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 </head>
@@ -135,7 +155,7 @@ main{padding:14px}.grid{grid-template-columns:repeat(auto-fill,minmax(130px,1fr)
 <aside aria-label="Main navigation"><div class="brand">Warraq</div><nav id="nav"></nav></aside>
 <div id="bd" data-act="menu"></div>
 <div style="flex:1;min-width:0">
-<div class="top"><button class="btn" data-act="menu" aria-label="Open menu">☰</button><b id="ttl">Warraq</b><button class="btn pri" data-act="add" aria-label="Add book">＋</button></div>
+<div class="top"><button class="btn" data-act="menu" aria-label="Open menu">☰</button><button class="btn ib" id="bb" data-act="back" hidden aria-label="Back"><svg class="i" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5m7 7-7-7 7-7"/></svg></button><b id="ttl">Warraq</b><button class="btn pri" data-act="add" aria-label="Add book">＋</button></div>
 <main id="main"></main>
 </div></div>
 <dialog id="dlg" aria-label="Dialog"></dialog>
@@ -146,7 +166,16 @@ main{padding:14px}.grid{grid-template-columns:repeat(auto-fill,minmax(130px,1fr)
 "use strict";
 /* ===== Localization (English / Arabic) ===== */
 let LANG='en';
-const AR={"Warraq": "ورّاق", "Main navigation": "القائمة الرئيسية", "Open menu": "فتح القائمة", "Add book": "إضافة كتاب", "Dashboard": "لوحة التحكم", "My Library": "مكتبتي", "Sections": "الأقسام", "More": "المزيد", "Statistics": "الإحصائيات", "Settings": "الإعدادات", "Welcome back": "مرحبًا بعودتك", "Your reading life at a glance.": "نظرة سريعة على رحلتك مع القراءة.", "＋ Add book": "＋ إضافة كتاب", "Total books": "إجمالي الكتب", "Currently reading": "أقرأ حاليًا", "Completed": "مكتملة", "Want to read": "أريد قراءتها", "Want to buy": "أريد شراءها", "Favorites": "المفضلة", "Pages read": "الصفحات المقروءة", "Reading progress overview": "نظرة عامة على تقدم القراءة", "{0} of {1} pages across books with a page count ({2}%)": "{0} من {1} صفحة في الكتب التي لها عدد صفحات ({2}%)", "Continue reading": "متابعة القراءة", "Page {0} of {1} · {2}%": "الصفحة {0} من {1} · {2}%", "Update progress": "تحديث التقدم", "Nothing in progress. Start a book from your library.": "لا توجد كتب قيد القراءة. ابدأ كتابًا من مكتبتك.", "Recently added": "أُضيفت مؤخرًا", "Recently completed": "اكتملت مؤخرًا", "Reading activity": "نشاط القراءة", "Books completed per month": "الكتب المكتملة شهريًا", "{0} books": "{0} كتاب", "Every book you own, want or love.": "كل كتاب تملكه أو تريده أو تحبه.", "Search title, author or genre": "ابحث بالعنوان أو المؤلف أو النوع", "Search books": "البحث عن الكتب", "All sections": "كل الأقسام", "Filter by section": "تصفية حسب القسم", "Any status": "أي حالة", "Filter by status": "تصفية حسب الحالة", "Sort by": "ترتيب حسب", "Newest added": "الأحدث إضافة", "A to Z": "أبجديًا", "Rating": "التقييم", "Progress": "التقدم", "View": "العرض", "Grid view": "عرض شبكي", "List view": "عرض قائمة", "No matching books": "لم يتم العثور على كتب", "Try a different search or clear the filters.": "جرّب بحثًا مختلفًا أو أزل عوامل التصفية.", "Your reading journey starts here.": "رحلتك مع القراءة تبدأ من هنا.", "Nothing in “{0}” yet.": "لا توجد كتب في «{0}» بعد.", "Your library is empty.": "مكتبتك فارغة.", "Add your first book.": "أضف أول كتاب لك.", "Unknown author": "مؤلف غير معروف", "{0} pages": "{0} صفحة", "Favorite": "مفضل", "Calculated live from your library.": "تُحسب مباشرة من بيانات مكتبتك.", "Average rating": "متوسط التقييم", "Total spent": "إجمالي الإنفاق", "Books completed, last 12 months": "الكتب المكتملة خلال آخر 12 شهرًا", "By status": "حسب الحالة", "By genre": "حسب النوع", "Add books to see genres.": "أضف كتبًا لعرض الأنواع.", "No genre": "بدون نوع", "Language": "اللغة", "Numbers": "الأرقام", "Western digits (1234)": "أرقام غربية (1234)", "Arabic-Indic digits (١٢٣٤)": "أرقام هندية (١٢٣٤)", "Theme": "المظهر", "Neutral": "محايد", "Elegant": "أنيق", "Modern": "عصري", "Dark mode": "الوضع الداكن", "Default section for new books": "القسم الافتراضي للكتب الجديدة", "Default": "افتراضي", "(hidden from menu)": "(مخفي من القائمة)", "Move {0} up": "نقل {0} للأعلى", "Move {0} down": "نقل {0} للأسفل", "Edit": "تعديل", "Delete": "حذف", "＋ New section": "＋ قسم جديد", "Backup and restore": "النسخ الاحتياطي والاستعادة", "Export library (JSON)": "تصدير المكتبة (JSON)", "Import backup": "استيراد نسخة احتياطية", "Erase everything": "مسح كل شيء", "storageNote": "<b>بياناتك محفوظة في هذا المتصفح فقط.</b> فتح هذا الملف في متصفح أو جهاز آخر سيبدأ بمكتبة فارغة، ولا تتم أي مزامنة تلقائية. لنقل مكتبتك، صدّر ملف نسخة احتياطية ثم استورده هناك.", "Edit book": "تعديل الكتاب", "Add a book": "إضافة كتاب", "Title *": "العنوان *", "Author": "المؤلف", "Genre": "النوع", "Section": "القسم", "Reading status": "حالة القراءة", "Description": "الوصف", "Cover image": "صورة الغلاف", "Image URL": "رابط الصورة", "Or upload a picture": "أو ارفع صورة", "Cover preview": "معاينة الغلاف", "Remove cover": "إزالة الغلاف", "Reading": "قيد القراءة", "Total pages": "إجمالي الصفحات", "Current page": "الصفحة الحالية", "Date started": "تاريخ البدء", "Date completed": "تاريخ الإكمال", "Personal rating": "التقييم الشخصي", "No rating": "بدون تقييم", "Publication": "النشر", "Publication year": "سنة النشر", "Publisher": "الناشر", "Purchase": "الشراء", "Purchase status": "حالة الشراء", "Price": "السعر", "Purchase date": "تاريخ الشراء", "Notes": "الملاحظات", "Personal notes": "ملاحظات شخصية", "Cancel": "إلغاء", "Save book": "حفظ الكتاب", "Save": "حفظ", "Not started": "لم تبدأ", "On hold": "مؤجلة", "Dropped": "متروكة", "Not purchased": "لم يُشترَ", "Purchased": "تم الشراء", "Gift": "هدية", "Borrowed": "مستعار", "Status": "الحالة", "Pages": "الصفحات", "Year": "السنة", "Added": "تاريخ الإضافة", "Started": "تاريخ البدء", "Move to section": "نقل إلى قسم", "♥ Favorited": "♥ في المفضلة", "♡ Add to favorites": "♡ أضف إلى المفضلة", "Update page": "تحديث الصفحة", "Mark completed": "تحديد كمكتمل", "Close": "إغلاق", "Edit section": "تعديل القسم", "New section": "قسم جديد", "Name *": "الاسم *", "Color": "اللون", "Icon": "الأيقونة", "Behavior": "السلوك", "Save section": "حفظ القسم", "Show in main menu": "إظهار في القائمة الرئيسية", "Default for new books": "افتراضي للكتب الجديدة", "Untitled": "بدون عنوان", "No special behavior": "بدون سلوك خاص", "Marks books as Reading": "يحوّل الكتب إلى «قيد القراءة»", "Marks books as Completed": "يحوّل الكتب إلى «مكتملة»", "Counts as Want to Read": "يُحتسب ضمن «أريد قراءتها»", "Counts as Want to Buy": "يُحتسب ضمن «أريد شراءها»", "Marks books as On hold": "يحوّل الكتب إلى «مؤجلة»", "Marks books as Dropped": "يحوّل الكتب إلى «متروكة»", "Backup downloaded": "تم تنزيل النسخة الاحتياطية", "Import failed: {0}": "فشل الاستيراد: {0}", "Not a valid library file": "ملف المكتبة غير صالح", "The file has no sections": "لا يحتوي الملف على أقسام", "this is not a valid library backup.": "هذا ليس ملف نسخة احتياطية صالحًا.", "Import library": "استيراد المكتبة", "This file has <b>{0} books</b> and <b>{1} sections</b>. Merge adds only what is missing from your library. Replace deletes your current library first.": "يحتوي هذا الملف على <b>{0} كتاب</b> و<b>{1} قسم</b>. الدمج يضيف فقط ما ليس موجودًا في مكتبتك، أما الاستبدال فيحذف مكتبتك الحالية أولًا.", "Merge": "دمج", "Replace": "استبدال", "Library imported": "تم استيراد المكتبة", "Storage is full or blocked. Export a backup now.": "مساحة التخزين ممتلئة أو محظورة. صدّر نسخة احتياطية الآن.", "Saved data could not be read. A copy was kept and a fresh library started.": "تعذّرت قراءة البيانات المحفوظة. تم الاحتفاظ بنسخة منها وبدء مكتبة جديدة.", "of {0} pages": "من {0} صفحة", "page number": "رقم الصفحة", "Marked as completed 🎉": "تم تحديد الكتاب كمكتمل 🎉", "Finished! Marked as completed 🎉": "أحسنت! تم إكمال الكتاب 🎉", "Delete book?": "حذف الكتاب؟", "“{0}” will be removed permanently.": "سيتم حذف «{0}» نهائيًا.", "Book deleted": "تم حذف الكتاب", "Keep at least one section": "يجب الإبقاء على قسم واحد على الأقل", "Delete section?": "حذف القسم؟", "“{0}” will be removed. {1}": "سيتم حذف «{0}». {1}", "{0} book(s) will move to your default section.": "سيتم نقل {0} كتاب إلى القسم الافتراضي.", "It has no books.": "لا يحتوي على كتب.", "Erase everything?": "مسح كل شيء؟", "All books and sections will be deleted. Export a backup first if unsure.": "سيتم حذف كل الكتب والأقسام. صدّر نسخة احتياطية أولًا إن لم تكن متأكدًا.", "Library erased": "تم مسح المكتبة", "Book saved": "تم حفظ الكتاب", "Section saved": "تم حفظ القسم", "Book moved": "تم نقل الكتاب", "Image too large (max 8 MB)": "الصورة كبيرة جدًا (الحد الأقصى 8 ميجابايت)", "Could not read that image": "تعذّرت قراءة هذه الصورة", "Please fill out this field.": "يرجى ملء هذا الحقل.", "Cover of {0}": "غلاف {0}", "No cover for {0}": "لا يوجد غلاف لـ {0}", "Reading progress {0}%": "تقدم القراءة {0}%", "{0} of 5 stars": "{0} من 5 نجوم", "Currently Reading": "أقرأ حاليًا", "Books you are reading right now": "الكتب التي تقرؤها الآن", "Completed Books": "الكتب المكتملة", "Finished reads": "قراءات انتهيت منها", "Want to Read": "أريد قراءتها", "Your reading wishlist": "قائمة رغباتك في القراءة", "Want to Buy": "أريد شراءها", "Books to get next": "كتب تنوي اقتناءها", "On Hold": "مؤجلة", "Paused for now": "متوقفة مؤقتًا", "Dropped / Abandoned": "متروكة / مهجورة", "Not for me": "لم تناسبني", "All-time favorites": "المفضلة على الإطلاق", "Optional": "اختياري", "Clear search": "مسح البحث", "Filters": "عوامل التصفية", "Discard changes?": "تجاهل التغييرات؟", "You have unsaved changes. Close without saving?": "لديك تغييرات غير محفوظة. هل تريد الإغلاق دون حفظ؟", "Discard": "تجاهل", "Keep editing": "متابعة التحرير", "Choose a cover image": "اختر صورة الغلاف", "or drag and drop it here": "أو اسحبها وأفلتها هنا", "Reading progress": "تقدم القراءة", "Purchase information": "معلومات الشراء", "Rating and notes": "التقييم والملاحظات", "Appearance": "المظهر العام", "Choose how the library looks.": "اختر شكل المكتبة.", "Choose the interface language.": "اختر لغة الواجهة.", "Library preferences": "تفضيلات المكتبة", "Defaults used when browsing and adding books.": "القيم الافتراضية عند التصفح وإضافة الكتب.", "Default view": "العرض الافتراضي", "Default sorting": "الترتيب الافتراضي", "Create, rename, reorder or delete your sections.": "أنشئ أقسامك أو أعد تسميتها أو رتّبها أو احذفها.", "Data management": "إدارة البيانات", "Back up your library or move it to another device.": "انسخ مكتبتك احتياطيًا أو انقلها إلى جهاز آخر.", "Danger zone": "منطقة الخطر", "Deletes every book and section from this browser.": "يحذف كل الكتب والأقسام من هذا المتصفح.", "About": "حول التطبيق", "Data format version {0}": "إصدار تنسيق البيانات {0}", "Digits used for numbers and dates.": "الأرقام المستخدمة في الأعداد والتواريخ.", "Your data stays in this browser.": "تبقى بياناتك في هذا المتصفح."};
+const AR={"Warraq": "ورّاق", "Main navigation": "القائمة الرئيسية", "Open menu": "فتح القائمة", "Add book": "إضافة كتاب", "Dashboard": "لوحة التحكم", "My Library": "مكتبتي", "Sections": "الأقسام", "More": "المزيد", "Statistics": "الإحصائيات", "Settings": "الإعدادات", "Welcome back": "مرحبًا بعودتك", "Your reading life at a glance.": "نظرة سريعة على رحلتك مع القراءة.", "＋ Add book": "＋ إضافة كتاب", "Total books": "إجمالي الكتب", "Currently reading": "أقرأ حاليًا", "Completed": "مكتملة", "Want to read": "أريد قراءتها", "Want to buy": "أريد شراءها", "Favorites": "المفضلة", "Pages read": "الصفحات المقروءة", "Reading progress overview": "نظرة عامة على تقدم القراءة", "{0} of {1} pages across books with a page count ({2}%)": "{0} من {1} صفحة في الكتب التي لها عدد صفحات ({2}%)", "Continue reading": "متابعة القراءة", "Page {0} of {1} · {2}%": "الصفحة {0} من {1} · {2}%", "Update progress": "تحديث التقدم", "Nothing in progress. Start a book from your library.": "لا توجد كتب قيد القراءة. ابدأ كتابًا من مكتبتك.", "Recently added": "أُضيفت مؤخرًا", "Recently completed": "اكتملت مؤخرًا", "Reading activity": "نشاط القراءة", "Books completed per month": "الكتب المكتملة شهريًا", "{0} books": "{0} كتاب", "Every book you own, want or love.": "كل كتاب تملكه أو تريده أو تحبه.", "Search title, author or genre": "ابحث بالعنوان أو المؤلف أو النوع", "Search books": "البحث عن الكتب", "All sections": "كل الأقسام", "Filter by section": "تصفية حسب القسم", "Any status": "أي حالة", "Filter by status": "تصفية حسب الحالة", "Sort by": "ترتيب حسب", "Newest added": "الأحدث إضافة", "A to Z": "أبجديًا", "Rating": "التقييم", "Progress": "التقدم", "View": "العرض", "Grid view": "عرض شبكي", "List view": "عرض قائمة", "No matching books": "لم يتم العثور على كتب", "Try a different search or clear the filters.": "جرّب بحثًا مختلفًا أو أزل عوامل التصفية.", "Your reading journey starts here.": "رحلتك مع القراءة تبدأ من هنا.", "Nothing in “{0}” yet.": "لا توجد كتب في «{0}» بعد.", "Your library is empty.": "مكتبتك فارغة.", "Add your first book.": "أضف أول كتاب لك.", "Unknown author": "مؤلف غير معروف", "{0} pages": "{0} صفحة", "Favorite": "مفضل", "Calculated live from your library.": "تُحسب مباشرة من بيانات مكتبتك.", "Average rating": "متوسط التقييم", "Total spent": "إجمالي الإنفاق", "Books completed, last 12 months": "الكتب المكتملة خلال آخر 12 شهرًا", "By status": "حسب الحالة", "By genre": "حسب النوع", "Add books to see genres.": "أضف كتبًا لعرض الأنواع.", "No genre": "بدون نوع", "Language": "اللغة", "Numbers": "الأرقام", "Western digits (1234)": "أرقام غربية (1234)", "Arabic-Indic digits (١٢٣٤)": "أرقام هندية (١٢٣٤)", "Theme": "المظهر", "Neutral": "محايد", "Elegant": "أنيق", "Modern": "عصري", "Dark mode": "الوضع الداكن", "Default section for new books": "القسم الافتراضي للكتب الجديدة", "Default": "افتراضي", "(hidden from menu)": "(مخفي من القائمة)", "Move {0} up": "نقل {0} للأعلى", "Move {0} down": "نقل {0} للأسفل", "Edit": "تعديل", "Delete": "حذف", "＋ New section": "＋ قسم جديد", "Backup and restore": "النسخ الاحتياطي والاستعادة", "Export library (JSON)": "تصدير المكتبة (JSON)", "Import backup": "استيراد نسخة احتياطية", "Erase everything": "مسح كل شيء", "storageNote": "<b>بياناتك محفوظة في هذا المتصفح فقط.</b> فتح هذا الملف في متصفح أو جهاز آخر سيبدأ بمكتبة فارغة، ولا تتم أي مزامنة تلقائية. لنقل مكتبتك، صدّر ملف نسخة احتياطية ثم استورده هناك.", "Edit book": "تعديل الكتاب", "Add a book": "إضافة كتاب", "Title *": "العنوان *", "Author": "المؤلف", "Genre": "النوع", "Section": "القسم", "Reading status": "حالة القراءة", "Description": "الوصف", "Cover image": "صورة الغلاف", "Image URL": "رابط الصورة", "Or upload a picture": "أو ارفع صورة", "Cover preview": "معاينة الغلاف", "Remove cover": "إزالة الغلاف", "Reading": "قيد القراءة", "Total pages": "إجمالي الصفحات", "Current page": "الصفحة الحالية", "Date started": "تاريخ البدء", "Date completed": "تاريخ الإكمال", "Personal rating": "التقييم الشخصي", "No rating": "بدون تقييم", "Publication": "النشر", "Publication year": "سنة النشر", "Publisher": "الناشر", "Purchase": "الشراء", "Purchase status": "حالة الشراء", "Price": "السعر", "Purchase date": "تاريخ الشراء", "Notes": "الملاحظات", "Personal notes": "ملاحظات شخصية", "Cancel": "إلغاء", "Save book": "حفظ الكتاب", "Save": "حفظ", "Not started": "لم تبدأ", "On hold": "مؤجلة", "Dropped": "متروكة", "Not purchased": "لم يُشترَ", "Purchased": "تم الشراء", "Gift": "هدية", "Borrowed": "مستعار", "Status": "الحالة", "Pages": "الصفحات", "Year": "السنة", "Added": "تاريخ الإضافة", "Started": "تاريخ البدء", "Move to section": "نقل إلى قسم", "♥ Favorited": "♥ في المفضلة", "♡ Add to favorites": "♡ أضف إلى المفضلة", "Update page": "تحديث الصفحة", "Mark completed": "تحديد كمكتمل", "Close": "إغلاق", "Edit section": "تعديل القسم", "New section": "قسم جديد", "Name *": "الاسم *", "Color": "اللون", "Icon": "الأيقونة", "Behavior": "السلوك", "Save section": "حفظ القسم", "Show in main menu": "إظهار في القائمة الرئيسية", "Default for new books": "افتراضي للكتب الجديدة", "Untitled": "بدون عنوان", "No special behavior": "بدون سلوك خاص", "Marks books as Reading": "يحوّل الكتب إلى «قيد القراءة»", "Marks books as Completed": "يحوّل الكتب إلى «مكتملة»", "Counts as Want to Read": "يُحتسب ضمن «أريد قراءتها»", "Counts as Want to Buy": "يُحتسب ضمن «أريد شراءها»", "Marks books as On hold": "يحوّل الكتب إلى «مؤجلة»", "Marks books as Dropped": "يحوّل الكتب إلى «متروكة»", "Backup downloaded": "تم تنزيل النسخة الاحتياطية", "Import failed: {0}": "فشل الاستيراد: {0}", "Not a valid library file": "ملف المكتبة غير صالح", "The file has no sections": "لا يحتوي الملف على أقسام", "this is not a valid library backup.": "هذا ليس ملف نسخة احتياطية صالحًا.", "Import library": "استيراد المكتبة", "This file has <b>{0} books</b> and <b>{1} sections</b>. Merge adds only what is missing from your library. Replace deletes your current library first.": "يحتوي هذا الملف على <b>{0} كتاب</b> و<b>{1} قسم</b>. الدمج يضيف فقط ما ليس موجودًا في مكتبتك، أما الاستبدال فيحذف مكتبتك الحالية أولًا.", "Merge": "دمج", "Replace": "استبدال", "Library imported": "تم استيراد المكتبة", "Storage is full or blocked. Export a backup now.": "مساحة التخزين ممتلئة أو محظورة. صدّر نسخة احتياطية الآن.", "Saved data could not be read. A copy was kept and a fresh library started.": "تعذّرت قراءة البيانات المحفوظة. تم الاحتفاظ بنسخة منها وبدء مكتبة جديدة.", "of {0} pages": "من {0} صفحة", "page number": "رقم الصفحة", "Marked as completed 🎉": "تم تحديد الكتاب كمكتمل 🎉", "Finished! Marked as completed 🎉": "أحسنت! تم إكمال الكتاب 🎉", "Delete book?": "حذف الكتاب؟", "“{0}” will be removed permanently.": "سيتم حذف «{0}» نهائيًا.", "Book deleted": "تم حذف الكتاب", "Keep at least one section": "يجب الإبقاء على قسم واحد على الأقل", "Delete section?": "حذف القسم؟", "“{0}” will be removed. {1}": "سيتم حذف «{0}». {1}", "{0} book(s) will move to your default section.": "سيتم نقل {0} كتاب إلى القسم الافتراضي.", "It has no books.": "لا يحتوي على كتب.", "Erase everything?": "مسح كل شيء؟", "All books and sections will be deleted. Export a backup first if unsure.": "سيتم حذف كل الكتب والأقسام. صدّر نسخة احتياطية أولًا إن لم تكن متأكدًا.", "Library erased": "تم مسح المكتبة", "Book saved": "تم حفظ الكتاب", "Section saved": "تم حفظ القسم", "Book moved": "تم نقل الكتاب", "Image too large (max 8 MB)": "الصورة كبيرة جدًا (الحد الأقصى 8 ميجابايت)", "Could not read that image": "تعذّرت قراءة هذه الصورة", "Please fill out this field.": "يرجى ملء هذا الحقل.", "Cover of {0}": "غلاف {0}", "No cover for {0}": "لا يوجد غلاف لـ {0}", "Reading progress {0}%": "تقدم القراءة {0}%", "{0} of 5 stars": "{0} من 5 نجوم", "Currently Reading": "أقرأ حاليًا", "Books you are reading right now": "الكتب التي تقرؤها الآن", "Completed Books": "الكتب المكتملة", "Finished reads": "قراءات انتهيت منها", "Want to Read": "أريد قراءتها", "Your reading wishlist": "قائمة رغباتك في القراءة", "Want to Buy": "أريد شراءها", "Books to get next": "كتب تنوي اقتناءها", "On Hold": "مؤجلة", "Paused for now": "متوقفة مؤقتًا", "Dropped / Abandoned": "متروكة / مهجورة", "Not for me": "لم تناسبني", "All-time favorites": "المفضلة على الإطلاق", "Optional": "اختياري", "Clear search": "مسح البحث", "Filters": "عوامل التصفية", "Discard changes?": "تجاهل التغييرات؟", "You have unsaved changes. Close without saving?": "لديك تغييرات غير محفوظة. هل تريد الإغلاق دون حفظ؟", "Discard": "تجاهل", "Keep editing": "متابعة التحرير", "Choose a cover image": "اختر صورة الغلاف", "or drag and drop it here": "أو اسحبها وأفلتها هنا", "Reading progress": "تقدم القراءة", "Purchase information": "معلومات الشراء", "Rating and notes": "التقييم والملاحظات", "Appearance": "المظهر العام", "Choose how the library looks.": "اختر شكل المكتبة.", "Choose the interface language.": "اختر لغة الواجهة.", "Library preferences": "تفضيلات المكتبة", "Defaults used when browsing and adding books.": "القيم الافتراضية عند التصفح وإضافة الكتب.", "Default view": "العرض الافتراضي", "Default sorting": "الترتيب الافتراضي", "Create, rename, reorder or delete your sections.": "أنشئ أقسامك أو أعد تسميتها أو رتّبها أو احذفها.", "Data management": "إدارة البيانات", "Back up your library or move it to another device.": "انسخ مكتبتك احتياطيًا أو انقلها إلى جهاز آخر.", "Danger zone": "منطقة الخطر", "Deletes every book and section from this browser.": "يحذف كل الكتب والأقسام من هذا المتصفح.", "About": "حول التطبيق", "Data format version {0}": "إصدار تنسيق البيانات {0}", "Digits used for numbers and dates.": "الأرقام المستخدمة في الأعداد والتواريخ.", "Your data stays in this browser.": "تبقى بياناتك في هذا المتصفح.",
+"e.g. Dune": "مثال: أرض زيكولا", "Replace cover image": "استبدال صورة الغلاف", "Import skipped {0} invalid record(s).": "تم تجاهل {0} من السجلات غير الصالحة أثناء الاستيراد.",
+"Book Series": "سلاسل الكتب", "New series": "سلسلة جديدة", "Edit series": "تعديل السلسلة", "Series name": "اسم السلسلة", "Series description": "وصف السلسلة", "Series cover URL": "رابط صورة السلسلة",
+"Add book to series": "إضافة كتاب إلى السلسلة", "Create a new book instead": "إنشاء كتاب جديد بدلًا من ذلك", "Choose a book from your library": "اختر كتابًا من مكتبتك", "Filter by title or author": "تصفية بالعنوان أو المؤلف",
+"Add to “{0}”": "إضافة إلى «{0}»", "Position in series (1–{0}, empty = end)": "الترتيب في السلسلة (1–{0}، الفارغ = النهاية)", "No matching series": "لا توجد سلاسل مطابقة", "Search series": "البحث في السلاسل", "Sort series": "ترتيب السلاسل",
+"Series progress": "تقدّم السلسلة", "No series yet": "لا توجد سلاسل بعد", "Track your multi-book sagas in reading order.": "تابع سلاسلك من الكتب المتتابعة بترتيب القراءة.", "This series is empty": "هذه السلسلة فارغة", "Add the first book to start tracking progress.": "أضف أول كتاب في السلسلة لبدء متابعة التقدم.",
+"Remove from series": "إزالة من السلسلة", "Remove “{0}” from this series? The book stays in your library.": "إزالة «{0}» من هذه السلسلة؟ يبقى الكتاب في مكتبتك.", "Delete series?": "حذف السلسلة؟", "“{0}” series will be deleted. Books stay in your library.": "سيتم حذف سلسلة «{0}». تبقى الكتب في مكتبتك.",
+"Book added to series": "تمت إضافة الكتاب إلى السلسلة", "Book removed from series": "تمت إزالة الكتاب من السلسلة", "Series saved": "تم حفظ السلسلة", "Series deleted": "تم حذف السلسلة", "Save series": "حفظ السلسلة", "e.g. Harry Potter": "مثال: هاري بوتر",
+"Back": "رجوع", "This file also contains <b>{0} series</b>.": "يحتوي الملف أيضًا على <b>{0} من السلاسل</b>.", "Books in series": "كتب السلسلة", "Remove": "إزالة",
+"Every book in your library is already in this series.": "كل كتب مكتبتك موجودة بالفعل في هذه السلسلة.", "Across this series: {0} of {1} pages read ({2}%)": "في هذه السلسلة: قُرئت {0} من {1} صفحة ({2}%)"};
 const EN={"storageNote": "<b>Your data is stored only in this browser.</b> Opening this file in another browser or on another device starts an empty library; nothing syncs automatically. To move your library, export a backup file and import it there."};
 function T(s,...a){return (LANG==='ar'?AR[s]:EN[s]??s)?.replace(/\{(\d)\}/g,(m,i)=>nf(a[i]))??s}
 const loc=()=>S.prefs.digits==='ar'?'ar-EG':'ar-EG-u-nu-latn';
@@ -155,10 +184,10 @@ const fd=d=>{if(!d||LANG!=='ar')return d;const x=new Date(d+'T00:00:00');return 
 const tr=o=>new Proxy(o,{get:(a,k)=>typeof a[k]==='string'?T(a[k]):a[k]});
 const sn=s=>s.dflt?T(s.name):s.name,sd=s=>s.dflt?T(s.desc):s.desc;
 function applyStatic(){$('aside').setAttribute('aria-label',T('Main navigation'));$('.brand').innerHTML=`<img src="${LOGO}" alt="" onerror="this.remove()">${T('Warraq')}`;document.title=T('Warraq');
-  $('.top button').setAttribute('aria-label',T('Open menu'));$('.top .pri').setAttribute('aria-label',T('Add book'))}
+  $('.top button').setAttribute('aria-label',T('Open menu'));$('.top .pri').setAttribute('aria-label',T('Add book'));const bb=$('#bb');if(bb)bb.setAttribute('aria-label',T('Back'))}
 
 /* ===== Constants & helpers ===== */
-const KEY='novelLibrary.v1',VER=1,LOGO='../assets/logo.jpg';
+const KEY='novelLibrary.v1',VER=2,LOGO='../assets/logo.jpg';
 const THEMES=tr({neutral:'Neutral',elegant:'Elegant',modern:'Modern',dark:'Dark mode'});
 const STAT=tr({unread:'Not started',reading:'Reading',completed:'Completed',hold:'On hold',dropped:'Dropped'});
 const PUR=tr({no:'Not purchased',yes:'Purchased',gift:'Gift',borrowed:'Borrowed'});
@@ -179,7 +208,7 @@ const hue=t=>[...t].reduce((a,c)=>a+c.charCodeAt(0),0)%360;
 function defaults(){
   const mk=(name,icon,color,role,desc)=>({id:uid(),name,icon,color,role,desc,nav:true,dflt:true});
   const s=[mk('Currently Reading','📖','#3b82f6','reading','Books you are reading right now'),mk('Completed Books','✅','#16a34a','completed','Finished reads'),mk('Want to Read','🔖','#a855f7','toread','Your reading wishlist'),mk('Want to Buy','🛒','#d97706','tobuy','Books to get next'),mk('On Hold','⏸️','#64748b','hold','Paused for now'),mk('Dropped / Abandoned','🚫','#ef4444','dropped','Not for me'),mk('Favorites','⭐','#ec4899','','All-time favorites')];
-  return {v:VER,sections:s,books:[],prefs:{theme:'neutral',view:'grid',defSec:s[2].id,lang:'en',digits:'latn'}};
+  return {v:VER,sections:s,series:[],books:[],prefs:{theme:'neutral',view:'grid',defSec:s[2].id,lang:'en',digits:'latn',sort:'added',ssort:'added'}};
 }
 const DEF=Object.fromEntries(defaults().sections.map(s=>[s.name,s.desc]));
 function normalize(d,warn){
@@ -195,7 +224,25 @@ function normalize(d,warn){
     o.id=String(b.id||uid());if(!ids.has(o.section))o.section=defSec;if(!STAT[o.status])o.status='unread';if(!PUR[o.purchase])o.purchase='no';
     o.rating=Math.min(5,Math.round(o.rating));o.added=o.added||today();return o});
   warn.books=d.books.length-rawBooks.length;
-  return {v:VER,sections:secs,books,prefs:{theme:THEMES[p.theme]?p.theme:'neutral',view:p.view==='list'?'list':'grid',defSec,lang:p.lang==='ar'?'ar':'en',digits:p.digits==='ar'?'ar':'latn',sort:['added','az','rating','progress'].includes(p.sort)?p.sort:'added'}};
+
+  /* series: optional in backups; members must reference valid payload book ids; unique series ids and unique memberships */
+  const bset=new Set(books.map(b=>b.id)),seenSer=new Set();let memBad=0;
+  const series=(Array.isArray(d.series)?d.series:[]).filter(s=>{
+    if(!s||typeof s!=='object'||!s.id||!String(s.name||'').trim()||seenSer.has(String(s.id)))return false;
+    seenSer.add(String(s.id));return true;
+  }).map(s=>{
+    const mem=[],seenMem=new Set();
+    (Array.isArray(s.books)?s.books:[]).forEach((m,idx)=>{
+      if(!m||typeof m!=='object'||!m.id||!bset.has(String(m.id))||seenMem.has(String(m.id))){memBad++;return}
+      seenMem.add(String(m.id));
+      mem.push({id:String(m.id),ord:Number(m.ord)||idx+1})});
+    mem.sort((a,b)=>a.ord-b.ord);
+    const sortedMem=mem.map((m,k)=>({id:m.id,ord:k+1}));
+    return {id:String(s.id),name:String(s.name).trim().slice(0,80),desc:String(s.desc||'').slice(0,300),cover:String(s.cover||'').slice(0,600),icon:String(s.icon||'📚').slice(0,8),added:String(s.added||today()).slice(0,10),books:sortedMem}});
+  warn.series=(Array.isArray(d.series)?d.series.length:0)-series.length;
+  warn.members=memBad;
+
+  return {v:VER,sections:secs,series,books,prefs:{theme:THEMES[p.theme]?p.theme:'neutral',view:p.view==='list'?'list':'grid',defSec,lang:p.lang==='ar'?'ar':'en',digits:p.digits==='ar'?'ar':'latn',sort:['added','az','rating','progress'].includes(p.sort)?p.sort:'added',ssort:p.ssort==='az'?'az':'added'}};
 }
 let recovered=false;
 const Store={
@@ -204,7 +251,8 @@ const Store={
   save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){toast(T('Storage is full or blocked. Export a backup now.'))}}
 };
 let S=Store.load();LANG=S.prefs.lang;
-const UI={route:'dash',q:'',sec:'',st:'',fav:false,sort:S.prefs.sort||'added',open:null,dirty:false};
+const UI={route:'dash',q:'',sec:'',st:'',fav:false,sort:S.prefs.sort||'added',sq:'',pq:'',open:null,dirty:false};
+let pendSer=null,pendPos=0;
 
 /* ===== Section service ===== */
 const Sec={
@@ -221,7 +269,8 @@ const roleStatus={reading:'reading',completed:'completed',hold:'hold',dropped:'d
 /* ===== Book service ===== */
 const Bk={
   get:id=>S.books.find(b=>b.id===id),
-  del(id){S.books=S.books.filter(b=>b.id!==id)},
+  del(id){S.books=S.books.filter(b=>b.id!==id);
+    if(S.series){(S.series||[]).forEach(s=>{s.books=(s.books||[]).filter(m=>m.id!==id);Ser.renum(s)})}},
   complete(b){if(b.status!=='completed'){b.prev=b.page;   /* remember exact last reading position for undo */
     if(b.pages)b.page=b.pages;b.completed=today();b.started=b.started||today()}
     b.status='completed'},
@@ -238,6 +287,35 @@ const Bk={
     if(b.page>0&&b.status==='unread'){b.status='reading';b.started=b.started||today()}return false}
 };
 
+/* ===== Series service =====
+   Series membership is persistent and ordered (1..N). Adding/inserting/reordering
+   safely canonicalizes sequence numbers, preventing duplicates or invalid indices. */
+const Ser={
+  get:id=>(S.series||[]).find(s=>s.id===id),
+  inSeries:(ser,bid)=>(ser.books||[]).some(m=>m.id===bid),
+  sorted(ser){return (ser.books||[]).map((m,i)=>({m,i})).sort((a,b)=>((Number(a.m.ord)||0)-(Number(b.m.ord)||0))||(a.i-b.i)).map(x=>x.m)},
+  renum(ser){ser.books=Ser.sorted(ser).map((m,j)=>({id:m.id,ord:j+1}))},
+  add(ser,bid,pos){if(!Bk.get(bid)||Ser.inSeries(ser,bid))return false;
+    const ms=Ser.sorted(ser);
+    const p=Number(pos)||0;
+    if(p>=1&&p<=ms.length){ms.splice(p-1,0,{id:bid,ord:p})}else{ms.push({id:bid,ord:ms.length+1})}
+    ser.books=ms.map((m,k)=>({id:m.id,ord:k+1}));
+    return true},
+  shift(sid,bid,d){const ser=Ser.get(sid);if(!ser)return;
+    const ms=Ser.sorted(ser),i=ms.findIndex(m=>m.id===bid),j=i+d;if(i<0||j<0||j>=ms.length)return;
+    [ms[i],ms[j]]=[ms[j],ms[i]];ser.books=ms.map((m,k)=>({id:m.id,ord:k+1}))},
+  remove(ser,bid){ser.books=(ser.books||[]).filter(m=>m.id!==bid);Ser.renum(ser)},
+  stats(ser){const bs=Ser.sorted(ser).map(m=>Bk.get(m.id)).filter(Boolean);
+    const done=bs.filter(b=>b.status==='completed').length,rd=bs.filter(b=>b.status==='reading').length;
+    const pr=bs.reduce((a,b)=>a+pagesRead(b),0),
+          tp=bs.reduce((a,b)=>a+(b.pages>0?b.pages:pagesRead(b)),0);
+    let p=0;
+    if(tp>0)p=Math.min(100,Math.round(pr/tp*1000)/10);
+    else if(bs.length>0)p=Math.min(100,Math.round(done/bs.length*1000)/10);
+    if(isNaN(p)||!isFinite(p))p=0;
+    return {total:bs.length,done,reading:rd,unread:bs.length-done-rd,prog:p,pr,tp}}
+};
+
 /* ===== UI utilities ===== */
 function toast(m){const t=document.createElement('div');t.textContent=m;$('#toast').append(t);setTimeout(()=>t.remove(),3200)}
 function ask({title,msg,btns,input}){
@@ -247,15 +325,15 @@ function ask({title,msg,btns,input}){
 const confirmDel=(title,msg)=>ask({title,msg,btns:[['ok',T('Delete'),'dng'],['x',T('Cancel')]]}).then(r=>r.btn==='ok');
 const dlg=$('#dlg');
 function openDlg(h){dlg.innerHTML=`<div class="db">${h}</div>`;if(!dlg.open)dlg.showModal()}
-dlg.addEventListener('close',()=>{UI.open=null;UI.dirty=false});
+dlg.addEventListener('close',()=>{UI.open=null;UI.dirty=false;UI.pser='';UI.pq=''});
 dlg.addEventListener('click',e=>{if(e.target===dlg)closeForm()});
-function commit(){Store.save();render();if(UI.open&&dlg.open){Bk.get(UI.open)?showBook(UI.open):dlg.close()}}
+function commit(){Store.save();render();if(UI.open&&dlg.open){Bk.get(UI.open)?showBook(UI.open,true):dlg.close()}}
 
 /* ===== Rendering: shared pieces ===== */
 const ph=b=>`<div class="cv ph" style="--h:${hue(b.title)}" role="img" aria-label="${T('No cover for {0}',esc(b.title))}"><span>${esc(b.title)}</span></div>`;
 const coverH=b=>b.cover?`<img class="cv" src="${esc(b.cover)}" data-id="${b.id}" alt="${T('Cover of {0}',esc(b.title))}" loading="lazy">`:ph(b);
 document.addEventListener('error',e=>{const i=e.target;if(i.tagName!=='IMG')return;
-  if(i.dataset.id&&Bk.get(i.dataset.id))i.outerHTML=ph(Bk.get(i.dataset.id));else if(i.id==='pv')i.hidden=true},true);
+  if(i.dataset.id&&Bk.get(i.dataset.id))i.outerHTML=ph(Bk.get(i.dataset.id));else if(i.id==='pv'||i.id==='spv')i.hidden=true},true);
 const progBar=(b,p)=>`<div class="bar" role="progressbar" aria-valuenow="${p}" aria-valuemin="0" aria-valuemax="100" aria-label="${T('Reading progress {0}%',p)}"><i style="width:${p}%"></i></div>`;
 function card(b){
   const s=Sec.get(b.section),p=pct(b),show=b.pages>0&&(b.status==='reading'||p>0);
@@ -265,16 +343,17 @@ function months(n){const a=[],d=new Date();d.setDate(1);for(let i=n-1;i>=0;i--){
   a.push([x.toLocaleString(LANG==='ar'?loc():undefined,{month:'short'}),S.books.filter(b=>b.status==='completed'&&b.completed.slice(0,7)===k).length])}return a}
 const strip=(a,t)=>a.length?`<h2>${t}</h2><div class="grid">${a.map(card).join('')}</div>`:'';
 const byAdded=a=>a.map((b,i)=>[b,i]).sort((x,y)=>(y[0].added||'').localeCompare(x[0].added||'')||y[1]-x[1]).map(x=>x[0]);
+const backBtnHtml=()=>{const d=(history.state&&Number(history.state.depth))||0;return d>0?`<button type="button" class="btn ib back-btn" data-act="back" aria-label="${T('Back')}" title="${T('Back')}">${ico(IC.back)}</button>`:''};
 
 /* ===== Views ===== */
 function renderNav(){
-  const it=(r,i,t,c,col)=>`<button class="nv" data-act="go" data-r="${r}" ${UI.route===r?'aria-current="page"':''}><span aria-hidden="true">${i}</span><span dir="auto">${esc(t)}</span>${c!=null?`<em>${nf(c)}</em>`:''}</button>`;
-  $('#nav').innerHTML=it('dash','🏠',T('Dashboard'))+it('lib','📚',T('My Library'),S.books.length)+`<div class="sh">${T('Sections')}</div>`+S.sections.filter(s=>s.nav).map(s=>it('sec:'+s.id,s.icon,sn(s),Sec.count(s.id))).join('')+`<div class="sh">${T('More')}</div>`+it('stats','📊',T('Statistics'))+it('set','⚙️',T('Settings'))}
+  const it=(r,i,t,c)=>`<button class="nv" data-act="go" data-r="${r}" ${UI.route===r?'aria-current="page"':''}><span aria-hidden="true">${i}</span><span dir="auto">${esc(t)}</span>${c!=null?`<em>${nf(c)}</em>`:''}</button>`;
+  $('#nav').innerHTML=it('dash','🏠',T('Dashboard'))+it('lib','📚',T('My Library'),S.books.length)+it('series','📑',T('Book Series'),(S.series||[]).length)+`<div class="sh">${T('Sections')}</div>`+S.sections.filter(s=>s.nav).map(s=>it('sec:'+s.id,s.icon,sn(s),Sec.count(s.id))).join('')+`<div class="sh">${T('More')}</div>`+it('stats','📊',T('Statistics'))+it('set','⚙️',T('Settings'))}
 function dash(){
   const B=S.books,rd=B.filter(b=>b.status==='reading'),done=B.filter(b=>b.status==='completed');
   const role=r=>B.filter(b=>Sec.get(b.section)?.role===r).length,pr=B.reduce((a,b)=>a+pagesRead(b),0),tp=B.reduce((a,b)=>a+(b.pages||0),0),op=tp?Math.min(100,Math.round(pr/tp*100)):0;
   const st=[[T('Total books'),B.length],[T('Currently reading'),rd.length],[T('Completed'),done.length],[T('Want to read'),role('toread')],[T('Want to buy'),role('tobuy')],[T('Favorites'),B.filter(b=>b.fav).length],[T('Pages read'),pr]];
-  return `<div class="hd"><div><h1>${T('Welcome back')}</h1><p class="mut">${T('Your reading life at a glance.')}</p></div><button class="btn pri" data-act="add">${T('＋ Add book')}</button></div>
+  return `<div class="hd">${backBtnHtml()}<div><h1>${T('Welcome back')}</h1><p class="mut">${T('Your reading life at a glance.')}</p></div><button class="btn pri" data-act="add">${T('＋ Add book')}</button></div>
   <div class="stats">${st.map(([l,v])=>`<div class="card stat"><b>${nf(v)}</b><span class="mut sm">${l}</span></div>`).join('')}</div>
   <h2>${T('Reading progress overview')}</h2><div class="card" style="padding:14px">${progBar({},op)}<p class="sm mut">${T('{0} of {1} pages across books with a page count ({2}%)',pr,tp,op)}</p></div>
   <h2>${T('Continue reading')}</h2>${rd.length?`<div class="row2">${rd.map(b=>{const p=pct(b);return `<div class="card cr"><div style="flex:none;width:64px" data-act="open" data-id="${b.id}">${coverH(b)}</div><div><h3 dir="auto">${esc(b.title)}</h3><p dir="auto" class="mut sm">${esc(b.author)}</p>${progBar(b,p)}<p class="sm">${T('Page {0} of {1} · {2}%',b.page,b.pages||'?',p)}</p><button class="btn" style="margin-top:6px" data-act="page" data-id="${b.id}">${T('Update progress')}</button></div></div>`}).join('')}</div>`:`<div class="card empty"><p>${T('Nothing in progress. Start a book from your library.')}</p></div>`}
@@ -283,7 +362,7 @@ function dash(){
   <h2>${T('Sections')}</h2><div class="row2">${S.sections.map(s=>`<button class="sc" data-act="go" data-r="sec:${s.id}"><span class="big" style="background:${s.color}22;color:${s.color}">${s.icon}</span><span><b dir="auto">${esc(sn(s))}</b><br><span class="mut sm">${T('{0} books',Sec.count(s.id))}</span></span></button>`).join('')}</div>`}
 function lib(sid){
   const s=sid&&Sec.get(sid),o=(v,t,sel)=>`<option value="${v}" ${sel?'selected':''}>${esc(t)}</option>`;
-  return `<div class="hd">${s?`<span class="big" style="background:${s.color}22;color:${s.color}">${s.icon}</span>`:''}<div><h1 dir="auto">${s?esc(sn(s)):T('My Library')}</h1><p class="mut">${s?esc(sd(s)):T('Every book you own, want or love.')}</p></div><button class="btn pri" data-act="add" data-sec="${sid||''}">${T('＋ Add book')}</button></div>
+  return `<div class="hd">${backBtnHtml()}${s?`<span class="big" style="background:${s.color}22;color:${s.color}">${s.icon}</span>`:''}<div><h1 dir="auto">${s?esc(sn(s)):T('My Library')}</h1><p class="mut">${s?esc(sd(s)):T('Every book you own, want or love.')}</p></div><button class="btn pri" data-act="add" data-sec="${sid||''}">${T('＋ Add book')}</button></div>
   <div class="bar2" role="search"><div class="srch">${ico(IC.search)}<input id="q" type="search" dir="auto" placeholder="${T('Search title, author or genre')}" aria-label="${T('Search books')}" value="${esc(UI.q)}"><button type="button" class="clr" data-act="clrq" aria-label="${T('Clear search')}" ${UI.q?'':'hidden'}>${ico(IC.x)}</button></div>
   <div class="grp" role="group" aria-label="${T('Filters')}">${sid?'':`<select data-f="sec" aria-label="${T('Filter by section')}">${o('',T('All sections'))}${S.sections.map(x=>o(x.id,sn(x),UI.sec===x.id)).join('')}</select>`}
   <select data-f="st" aria-label="${T('Filter by status')}">${o('',T('Any status'))}${Object.entries(STAT).map(([k,v])=>o(k,v,UI.st===k)).join('')}</select>
@@ -304,12 +383,58 @@ function results(){
     return total||(!sid&&S.books.length)?`<div class="card empty"><h2>${T('No matching books')}</h2><p class="mut">${T('Try a different search or clear the filters.')}</p></div>`
     :`<div class="card empty"><h2>${T('Your reading journey starts here.')}</h2><p class="mut">${s?T('Nothing in “{0}” yet.',esc(sn(s))):T('Your library is empty.')} ${T('Add your first book.')}</p><button class="btn pri" data-act="add" data-sec="${sid}">${T('＋ Add book')}</button></div>`}
   return `<div class="${S.prefs.view==='list'?'list':'grid'}">${a.map(card).join('')}</div>`}
+
+/* ===== Series views ===== */
+const serTile=(x,cls)=>{const hh=hue(x.name);
+  return x.cover?`<span class="${cls}" style="--h:${hh}"><img src="${esc(x.cover)}" alt="${T('Cover of {0}',esc(x.name))}" loading="lazy"></span>`
+  :`<span class="${cls}" style="--h:${hh};background:hsl(${hh} 32% 88%);color:hsl(${hh} 40% 35%)"><span aria-hidden="true">${esc(x.icon||'📚')}</span></span>`};
+function serListAll(q){let a=[...(S.series||[])];
+  if(S.prefs.ssort==='az')a.sort((x,y)=>x.name.localeCompare(y.name));else a.sort((x,y)=>(y.added||'').localeCompare(x.added||'')||(S.series||[]).indexOf(x)-(S.series||[]).indexOf(y));
+  if(q)a=a.filter(s=>nz(s.name+' '+(s.desc||'')).includes(q));return a}
+function serList(){
+  const q=nz(UI.q.trim()),body=serBody(serListAll(q),q);
+  return `<div class="hd">${backBtnHtml()}<div><h1>${T('Book Series')}</h1><p class="mut">${T('Track your multi-book sagas in reading order.')}</p></div><button class="btn pri" data-act="sernew">＋ ${T('New series')}</button></div>
+  <div class="bar2" role="search"><div class="srch">${ico(IC.search)}<input id="sesq" type="search" dir="auto" placeholder="${T('Search series')}" aria-label="${T('Search series')}" value="${esc(UI.q)}"></div>
+  <div class="grp"><select data-f="ssort" aria-label="${T('Sort series')}">${[['added',T('Newest added')],['az',T('A to Z')]].map(([k,v])=>`<option value="${k}" ${S.prefs.ssort===k?'selected':''}>${esc(v)}</option>`).join('')}</select></div></div>
+  <div id="sres" aria-live="polite">${body}</div>`}
+function serBody(a,q){
+  return a.length?a.map(s=>{const st=Ser.stats(s);
+    return `<div class="srow" role="button" tabindex="0" data-act="go" data-r="ser:${s.id}">
+    ${serTile(s,'srt')}<span class="grow"><b dir="auto">${esc(s.name)}</b>
+    ${s.desc?`<span class="mut sm" dir="auto" style="display:block">${esc(s.desc)}</span>`:''}
+    <span class="mut sm">${T('{0} books',st.total)} · ${T('Completed')} ${nf(st.done)} · ${T('Currently reading')} ${nf(st.reading)}</span>
+    <div style="margin-top:6px;max-width:260px">${progBar({},st.prog)}</div></span>
+    <b class="pos" style="width:auto;padding:0 10px">${nf(st.prog)}%</b></div>`}).join('')
+    :`<div class="card empty"><h2>${q?T('No matching series'):T('No series yet')}</h2><p class="mut">${q?T('Try a different search or clear the filters.'):T('Track your multi-book sagas in reading order.')}</p>${q?'':`<button class="btn pri" data-act="sernew">${T('New series')}</button>`}</div>`}
+function serRows(x){
+  const ms=Ser.sorted(x),q=nz((UI.sq||'').trim());
+  const all=ms.map(m=>Bk.get(m.id)).filter(Boolean),posOf={};all.forEach((b,i)=>{posOf[b.id]=i});
+  let rows=all.filter(b=>!q||[b.title,b.author].some(v=>nz(v).includes(q)));
+  if(!rows.length)return `<div class="card empty"><h2>${q?T('No matching books'):T('This series is empty')}</h2><p class="mut">${q?T('Try a different search or clear the filters.'):T('Add the first book to start tracking progress.')}</p>${q?'':`<button class="btn pri" data-act="add" data-ser="${x.id}">＋ ${T('Add book to series')}</button>`}</div>`;
+  return rows.map(b=>{const p=pct(b),show=b.pages>0&&(b.status==='reading'||p>0),i=posOf[b.id];
+    return `<div class="srow"><b class="pos" title="${T('Position in series (1–{0}, empty = end)',all.length)}">${nf(i+1)}</b>
+    ${b.cover?`<span class="srt"><img src="${esc(b.cover)}" alt="" loading="lazy"></span>`:`<span class="srt" style="--h:${hue(b.title)}"><span aria-hidden="true">📖</span></span>`}
+    <span class="grow" role="button" tabindex="0" data-act="open" data-id="${b.id}"><b dir="auto">${esc(b.title)}</b><br>
+    <span class="mut sm">${STAT[b.status]}${b.pages?`<br>${T('Page {0} of {1} · {2}%',b.page,b.pages,p)}`:''}</span>
+    ${show?progBar(b,p):''}</span>
+    <span class="mctl"><button class="btn" data-act="serup" data-ser="${x.id}" data-id="${b.id}" ${i?'':'disabled'} aria-label="${T('Move {0} up',esc(b.title))}">▲</button><button class="btn" data-act="serdn" data-ser="${x.id}" data-id="${b.id}" ${i<all.length-1?'':'disabled'} aria-label="${T('Move {0} down',esc(b.title))}">▼</button><button class="btn dng" data-act="rmser" data-ser="${x.id}" data-id="${b.id}" aria-label="${T('Remove from series')}">✕</button></span></div>`}).join('')}
+function serView(x){
+  const st=Ser.stats(x),ms=Ser.sorted(x);
+  return `<div class="hd">${backBtnHtml()}<div style="max-width:920px">
+  <div class="sv">${serTile(x,'big')}<div class="grow"><h1 dir="auto" style="margin:0">${esc(x.name)}</h1>
+  ${x.desc?`<p class="mut" dir="auto">${esc(x.desc)}</p>`:''}
+  <div class="chips"><span class="chip2">${T('{0} books',st.total)}</span><span class="chip2">${T('Completed')} ${nf(st.done)}</span><span class="chip2">${T('Currently reading')} ${nf(st.reading)}</span><span class="chip2">${STAT.unread} ${nf(st.unread)}</span></div></div></div></div></div>
+  <div class="acts" style="justify-content:flex-start;margin-top:10px"><button class="btn pri" data-act="add" data-ser="${x.id}">＋ ${T('Add book to series')}</button><button class="btn" data-act="seredit" data-id="${x.id}">${T('Edit')}</button><button class="btn dng" data-act="serdel" data-id="${x.id}">${T('Delete')}</button></div>
+  <h2>${T('Series progress')}</h2><div class="card" style="padding:14px">${progBar({},st.prog)}<p class="sm mut">${T('Across this series: {0} of {1} pages read ({2}%)',st.pr,st.tp,st.prog)}</p></div>
+  <h2>${T('Books in series')}${ms.length?` <span class="mut sm">(${ms.length})</span>`:''}</h2>
+  <div class="bar2" role="search" style="margin-bottom:10px"><div class="srch">${ico(IC.search)}<input id="ssq" type="search" dir="auto" placeholder="${T('Filter by title or author')}" aria-label="${T('Filter by title or author')}" value="${esc(UI.sq||'')}"></div></div>
+  <div id="mres" aria-live="polite">${serRows(x)}</div>`}
 function stats(){
   const B=S.books,done=B.filter(b=>b.status==='completed'),rated=B.filter(b=>b.rating),g={};
   B.forEach(b=>{const k=b.genre.trim()||T('No genre');g[k]=(g[k]||0)+1});const gs=Object.entries(g).sort((a,b)=>b[1]-a[1]).slice(0,8),gm=gs[0]?gs[0][1]:1;
   const spent=B.reduce((a,b)=>a+(parseFloat(b.price)||0),0);
   const st=[[T('Total books'),B.length],[T('Completed'),done.length],[T('Pages read'),B.reduce((a,b)=>a+pagesRead(b),0)],[T('Average rating'),rated.length?(rated.reduce((a,b)=>a+b.rating,0)/rated.length).toFixed(1):'–'],[T('Total spent'),spent||'–']];
-  return `<div class="hd"><div><h1>${T('Statistics')}</h1><p class="mut">${T('Calculated live from your library.')}</p></div></div>
+  return `<div class="hd">${backBtnHtml()}<div><h1>${T('Statistics')}</h1><p class="mut">${T('Calculated live from your library.')}</p></div></div>
   <div class="stats">${st.map(([l,v])=>`<div class="card stat"><b>${nf(v)}</b><span class="mut sm">${l}</span></div>`).join('')}</div>
   <h2>${T('Books completed, last 12 months')}</h2>${bars(months(12))}
   <h2>${T('By status')}</h2><div class="card" style="padding:12px">${Object.entries(STAT).map(([k,v])=>{const n=B.filter(b=>b.status===k).length;return `<div class="hb"><span>${v}</span>${progBar({},B.length?Math.round(n/B.length*100):0)}<b>${nf(n)}</b></div>`}).join('')}</div>
@@ -320,7 +445,7 @@ function settings(){
   const card=(ic,ti,ds,body)=>`<section class="sc2"><header><span class="ci">${ic}</span><div><h2>${T(ti)}</h2><p class="mut sm">${T(ds)}</p></div></header>${body}</section>`;
   const pill=(act,at,val,on,label,lg)=>`<button type="button" class="btn pill" data-act="${act}" data-${at}="${val}" aria-pressed="${on}" ${lg?`lang="${lg}"`:''}>${label}</button>`;
   const sel=(f,val,opts)=>`<select data-f="${f}" aria-label="${T(f==='defSec'?'Default section for new books':'Default sorting')}">${opts.map(([k,t])=>`<option value="${k}" ${val===k?'selected':''}>${esc(t)}</option>`).join('')}</select>`;
-  return `<div class="hd"><div><h1>${T('Settings')}</h1></div></div><div class="sgrid">
+  return `<div class="hd">${backBtnHtml()}<div><h1>${T('Settings')}</h1></div></div><div class="sgrid">
   ${card('🎨','Appearance','Choose how the library looks.',set('Theme','',`<div class="pills">${Object.entries(THEMES).map(([k,v])=>`<button type="button" class="btn pill" data-act="theme" data-t="${k}" aria-pressed="${S.prefs.theme===k}"><i class="sw" style="background:${sw[k]}"></i>${esc(v)}</button>`).join('')}</div>`))}
   ${card('🌐','Language','Choose the interface language.',set('Language','',`<div class="pills">${pill('lang','l','ar',S.prefs.lang==='ar','العربية','ar')}${pill('lang','l','en',S.prefs.lang==='en','English','en')}</div>`)+(S.prefs.lang==='ar'?set('Numbers','Digits used for numbers and dates.',`<div class="pills">${pill('digits','d','latn',S.prefs.digits!=='ar',T('Western digits (1234)'))}${pill('digits','d','ar',S.prefs.digits==='ar',T('Arabic-Indic digits (١٢٣٤)'))}</div>`):''))}
   ${card('📚','Library preferences','Defaults used when browsing and adding books.',set('Default section for new books','',sel('defSec',S.prefs.defSec,S.sections.map(s=>[s.id,s.icon+' '+sn(s)])))+set('Default view','',`<div class="pills">${pill('view','v','grid',S.prefs.view==='grid',T('Grid view'))}${pill('view','v','list',S.prefs.view==='list',T('List view'))}</div>`)+set('Default sorting','',sel('defSort',S.prefs.sort,SORTS())))}
@@ -331,12 +456,16 @@ function render(){
   LANG=S.prefs.lang;const H=document.documentElement;H.dataset.theme=S.prefs.theme;H.lang=LANG;H.dir=LANG==='ar'?'rtl':'ltr';applyStatic();renderNav();
   const r=UI.route;let h,t=T('Warraq');
   if(r.startsWith('sec:')&&Sec.get(r.slice(4))){h=lib(r.slice(4));t=sn(Sec.get(r.slice(4)))}
-  else if(r==='lib'){h=lib();t=T('My Library')}else if(r==='stats'){h=stats();t=T('Statistics')}else if(r==='set'){h=settings();t=T('Settings')}
+  else if(r==='lib'){h=lib();t=T('My Library')}
+  else if(r==='series'){h=serList();t=T('Book Series')}
+  else if(r.startsWith('ser:')&&Ser.get(r.slice(4))){const x=Ser.get(r.slice(4));h=serView(x);t=x.name}
+  else if(r.startsWith('ser:')){UI.route='series';t=T('Book Series');h=serList();renderNav()}
+  else if(r==='stats'){h=stats();t=T('Statistics')}else if(r==='set'){h=settings();t=T('Settings')}
   else{UI.route='dash';h=dash();t=T('Dashboard');renderNav()}
-  $('#main').innerHTML=h;$('#ttl').textContent=t}
+  $('#main').innerHTML=h;$('#ttl').textContent=t;updateBack()}
 
 /* ===== Book forms & details ===== */
-function bookDlg(b,secId){
+function bookDlg(b,secId,fromHist=false){
   UI.dirty=false;
   const v=b||{...BK,section:secId&&Sec.get(secId)?secId:S.prefs.defSec};
   const fld=(k,l,t='text',x='')=>`<label>${T(l)}<input name="${k}" type="${t}" dir="${t==='text'?'auto':'ltr'}" value="${esc(v[k]||'')}" ${x}></label>`;
@@ -353,7 +482,8 @@ function bookDlg(b,secId){
   ${card(IC.cart,'Purchase information',v.purchase!=='no'||!!(v.price||v.pdate),`${sel('purchase','Purchase status',Object.entries(PUR))}${fld('price','Price','number','step="any" min="0"')}${fld('pdate','Purchase date','date')}`)}
   ${card(IC.note,'Rating and notes',!!(v.notes||v.rating||v.fav),`${sel('rating','Personal rating',[[0,T('No rating')],...[1,2,3,4,5].map(n=>[n,stars(n)])])}<label><input type="checkbox" name="fav" ${v.fav?'checked':''}> ${T('Favorite')}</label><label class="wide">${T('Personal notes')}<textarea dir="auto" name="notes" rows="5">${esc(v.notes)}</textarea></label>`)}
   <div class="acts sticky"><button type="button" class="btn" data-act="close">${T('Cancel')}</button><button class="btn pri" type="submit">${T('Save book')}</button></div></form>`);
-  const fbf=$('#bf');fbf.op=String(v.page||0);fbf.wasC=''; /* remember the page this dialog opened with: in-dialog completed→reading flips restore it */
+  const fbf=$('#bf');if(fbf){fbf.op=String(v.page||0);fbf.wasC=''}
+  if(!fromHist)syncHistDlg('edit',b?b.id:'');
 }
 function saveForm(f){
   const d=Object.fromEntries(new FormData(f)),n=k=>Math.max(0,Number(d[k])||0),old=d.id?Bk.get(d.id):null,b=old||{...BK,id:uid(),added:today()};
@@ -368,14 +498,18 @@ function saveForm(f){
   if(completing){b.completed=b.completed||today();b.started=b.started||today()}
   if(st==='reading')b.started=b.started||today();
   if(!old)S.books.push(b);return b}
-function showBook(id){
+function showBook(id,fromHist=false){
   const b=Bk.get(id);if(!b)return;UI.open=id;const s=Sec.get(b.section),p=pct(b),row=(k,v)=>v?`<dt>${k}</dt><dd>${esc(v)}</dd>`:'';
+  const ss=(S.series||[]).filter(x=>(x.books||[]).some(m=>m.id===id)),chips=ss.length?`<div class="chips" style="margin-bottom:8px">${ss.map(x=>`<button type="button" class="chip2" data-act="go" data-r="ser:${x.id}">${esc(x.icon||'📚')} ${esc(x.name)}</button>`).join('')}</div>`:'';
   openDlg(`<div class="det">${coverH(b)}<div><h2 dir="auto" style="margin:0">${esc(b.title)}</h2><p dir="auto" class="mut">${esc(b.author||T('Unknown author'))}</p>${b.rating?`<p class="st" aria-label="${T('{0} of 5 stars',b.rating)}">${stars(b.rating)}</p>`:''}
+  ${chips}
   ${(b.pages||b.status==='reading')?`${progBar(b,p)}<p class="sm">${T('Page {0} of {1} · {2}%',b.page,b.pages||'?',p)}</p>`:''}
   <dl class="dl">${row(T('Section'),s?s.icon+' '+sn(s):'')}${row(T('Status'),STAT[b.status])}${row(T('Genre'),b.genre)}${row(T('Pages'),b.pages||'')}${row(T('Year'),b.year)}${row(T('Publisher'),b.publisher)}${row('ISBN',b.isbn)}${row(T('Language'),b.lang)}${row(T('Purchase'),PUR[b.purchase]+(b.price?' · '+b.price:'')+(b.pdate?' · '+fd(b.pdate):''))}${row(T('Added'),fd(b.added))}${row(T('Started'),fd(b.started))}${row(T('Completed'),fd(b.completed))}</dl></div></div>
   ${b.desc?`<h3>${T('Description')}</h3><p dir="auto">${esc(b.desc).replace(/\n/g,'<br>')}</p>`:''}${b.notes?`<h3 style="margin-top:12px">${T('Notes')}</h3><p dir="auto">${esc(b.notes).replace(/\n/g,'<br>')}</p>`:''}
   <label class="sm mut" style="display:block;margin-top:12px">${T('Move to section')} <select data-act="move" data-id="${b.id}">${S.sections.map(x=>`<option value="${x.id}" ${x.id===b.section?'selected':''}>${esc(x.icon+' '+sn(x))}</option>`).join('')}</select></label>
-  <div class="acts" style="justify-content:flex-start"><button class="btn" data-act="fav" data-id="${b.id}" aria-pressed="${b.fav}">${b.fav?T('♥ Favorited'):T('♡ Add to favorites')}</button>${b.status!=='completed'?`<button class="btn" data-act="page" data-id="${b.id}">${T('Update page')}</button><button class="btn" data-act="done" data-id="${b.id}">${T('Mark completed')}</button>`:''}<button class="btn" data-act="edit" data-id="${b.id}">${T('Edit')}</button><button class="btn dng" data-act="del" data-id="${b.id}">${T('Delete')}</button><button class="btn" data-act="close">${T('Close')}</button></div>`)}
+  <div class="acts" style="justify-content:flex-start"><button class="btn" data-act="fav" data-id="${b.id}" aria-pressed="${b.fav}">${b.fav?T('♥ Favorited'):T('♡ Add to favorites')}</button>${b.status!=='completed'?`<button class="btn" data-act="page" data-id="${b.id}">${T('Update page')}</button><button class="btn" data-act="done" data-id="${b.id}">${T('Mark completed')}</button>`:''}<button class="btn" data-act="edit" data-id="${b.id}">${T('Edit')}</button><button class="btn dng" data-act="del" data-id="${b.id}">${T('Delete')}</button><button class="btn" data-act="close">${T('Close')}</button></div>`);
+  if(!fromHist)syncHistDlg('show',id);
+}
 function secDlg(id){
   const s=id?Sec.get(id):{name:'',desc:'',icon:'📖',color:'#5f8a68',nav:true,role:''};
   openDlg(`<form id="sf"><h2 style="margin-top:0">${id?T('Edit section'):T('New section')}</h2><input type="hidden" name="id" value="${id||''}">
@@ -387,25 +521,88 @@ function secDlg(id){
   <label style="flex-direction:row;align-items:center;gap:8px"><input type="checkbox" name="def" ${S.prefs.defSec===id?'checked':''}> ${T('Default for new books')}</label></div>
   <div class="acts"><button type="button" class="btn" data-act="close">${T('Cancel')}</button><button class="btn pri">${T('Save section')}</button></div></form>`)}
 
+/* ===== Series dialogs ===== */
+function serDlg(id){
+  const x=id?Ser.get(id):{name:'',desc:'',cover:'',icon:'📚',added:''};
+  openDlg(`<form id="xf"><h2 style="margin-top:0">${id?T('Edit series'):T('New series')}</h2><input type="hidden" name="id" value="${id||''}">
+  <div class="fg"><label class="wide">${T('Series name')}<input dir="auto" name="name" required maxlength="80" value="${esc(x.name)}" placeholder="${T('e.g. Harry Potter')}" autofocus></label>
+  <label class="wide">${T('Series description')}<textarea dir="auto" name="desc" rows="2" maxlength="300">${esc(x.desc||'')}</textarea></label>
+  <label>${T('Series cover URL')}<input id="scu" type="url" dir="ltr" placeholder="https://…" value="${x.cover&&!x.cover.startsWith('data:')?esc(x.cover):''}"></label>
+  <div style="display:flex;gap:12px;align-items:flex-start"><div class="sv" style="flex:none"><span class="big" style="--h:${hue(x.name||'📚')}"><img id="spv" alt="${T('Cover preview')}" ${x.cover?`src="${esc(x.cover)}"`:'hidden'}></span></div>
+  <div class="wide">${T('Icon')}<input type="hidden" name="icon" id="sic" value="${esc(x.icon||'📚')}"><div class="ic2">${ICONS.map(i=>`<button type="button" data-act="pickicon" data-i="${i}" aria-pressed="${i===(x.icon||'📚')}" aria-label="Icon ${i}">${i}</button>`).join('')}</div></div></div></div>
+  <div class="acts"><button type="button" class="btn" data-act="close">${T('Cancel')}</button><button class="btn pri">${T('Save series')}</button></div></form>`)}
+function pickRows(x){
+  const q=nz((UI.pq||'').trim()),cand=S.books.filter(b=>!Ser.inSeries(x,b.id)&&(!q||[b.title,b.author,b.genre].some(v=>nz(v).includes(q))));
+  if(!cand.length)return `<div class="card empty"><p>${q?T('No matching books'):T('Every book in your library is already in this series.')}</p></div>`;
+  return cand.map(b=>`<button type="button" class="srow" data-act="pickb" data-ser="${x.id}" data-bid="${b.id}">
+  ${b.cover?`<span class="srt"><img src="${esc(b.cover)}" alt="" loading="lazy"></span>`:`<span class="srt" style="--h:${hue(b.title)}"><span aria-hidden="true">📖</span></span>`}
+  <span class="grow"><b dir="auto">${esc(b.title)}</b><br><span class="mut sm" dir="auto">${esc(b.author||T('Unknown author'))} · ${STAT[b.status]}</span></span>
+  <span class="pos" aria-hidden="true">＋</span></button>`).join('')}
+function pickDlg(sid){
+  const x=Ser.get(sid);if(!x)return;UI.pq='';UI.pser=sid;
+  const n=(x.books||[]).length,pos=m=>`<label>${T('Position in series (1–{0}, empty = end)',m)}<input id="sepos" type="number" min="1" max="${m}" style="max-width:140px"></label>`;
+  openDlg(`<div class="fh"><h2>${T('Add to “{0}”',esc(x.name))}</h2><button type="button" class="btn ib" data-act="close" aria-label="${T('Close')}">${ico(IC.x)}</button></div>
+  <p class="mut sm" style="margin-top:0">${T('Choose a book from your library')}</p>
+  <div class="srch">${ico(IC.search)}<input id="sepq" type="search" dir="auto" placeholder="${T('Filter by title or author')}" aria-label="${T('Filter by title or author')}"></div>
+  <div style="margin:10px 0" id="posw">${pos(n+1)}</div>
+  <div id="plist" class="plist" aria-live="polite">${pickRows(x)}</div>
+  <button type="button" class="btn pri" style="width:100%;margin-top:10px" data-act="picknew" data-ser="${x.id}">${T('Create a new book instead')}</button>`)}
+
 /* ===== Import / export ===== */
 function exportLib(){
   const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify({app:T('Warraq'),exported:new Date().toISOString(),...S},null,1)],{type:'application/json'}));
   a.download=`warraq-backup-${today()}.json`;document.body.append(a);a.click();a.remove();toast(T('Backup downloaded'))}
 async function importLib(file){
-  let d,skip={books:0,sections:0};try{d=normalize(JSON.parse(await file.text()),skip)}catch(e){return toast(T('Import failed: {0}',e instanceof SyntaxError?T('this is not a valid library backup.'):e.message))}
-  if(skip.books+skip.sections)toast(T('Import skipped {0} invalid record(s).',skip.books+skip.sections))
-  const r=await ask({title:T('Import library'),msg:T('This file has <b>{0} books</b> and <b>{1} sections</b>. Merge adds only what is missing from your library. Replace deletes your current library first.',d.books.length,d.sections.length),btns:[['merge',T('Merge'),'pri'],['replace',T('Replace'),'dng'],['x',T('Cancel')]]});
+  let d,skip={books:0,sections:0,series:0,members:0};try{d=normalize(JSON.parse(await file.text()),skip)}catch(e){return toast(T('Import failed: {0}',e instanceof SyntaxError?T('this is not a valid library backup.'):e.message))}
+  const bad=(skip.books||0)+(skip.sections||0)+(skip.series||0)+(skip.members||0);if(bad)toast(T('Import skipped {0} invalid record(s).',bad));
+  const serMsg=d.series&&d.series.length?` ${T('This file also contains <b>{0} series</b>.',d.series.length)}`:'';
+  const r=await ask({title:T('Import library'),msg:T('This file has <b>{0} books</b> and <b>{1} sections</b>. Merge adds only what is missing from your library. Replace deletes your current library first.',d.books.length,d.sections.length)+serMsg,btns:[['merge',T('Merge'),'pri'],['replace',T('Replace'),'dng'],['x',T('Cancel')]]});
   if(r.btn==='replace')S=d;
   else if(r.btn==='merge'){const sid=new Set(S.sections.map(s=>s.id)),bid=new Set(S.books.map(b=>b.id));
-    d.sections.forEach(s=>{if(!sid.has(s.id))S.sections.push(s)});d.books.forEach(b=>{if(!bid.has(b.id))S.books.push(b)})}
+    d.sections.forEach(s=>{if(!sid.has(s.id))S.sections.push(s)});
+    d.books.forEach(b=>{if(!bid.has(b.id)){S.books.push(b);bid.add(b.id)}});
+    if(!Array.isArray(S.series))S.series=[];
+    d.series.forEach(sr=>{const mine=S.series.find(s=>s.id===sr.id);
+      if(!mine)S.series.push({id:sr.id,name:sr.name,desc:sr.desc,cover:sr.cover,icon:sr.icon,added:sr.added,books:sr.books.filter(m=>bid.has(m.id))});
+      else{sr.books.forEach(m=>{if(bid.has(m.id)&&!Ser.inSeries(mine,m.id))mine.books.push({id:m.id,ord:m.ord})});Ser.renum(mine)}})}
   else return;
   Store.save();render();toast(T('Library imported'))}
 
+/* ===== Back navigation (History API + visible Back button) ===== */
+const snap=()=>({route:UI.route,q:UI.q||'',sec:UI.sec||'',st:UI.st||'',fav:!!UI.fav,sort:UI.sort||'',sq:UI.sq||'',depth:(history.state&&Number(history.state.depth))||0});
+function syncHist(){const curDepth=(history.state&&Number(history.state.depth))||0;const s={...snap(),depth:curDepth+1},j=JSON.stringify(s);
+  if(UI._hj===j)return;UI._hj=j;try{history.pushState(s,'')}catch(_){}updateBack()}
+function syncHistDlg(dlgType,did){const curDepth=(history.state&&Number(history.state.depth))||0;const s={...snap(),dlg:dlgType,did:did||'',depth:curDepth+1},j=JSON.stringify(s);
+  if(UI._hj===j)return;UI._hj=j;try{history.pushState(s,'')}catch(_){}updateBack()}
+function syncState(){if(!history.state)return;const curDepth=(history.state&&Number(history.state.depth))||0;const s={...snap(),depth:curDepth},j=JSON.stringify(s);if(UI._hj===j)return;UI._hj=j;try{history.replaceState(s,'')}catch(_){}}
+function updateBack(){const d=(history.state&&Number(history.state.depth))||0;const show=d>0;const bb=$('#bb');if(bb)bb.hidden=!show;document.querySelectorAll('.back-btn').forEach(b=>{b.hidden=!show})}
+async function applySnap(s){
+  if(dlg.open&&UI.dirty&&dlg.querySelector('#bf')){
+    const r=await ask({title:T('Discard changes?'),msg:T('You have unsaved changes. Close without saving?'),btns:[['ok',T('Discard'),'dng'],['x',T('Keep editing')]]});
+    if(r.btn!=='ok'){try{const curDepth=(history.state&&Number(history.state.depth))||0;const st={...snap(),dlg:'edit',depth:curDepth+1};UI._hj=JSON.stringify(st);history.pushState(st,'')}catch(_){}return}}
+  pendSer=null;pendPos=0;UI.dirty=false;if(dlg.open)dlg.close();
+  try{history.replaceState(s,'')}catch(_){}
+  Object.assign(UI,{route:s.route||'dash',q:s.q||'',sec:s.sec||'',st:s.st||'',fav:!!s.fav,sort:s.sort||S.prefs.sort,sq:s.sq||''});
+  UI._hj=JSON.stringify(snap());render();
+  if(s.dlg==='show'&&s.did&&Bk.get(s.did))showBook(s.did,true);
+  else if(s.dlg==='edit')bookDlg(s.did?Bk.get(s.did):null,'',true);
+  scrollTo(0,0);updateBack()}
+addEventListener('popstate',e=>applySnap(e.state||{route:'dash',depth:0}));
+
+/* ===== Navigation (route change) ===== */
+function nav(r){
+  UI.route=r;Object.assign(UI,{q:'',sec:'',st:'',fav:false,sq:''});pendSer=null;pendPos=0;
+  document.body.classList.remove('nv-open');if(dlg.open)dlg.close();
+  syncHist();render();scrollTo(0,0)}
+
 /* ===== Actions (event delegation) ===== */
 const A={
-  go(t){UI.route=t.dataset.r;Object.assign(UI,{q:'',sec:'',st:'',fav:false});document.body.classList.remove('nv-open');if(dlg.open)dlg.close();render();scrollTo(0,0)},
+  go(t){nav(t.dataset.r)},
   menu(){document.body.classList.toggle('nv-open')},
-  add(t){bookDlg(null,t.dataset.sec||(UI.route.startsWith('sec:')?UI.route.slice(4):''))},
+  add(t){const sid=t.dataset.ser&&Ser.get(t.dataset.ser)?t.dataset.ser:UI.route.startsWith('ser:')&&Ser.get(UI.route.slice(4))?UI.route.slice(4):'';
+    if(t.dataset.act==='add'&&UI.route==='series'&&!sid)return serDlg(null);
+    if(sid)return pickDlg(sid);
+    bookDlg(null,t.dataset.sec||(UI.route.startsWith('sec:')?UI.route.slice(4):''))},
   open(t){showBook(t.dataset.id)},edit(t){bookDlg(Bk.get(t.dataset.id))},close(){closeForm()},
   view(t){S.prefs.view=t.dataset.v;commit()},
   fav(t){const b=Bk.get(t.dataset.id);b.fav=!b.fav;commit()},
@@ -421,7 +618,28 @@ const A={
       if(UI.route==='sec:'+s.id)UI.route='set';Sec.remove(s.id);commit()}},
   pickicon(t){$('#sic').value=t.dataset.i;dlg.querySelectorAll('.ic2 button').forEach(x=>x.setAttribute('aria-pressed',x===t))},
   export:exportLib,import(){$('#imp').click()},
-  async reset(){if(await confirmDel(T('Erase everything?'),T('All books and sections will be deleted. Export a backup first if unsure.'))){S=defaults();UI.route='dash';Store.save();render();toast(T('Library erased'))}}
+  async reset(){if(await confirmDel(T('Erase everything?'),T('All books and sections will be deleted. Export a backup first if unsure.'))){S=defaults();UI.route='dash';Store.save();try{history.replaceState({...snap(),depth:0},'');UI._hj=JSON.stringify(history.state)}catch(_){}render();toast(T('Library erased'))}},
+  lang(t){S.prefs.lang=t.dataset.l;commit()},digits(t){S.prefs.digits=t.dataset.d;commit()},
+  /* series */
+  sernew(){serDlg(null)},seredit(t){serDlg(t.dataset.id)},addto(t){pickDlg(t.dataset.ser)},
+  async serdel(t){const x=Ser.get(t.dataset.id);if(!x)return;
+    if(await confirmDel(T('Delete series?'),T('“{0}” series will be deleted. Books stay in your library.',esc(x.name)))){
+      S.series=S.series.filter(s=>s.id!==x.id);Store.save();
+      if(UI.route.startsWith('ser:'))nav('series');else render();
+      toast(T('Series deleted'))}},
+  pickb(t){const x=Ser.get(t.dataset.ser),bid=t.dataset.bid;if(!x||!bid)return;
+    if(!Ser.add(x,bid,+($('#sepos')?$('#sepos').value:0)||0))return;
+    Store.save();render();toast(T('Book added to series'));
+    const pl=$('#plist');if(pl)pl.innerHTML=pickRows(x);
+    const sp=$('#sepos');if(sp){sp.value='';sp.max=x.books.length+1;const lb=sp.closest('label');if(lb&&lb.firstChild)lb.firstChild.textContent=T('Position in series (1–{0}, empty = end)',x.books.length+1)}},
+  picknew(t){const x=Ser.get(t.dataset.ser);if(!x)return;
+    pendSer=x.id;pendPos=+($('#sepos')?$('#sepos').value:0)||0;dlg.close();bookDlg(null,'')},
+  serup(t){Ser.shift(t.dataset.ser,t.dataset.id,-1);commit()},serdn(t){Ser.shift(t.dataset.ser,t.dataset.id,1);commit()},
+  async rmser(t){const x=Ser.get(t.dataset.ser),b=Bk.get(t.dataset.id);if(!x||!b)return;
+    if(await ask({title:T('Remove from series'),msg:T('Remove “{0}” from this series? The book stays in your library.',esc(b.title)),btns:[['ok',T('Remove'),'dng'],['x',T('Cancel')]]}).then(r=>r.btn==='ok')){
+      Ser.remove(x,b.id);Store.save();render();toast(T('Book removed from series'))}},
+  /* navigation */
+  back(){if(history.state&&Number(history.state.depth)>0)history.back()}
 };
 document.addEventListener('click',e=>{const t=e.target.closest('[data-act]');if(!t||t.tagName==='SELECT')return;if(t.dataset.act==='menu'||A[t.dataset.act]){e.stopPropagation();A[t.dataset.act](t)}});
 document.addEventListener('keydown',e=>{if((e.key==='Enter'||e.key===' ')&&e.target.matches('[role=button][data-act]')){e.preventDefault();A[e.target.dataset.act](e.target)}});
@@ -431,14 +649,24 @@ document.addEventListener('change',e=>{const t=e.target;
     else if(ob&&ob.status==='completed'){pg.value=Math.min(ob.prev||0,pgs||ob.prev||0);pg.dispatchEvent(new Event('input',{bubbles:true}))}
     else if(f.wasC==='1'){const op=+f.op||0;pg.value=Math.min(op,pgs||op);pg.dispatchEvent(new Event('input',{bubbles:true}))}}
   else if(t.dataset.act==='move'){Bk.move(t.dataset.id,t.value);commit();toast(T('Book moved'))}
-  else if(t.dataset.f){if(t.dataset.f==='defSec'){S.prefs.defSec=t.value;commit()}else if(t.dataset.f==='defSort'){S.prefs.sort=UI.sort=t.value;commit()}else{UI[t.dataset.f]=t.type==='checkbox'?t.checked:t.value;$('#res').innerHTML=results()}}
+  else if(t.dataset.f){if(t.dataset.f==='defSec'){S.prefs.defSec=t.value;commit()}else if(t.dataset.f==='defSort'){S.prefs.sort=UI.sort=t.value;commit();syncState()}else if(t.dataset.f==='ssort'){S.prefs.ssort=t.value;commit()}else{UI[t.dataset.f]=t.type==='checkbox'?t.checked:t.value;$('#res').innerHTML=results();syncState()}}
   else if(t.id==='cvf'&&t.files[0])readCover(t.files[0]);
   else if(t.id==='imp'&&t.files[0]){importLib(t.files[0]);t.value=''}});
 document.addEventListener('input',e=>{const t=e.target;
-  if(t.id==='q'){UI.q=t.value;$('.clr').hidden=!t.value;$('#res').innerHTML=results()}
+  if(t.id==='q'){UI.q=t.value;$('.clr').hidden=!t.value;$('#res').innerHTML=results();syncState()}
+  else if(t.id==='sesq'){UI.q=t.value;const q=nz(UI.q.trim()),c=$('#sres');if(c)c.innerHTML=serBody(serListAll(q),q)}
+  else if(t.id==='ssq'){UI.sq=t.value;const x=UI.route.startsWith('ser:')&&Ser.get(UI.route.slice(4)),c=$('#mres');if(x&&c)c.innerHTML=serRows(x)}
+  else if(t.id==='sepq'){UI.pq=t.value;const x=Ser.get(UI.pser),pl=$('#plist');if(x&&pl)pl.innerHTML=pickRows(x)}
+  else if(t.id==='scu'){const p=$('#spv'),u=t.value.trim();if(p){p.hidden=!u;p.src=u}}
   else if(t.id==='cvu'){$('#cvh').value=t.value.trim();const p=$('#pv');p.hidden=!t.value.trim();p.src=t.value.trim();syncCover()}});
 document.addEventListener('submit',e=>{const f=e.target,fid=f.getAttribute&&f.getAttribute('id');
-  if(fid==='bf'){e.preventDefault();const b=saveForm(f);UI.open=null;dlg.close();commit();toast(T('Book saved'));UI.open=null}
+  if(fid==='bf'){e.preventDefault();const b=saveForm(f);
+    if(pendSer){const ps=Ser.get(pendSer);if(ps&&!Ser.inSeries(ps,b.id))Ser.add(ps,b.id,pendPos);pendSer=null;pendPos=0}
+    UI.open=null;UI.dirty=false;if(history.state&&history.state.dlg){history.replaceState({...snap(),dlg:null},'');UI._hj=JSON.stringify(history.state)}dlg.close();commit();toast(T('Book saved'))}
+  else if(fid==='xf'){e.preventDefault();const d=Object.fromEntries(new FormData(f)),x=d.id?Ser.get(d.id):null,scu=$('#scu')?$('#scu').value.trim():'';
+    const val={name:d.name.trim()||T('Untitled'),desc:d.desc.trim(),icon:d.icon||'📚',cover:scu||(x&&x.cover&&x.cover.startsWith('data:')?x.cover:''),added:x?x.added:today()};
+    if(x)Object.assign(x,val);else S.series.push({id:uid(),...val,books:[]});
+    dlg.close();commit();toast(T('Series saved'))}
   else if(fid==='sf'){e.preventDefault();const d=Object.fromEntries(new FormData(f));
     const s=d.id?Sec.get(d.id):Sec.add({});const keep=s.dflt&&d.name.trim()===sn(s)&&d.desc.trim()===sd(s),o=[s.name,s.desc];Object.assign(s,{name:d.name.trim()||T('Untitled'),desc:d.desc.trim(),icon:d.icon||'📖',color:d.color,role:d.role,nav:!!d.nav});if(keep)[s.name,s.desc]=o;else s.dflt=false;
     if(d.def)S.prefs.defSec=s.id;dlg.close();commit();toast(T('Section saved'))}});
@@ -450,20 +678,14 @@ function readCover(file){
     const u=c.toDataURL('image/jpeg',.8);$('#cvh').value=u;$('#cvu').value='';const p=$('#pv');p.src=u;p.hidden=false;syncCover()};
     im.onerror=()=>toast(T('Could not read that image'));im.src=r.result};r.readAsDataURL(file)}
 
-Object.assign(A,{lang(t){S.prefs.lang=t.dataset.l;commit()},digits(t){S.prefs.digits=t.dataset.d;commit()}});
-document.addEventListener('invalid',e=>e.target.setCustomValidity(T('Please fill out this field.')),true);
-document.addEventListener('input',e=>e.target.setCustomValidity&&e.target.setCustomValidity(''));
-const ico=p=>`<svg class="i" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${p}</svg>`;
-const IC={search:'<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>',x:'<path d="M6 6l12 12M18 6 6 18"/>',heart:'<path d="M12 21s-7-4.5-9-9a5 5 0 0 1 9-3 5 5 0 0 1 9 3c-2 4.5-9 9-9 9z"/>',upload:'<path d="M12 16V4m0 0-4 4m4-4 4 4M4 20h16"/>',book:'<path d="M4 5a2 2 0 0 1 2-2h14v16H6a2 2 0 0 0-2 2zM4 19V5"/>',cart:'<circle cx="9" cy="20" r="1.5"/><circle cx="18" cy="20" r="1.5"/><path d="M3 4h2l2.5 11h11L21 7H6"/>',note:'<path d="M5 3h14v18H5zM9 8h6M9 12h6M9 16h3"/>',grid:'<rect x="4" y="4" width="6.5" height="6.5" rx="1.5"/><rect x="13.5" y="4" width="6.5" height="6.5" rx="1.5"/><rect x="4" y="13.5" width="6.5" height="6.5" rx="1.5"/><rect x="13.5" y="13.5" width="6.5" height="6.5" rx="1.5"/>',list:'<path d="M9 6h11M9 12h11M9 18h11M4.5 6h.01M4.5 12h.01M4.5 18h.01"/>'};
-Object.assign(AR,{'e.g. Dune':'مثال: أرض زيكولا','Replace cover image':'استبدال صورة الغلاف','Import skipped {0} invalid record(s).':'تم تجاهل {0} من السجلات غير الصالحة أثناء الاستيراد.'});
 const SORTS=()=>[['added',T('Newest added')],['az',T('A to Z')],['rating',T('Rating')],['progress',T('Progress')]];
 async function closeForm(){
   if(UI.dirty&&dlg.querySelector('#bf')){const r=await ask({title:T('Discard changes?'),msg:T('You have unsaved changes. Close without saving?'),btns:[['ok',T('Discard'),'dng'],['x',T('Keep editing')]]});if(r.btn!=='ok')return}
-  UI.dirty=false;dlg.close()}
-dlg.addEventListener('cancel',e=>{if(UI.dirty&&dlg.querySelector('#bf')){e.preventDefault();closeForm()}});
+  pendSer=null;pendPos=0;UI.dirty=false;if(history.state&&history.state.dlg){history.replaceState({...snap(),dlg:null},'');UI._hj=JSON.stringify(history.state)}dlg.close()}
+dlg.addEventListener('cancel',e=>{if(UI.dirty&&dlg.querySelector('#bf')){e.preventDefault();closeForm()}else{pendSer=null;pendPos=0;UI.dirty=false;if(history.state&&history.state.dlg){history.replaceState({...snap(),dlg:null},'');UI._hj=JSON.stringify(history.state)}}});
 Object.assign(A,{
-  favf(t){UI.fav=!UI.fav;t.setAttribute('aria-pressed',UI.fav);$('#res').innerHTML=results()},
-  clrq(){UI.q='';const q=$('#q');q.value='';q.focus();$('.clr').hidden=true;$('#res').innerHTML=results()}});
+  favf(t){UI.fav=!UI.fav;t.setAttribute('aria-pressed',UI.fav);$('#res').innerHTML=results();syncState()},
+  clrq(){UI.q='';const q=$('#q');q.value='';q.focus();$('.clr').hidden=true;$('#res').innerHTML=results();syncState()}});
 ['input','change'].forEach(ev=>document.addEventListener(ev,e=>{if(e.target.closest&&e.target.closest('#bf'))UI.dirty=true}));
 document.addEventListener('input',e=>{const t=e.target;if(t.form&&t.form.getAttribute('id')==='bf'&&(t.name==='page'||t.name==='pages')){
   const f=t.form,pg=+f.pages.value||0;let c=+f.page.value||0;
@@ -472,8 +694,14 @@ document.addEventListener('input',e=>{const t=e.target;if(t.form&&t.form.getAttr
 document.addEventListener('dragover',e=>{if(e.target.closest&&e.target.closest('.drop')){e.preventDefault();e.target.closest('.drop').classList.add('on')}});
 document.addEventListener('dragleave',e=>{if(e.target.closest&&e.target.closest('.drop'))e.target.closest('.drop').classList.remove('on')});
 document.addEventListener('drop',e=>{if(e.target.closest&&e.target.closest('.drop')){e.preventDefault();e.target.closest('.drop').classList.remove('on');const f=e.dataTransfer.files[0];if(f&&f.type.startsWith('image/')){UI.dirty=true;readCover(f)}}});
+document.addEventListener('invalid',e=>e.target.setCustomValidity(T('Please fill out this field.')),true);
+document.addEventListener('input',e=>e.target.setCustomValidity&&e.target.setCustomValidity(''));
+const ico=p=>`<svg class="i" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${p}</svg>`;
+const IC={search:'<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>',x:'<path d="M6 6l12 12M18 6 6 18"/>',heart:'<path d="M12 21s-7-4.5-9-9a5 5 0 0 1 9-3 5 5 0 0 1 9 3c-2 4.5-9 9-9 9z"/>',upload:'<path d="M12 16V4m0 0-4 4m4-4 4 4M4 20h16"/>',book:'<path d="M4 5a2 2 0 0 1 2-2h14v16H6a2 2 0 0 0-2 2zM4 19V5"/>',cart:'<circle cx="9" cy="20" r="1.5"/><circle cx="18" cy="20" r="1.5"/><path d="M3 4h2l2.5 11h11L21 7H6"/>',note:'<path d="M5 3h14v18H5zM9 8h6M9 12h6M9 16h3"/>',grid:'<rect x="4" y="4" width="6.5" height="6.5" rx="1.5"/><rect x="13.5" y="4" width="6.5" height="6.5" rx="1.5"/><rect x="4" y="13.5" width="6.5" height="6.5" rx="1.5"/><rect x="13.5" y="13.5" width="6.5" height="6.5" rx="1.5"/>',list:'<path d="M9 6h11M9 12h11M9 18h11M4.5 6h.01M4.5 12h.01M4.5 18h.01"/>',back:'<path d="M19 12H5m7 7-7-7 7-7"/>'};
+
 /* ===== Init ===== */
 render();
+try{history.replaceState({...snap(),depth:0},'');UI._hj=JSON.stringify(history.state)}catch(_){}
 if(recovered)toast(T('Saved data could not be read. A copy was kept and a fresh library started.'));
 </script>
 </body>

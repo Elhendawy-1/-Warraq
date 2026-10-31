@@ -262,7 +262,7 @@
       ok('merge: reading position survives backup/import (prev=70)',Bk.get('x9').prev===70&&Bk.get('x9').status==='completed');
       const countAfterMerge=S.books.length;
       importLib(new Blob(['garbage{"books":']));
-      await sleep(60);
+      await poll(()=>document.getElementById('toast').textContent.includes('Import failed'), 2000);
       ok('invalid backup: state intact',Bk.get('x9')!=null&&S.books.length===countAfterMerge);
       const t3=document.getElementById('toast').textContent;
       ok('invalid backup: error toast',t3&&t3.includes('Import failed'),'got: '+t3.slice(-300));
@@ -278,6 +278,86 @@
       ok('merge with skips adds nothing new (ids already present)',S.books.length===countAfterMerge);
       const t2=document.getElementById('toast').textContent;
       ok('skip-count toast shown',t2&&t2.includes('invalid record'),'got: '+t2.slice(-300));
+      /* ===== 19b. book series management ===== */
+      serDlg(null);
+      let sxf=document.getElementById('xf');
+      sxf.querySelector('[name=name]').value='Earthsea Cycle';
+      sxf.querySelector('[name=desc]').value='High fantasy by Ursula K. Le Guin';
+      sxf.dispatchEvent(new Event('submit',{bubbles:true,cancelable:true}));await sleep(30);
+      const ser1=S.series.find(s=>s.name==='Earthsea Cycle');
+      ok('series created',!!ser1&&ser1.desc==='High fantasy by Ursula K. Le Guin');
+      ok('series in list rendering',serListAll('').some(s=>s.name==='Earthsea Cycle'));
+      ok('series search',serListAll('earthsea').length===1);
+      /* series ordering: assign sequence numbers and insert */
+      const b1Prep=Bk.get('b1');b1Prep.status='reading';b1Prep.pages=288;b1Prep.page=100;b1Prep.prev=100;
+      Ser.add(ser1,'u1');
+      Ser.add(ser1,'b1',1); /* insert at position 1: b1 becomes 1, u1 becomes 2 */
+      ok('series ordered: b1 is 1st, u1 is 2nd',ser1.books[0].id==='b1'&&ser1.books[0].ord===1&&ser1.books[1].id==='u1'&&ser1.books[1].ord===2);
+      /* duplicate rejection */
+      const dupRes=Ser.add(ser1,'b1');
+      ok('duplicate book membership rejected',dupRes===false&&ser1.books.length===2);
+      /* create new book from series */
+      pickDlg(ser1.id);
+      A.picknew({dataset:{ser:ser1.id}});
+      const nbf=document.getElementById('bf');
+      nbf.querySelector('[name=title]').value='A Wizard of Earthsea';
+      nbf.querySelector('[name=pages]').value='200';
+      nbf.dispatchEvent(new Event('submit',{bubbles:true,cancelable:true}));await sleep(30);
+      const wiz=S.books.find(b=>b.title==='A Wizard of Earthsea');
+      ok('new book created directly into series',!!wiz&&Ser.inSeries(ser1,wiz.id));
+      ok('new book appended with sequential order',ser1.books.length===3&&ser1.books[2].id===wiz.id&&ser1.books[2].ord===3);
+      /* series progress calculation */
+      const sStats=Ser.stats(ser1);
+      /* b1: reading 100/288; u1: reading 80/200; wiz: unread 0/200. Total pages = 688, read = 180. 180/688*100 = 26.2% */
+      ok('series stats: total 3, reading 2, unread 1',sStats.total===3&&sStats.reading===2&&sStats.unread===1);
+      ok('series progress page-weighted ≈26.2%',sStats.prog===26.2,'got '+sStats.prog);
+      /* live series progress update on book completion */
+      A.done({dataset:{id:'b1'}});
+      const sStats2=Ser.stats(ser1);
+      /* b1 completed: 288/288; u1: 80/200; wiz: 0/200. Total read = 368/688 ≈ 53.5% */
+      ok('series progress updates on book complete',sStats2.done===1&&sStats2.prog===53.5,'got '+sStats2.prog);
+      Bk.reopen(Bk.get('b1'));
+      ok('series progress updates on book reopen',Ser.stats(ser1).done===0&&Ser.stats(ser1).prog===26.2);
+      /* reorder series books */
+      Ser.shift(ser1.id,'u1',-1); /* u1 was #2, shift up to #1 */
+      ok('series shifted up: u1 is #1, b1 is #2',ser1.books[0].id==='u1'&&ser1.books[0].ord===1&&ser1.books[1].id==='b1'&&ser1.books[1].ord===2);
+      /* remove book from series without deleting it from library */
+      Ser.remove(ser1,'u1');
+      ok('book removed from series',!Ser.inSeries(ser1,'u1')&&ser1.books.length===2);
+      ok('removed book still in library',!!Bk.get('u1'));
+      /* delete book from library automatically removes from series */
+      Bk.del(wiz.id);
+      ok('deleted book removed from series',!Ser.inSeries(ser1,wiz.id)&&ser1.books.length===1);
+      /* delete series without deleting books */
+      A.serdel({dataset:{id:ser1.id}});
+      await poll(()=>document.getElementById('cfm').open&&document.querySelector('#cfm button[value=ok]'));
+      document.querySelector('#cfm button[value=ok]').click();await sleep(30);
+      ok('series deleted',!Ser.get(ser1.id));
+      ok('books survive series deletion',!!Bk.get('b1'));
+      /* ===== 19c. back navigation (mobile and desktop) ===== */
+      nav('lib');
+      ok('nav pushes depth >= 1',history.state&&history.state.depth>=1);
+      ok('back button visible on mobile and desktop',!document.getElementById('bb').hidden&&document.querySelectorAll('.back-btn').length>0);
+      /* popstate back navigation */
+      await applySnap({route:'dash',depth:0});
+      ok('applySnap navigates to dash',UI.route==='dash');
+      ok('back button hidden at root depth 0',document.getElementById('bb').hidden);
+      /* popstate with unsaved changes in dialog asks confirmation */
+      bookDlg(Bk.get('b1'));
+      const edf=document.getElementById('bf');
+      edf.querySelector('[name=title]').value='Back Test Title';
+      fire(edf.querySelector('[name=title]'),'input');
+      ok('form marked dirty on edit',UI.dirty===true);
+      /* popstate triggers discard prompt */
+      applySnap({route:'dash',depth:0});
+      await poll(()=>document.getElementById('cfm').open&&document.querySelector('#cfm button[value=x]'));
+      ok('unsaved back shows discard prompt',document.getElementById('cfm').open);
+      document.querySelector('#cfm button[value=x]').click();await sleep(30);
+      ok('cancelling discard keeps edit dialog open with edits intact',document.getElementById('dlg').open&&edf.querySelector('[name=title]').value==='Back Test Title');
+      applySnap({route:'dash',depth:0});
+      await poll(()=>document.getElementById('cfm').open&&document.querySelector('#cfm button[value=ok]'));
+      document.querySelector('#cfm button[value=ok]').click();await sleep(30);
+      ok('confirming discard closes dialog',!document.getElementById('dlg').open);
       /* ===== 20. erase everything ===== */
       A.reset();await poll(()=>document.getElementById('cfm').open&&document.querySelector('#cfm button[value=ok]'));
       document.querySelector('#cfm button[value=ok]').click();await sleep(40);
@@ -287,8 +367,9 @@
       S.books.push(mk({id:'u1',title:'Unrelated Book',author:'X',pages:200,page:80,status:'reading',added}));
       S.books.push(mk({id:'b1',title:'My Novel',pages:288,page:100,status:'reading',prev:100,added,started:added}));
       S.books.push(mk({id:'c1',title:'Done Book',pages:288,page:288,status:'completed',prev:100,added,completed:added}));
+      S.series.push({id:'ser-1',name:'Canonical Series',desc:'Canonical desc',cover:'',icon:'📚',added,books:[{id:'b1',ord:1},{id:'c1',ord:2}]});
       Store.save();render();
-      ok('canonical state saved for reload test',JSON.parse(storeJSON()||'null')&&JSON.parse(storeJSON()||'null').books.length===3);
+      ok('canonical state saved for reload test',JSON.parse(storeJSON()||'null')&&JSON.parse(storeJSON()||'null').books.length===3&&JSON.parse(storeJSON()||'null').series.length===1);
       /* ===== 22. no network at runtime ===== */
       ok('zero network calls at runtime',R.net===0,'calls '+R.net);
       await sleep(50);
@@ -305,6 +386,9 @@
       ok('persist: unrelated book intact',Bk.get('u1')&&Bk.get('u1').page===80);
       ok('persist: theme=dark kept',S.prefs.theme==='dark');
       ok('persist: pct(100/288)=34.7',b1&&pct(b1)===34.7);
+      ok('persist: series restored',S.series&&S.series.length===1&&S.series[0].name==='Canonical Series');
+      ok('persist: series books intact',S.series&&S.series[0].books.length===2&&S.series[0].books[0].id==='b1'&&S.series[0].books[1].id==='c1');
+      ok('persist: series progress intact',S.series&&Ser.stats(S.series[0]).prog>0);
       /* full undo through the dialog AFTER refresh */
       bookDlg(b1);const f=document.getElementById('bf');
       const stSel=f.querySelector('[name=status]');
