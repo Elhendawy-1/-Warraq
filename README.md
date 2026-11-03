@@ -2,183 +2,209 @@
   <img src="assets/logo.svg" width="120" height="120" alt="Warraq (ورّاق) Logo">
   
   # Warraq (ورّاق)
-  ### Your Personal Reading Universe — مكتبتك الشخصية للروايات والكتب
+  ### Your Personal Reading Universe & Novel Library
   
   <p align="center">
     <a href="https://elhendawy-1.github.io/Warraq/" target="_blank">
-      <img src="https://img.shields.io/badge/🌐_LIVE_DEMO-اضغط_هنا_لتجربة_الموقع_مباشرة-2ea44f?style=for-the-badge&logoColor=white" alt="Live Demo">
+      <img src="https://img.shields.io/badge/🌐_LIVE_DEMO-Launch_Warraq_App-2ea44f?style=for-the-badge&logoColor=white" alt="Live Demo">
     </a>
   </p>
 
-  [![Live App](https://img.shields.io/badge/Live_Site-GitHub_Pages-238636?style=flat-square&logo=github&logoColor=white)](https://elhendawy-1.github.io/Warraq/)
+  [![Live Site](https://img.shields.io/badge/Live_Site-GitHub_Pages-238636?style=flat-square&logo=github&logoColor=white)](https://elhendawy-1.github.io/Warraq/)
   [![Vanilla JS](https://img.shields.io/badge/Vanilla_JS-ES6_Modules-F7DF1E?style=flat-square&logo=javascript&logoColor=black)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
-  [![HTML5](https://img.shields.io/badge/HTML5-Semantic-E34F26?style=flat-square&logo=html5&logoColor=white)](https://developer.mozilla.org/en-US/docs/Web/HTML)
-  [![CSS3](https://img.shields.io/badge/CSS3-Modern_Tokens-1572B6?style=flat-square&logo=css3&logoColor=white)](https://developer.mozilla.org/en-US/docs/Web/CSS)
+  [![HTML5](https://img.shields.io/badge/HTML5-Modern_Semantic-E34F26?style=flat-square&logo=html5&logoColor=white)](https://developer.mozilla.org/en-US/docs/Web/HTML)
+  [![CSS3](https://img.shields.io/badge/CSS3-Modern_Design_Tokens-1572B6?style=flat-square&logo=css3&logoColor=white)](https://developer.mozilla.org/en-US/docs/Web/CSS)
   [![Zero Dependencies](https://img.shields.io/badge/Dependencies-Zero-0969da?style=flat-square)](#)
   [![100% Offline](https://img.shields.io/badge/Storage-100%25_Local_&_Offline-8957e5?style=flat-square)](#)
-  [![Bilingual](https://img.shields.io/badge/Language-العربية_%7C_English-informational?style=flat-square)](#)
-  [![License](https://img.shields.io/badge/License-MIT-green?style=flat-square)](LICENSE)
+  [![Bilingual](https://img.shields.io/badge/Localization-English_%7C_العربية-informational?style=flat-square)](#)
+  [![License: MIT](https://img.shields.io/badge/License-MIT-green?style=flat-square)](LICENSE)
 
   <br>
 
   <p>
     <b>
-      <a href="https://elhendawy-1.github.io/Warraq/">🚀 تجربة الموقع المباشر (Live Site)</a>
+      <a href="https://elhendawy-1.github.io/Warraq/">🚀 Open Live App</a>
       &nbsp;•&nbsp;
-      <a href="#-عن-ورّاق-about-warraq">📖 عن ورّاق</a>
+      <a href="#-about-warraq">📖 About</a>
       &nbsp;•&nbsp;
-      <a href="#-المميزات-الرئيسية-key-features">✨ المميزات</a>
+      <a href="#-key-features">✨ Features</a>
       &nbsp;•&nbsp;
-      <a href="#-البنية-المعمارية-architecture">🏛️ المعمارية</a>
+      <a href="#-architecture">🏛️ Architecture</a>
       &nbsp;•&nbsp;
-      <a href="#-الخصوصية-والأمان-privacy">🔒 الخصوصية</a>
+      <a href="#-privacy--offline-first">🔒 Privacy</a>
       &nbsp;•&nbsp;
-      <a href="#-التشغيل-المحلي-quick-start">⚡ التشغيل المحلي</a>
+      <a href="#-getting-started">⚡ Quick Start</a>
     </b>
   </p>
 </div>
 
 ---
 
-## 📖 عن ورّاق (About Warraq)
+## 📖 About Warraq
 
-في التراث العربي الأصيل، كان **الورّاق** هو صانع الكتب، وناسخ المخطوطات، وخازن المعرفة الذي تلجأ إليه للبحث عن رحلتك القرائية القادمة.
+In classical Arabic literary tradition, a **Warrāq** (ورّاق) was the copyist, bookseller, binder, and guardian of manuscripts — the learned person you visited in the book bazaar to discover your next great read.
 
-يأتي تطبيق **ورّاق (Warraq)** ليجسد هذه الروح في صورة تطبيق ويب حديث، سريع، وأنيق مصمم خصيصاً للقراء ومحبي الروايات لتنظيم مكتبتهم الخاصة، متابعة تقدمهم في القراءة صفحة بصفحة، إدارة سلاسل الروايات، وبناء تصنيفاتهم وأقسامهم المفضلة في واجهة عربية وإنجليزية غنية ومريحة للعين.
+**Warraq (ورّاق)** embodies that timeless spirit in a modern, lightweight, privacy-first web application. Designed for bibliophiles, novel enthusiasts, and everyday readers, it enables you to curate your personal library, track your reading progress page-by-page, organize multi-volume book series, and create custom categorized bookshelves — all wrapped in a tactile, bilingual interface.
 
-> **بدون حسابات · بدون سيرفرات · بدون أي تبعيات خارجية — كل بياناتك ملكك ومحفوظة بالكامل داخل متصفحك.**
-
----
-
-## 🌐 تجربة الموقع مباشرة (Live Demo Server)
-
-يمكنك تجربة الموقع واستكشاف جميع خصائصه وميزاته فوراً عبر الرابط المباشر المستضاف على **GitHub Pages**:
-
-👉 **[اضغط هنا لفتح موقع ورّاق المباشر (Launch Live App)](https://elhendawy-1.github.io/Warraq/)**
+> **No accounts · No servers · No tracking · Zero dependencies — Everything runs locally inside your browser.**
 
 ---
 
-## ✨ المميزات الرئيسية (Key Features)
+## 🌐 Live Demo Server
 
-### 📊 1. لوحة التحكم التفاعلية (Dashboard)
-- **إحصائيات فورية:** إجمالي كتب المكتبة، الكتب المقروءة حالياً، المكتملة، رغبات القراءة والشراء، المفضلة، وإجمالي الصفحات المقروءة.
-- **شريط التقدم الكلي:** متابعة نسبة الإنجاز العامة لجميع كتب المكتبة.
-- **رف "متابعة القراءة":** بطاقات للكتب المفتوحة حالياً مع إمكانية تحديث رقم الصفحة بنقرة واحدة (+1 صفحة).
-- **مخطط النشاط القرائي:** رسم بياني يرصد نشاطك القرائي وتوزيع قراءاتك على مدار أشهر السنة.
+Explore the full application live in your browser hosted on **GitHub Pages**:
 
-### 📚 2. مكتبة ذكية وسريعة (Smart Library)
-- **بحث فوري ذكي:** بحث متقدم وسريع في العناوين والمؤلفين والتصنيفات، مع **تجاهل التشكيل وتوحيد الحروف العربية** (الهمزات، الياء، والتاء المربوطة).
-- **تصفية دقيقة:** فلترة حسب الأقسام، حالة القراءة (مكتمل، أقرأ حالياً، مؤجل...)، والكتب المفضلة.
-- **ترتيب مرن:** ترتيب حسب تاريخ الإضافة، الترتيب الأبجدي، تقييم النجوم الشخصي (1–5 ⭐)، أو نسبة التقدم.
-- **طرق عرض متعددة:** التبديل الفوري بين العرض الشبكي للكتب (Grid) وعرض القائمة التفصيلية (List).
+👉 **[Launch Live Application — elhendawy-1.github.io/Warraq](https://elhendawy-1.github.io/Warraq/)**
 
-### 📖 3. إدارة سلاسل الروايات (Book Series)
-- تجميع الروايات والكتب متعددة الأجزاء في سلاسل مستقلة.
-- ترتيب الأجزاء تسلسلياً (الجزء الأول، الثاني، الثالث...) مع حساب تلقائي لنسبة إنجاز السلسلة كاملة.
-- إضافة كتب من المكتبة إلى السلسلة مباشرة أو إنشاء كتاب جديد داخل السلسلة.
-
-### 🗂️ 4. أقسام ورفوف مخصصة (Custom Shelves & Emoji)
-- إنشاء مجموعات ورفوف مخصصة مع وصف وألوان مميزة.
-- **منتقي إيموجي حر:** إمكانية كتابة أو لصق أي رمز تعبيري تفضله لإضافته للأيقونات بحرية.
-- **سلوك الأقسام التلقائي:** تخصيص تصرف القسم عند نقل كتاب إليه (مثال: نقله لقسم "أقرأ حالياً" يغير حالة الكتاب تلقائياً).
-
-### 🎨 5. أربعة سمات أدبية فاخرة (4 Editorial Themes)
-تم تصميم لوحات الألوان بعناية مستوحاة من عوالم الكتب والمكتبات الكلاسيكية:
-1. 📜 **ورّاق كلاسيكي (Neutral Parchment):** درجات ورق الكتب العتيق الدافئ مع لمسات خضراء نباتية مريحة للقراءة الطويلة.
-2. 🌸 **مخمل وماء الورد (Elegant):** تدرجات الورد والتوت المخملي بطابع أدبي راقٍ.
-3. 🖋️ **أزرق نيلي عصري (Modern Editorial):** تباين صحفي دقيق بين الأبيض النقي والرمادي الإردوازي والأزرق الملكي.
-4. 🕯️ **مكتبة منتصف الليل (Midnight Library):** وضع ليلي فائق الأناقة مستوحى من **ضوء أباجورة نحاسية دافئة في مكتبة هادئة** (عنبر ذهبي `#f59e0b` عالي التباين).
-
-### 🌍 6. تجربة ثنائية اللغة متكاملة (Bilingual & RTL/LTR)
-- واجهة عربية أصيلة مع محاذاة واتجاه كامل من اليمين لليسار (RTL).
-- خط **`Amiri`** الأدبي العربي للعناوين والخطوط الروائية، بجانب **`Plus Jakarta Sans`** للأرقام وعناصر التحكم.
-- دعم كامل للغة الإنجليزية (LTR) مع تبديل لحظي بنقرة زر.
-- خيار التبديل بين الأرقام اللاتينية (1234) والأرقام العربية المشرقية (١٢٣٤).
-
-### 📱 7. تصميم متجاوب لجميع الأجهزة (Responsive Layout)
-- شريط جانبي ثابت على شاشات الحواسيب وشاشات العرض الكبيرة.
-- درج تنقل سلس وخفيف (Slide-in Drawer) للهواتف الذكية والأجهزة اللوحية.
-- دعم هوامش الشاشات الآمنة للهواتف الحديثة (`safe-area-inset`).
-- أهداف لمس قياسية (44px+) لسهولة الاستخدام باليد الواحدة على الهواتف.
+*Tip: Add the page to your browser bookmarks or phone's home screen for an instant, offline-capable reading companion.*
 
 ---
 
-## 🏛️ البنية المعمارية (Architecture)
+## ✨ Key Features
 
-التطبيق مبني بالكامل بمعمارية **Vanilla Modern Web Architecture** نظيفة وقابلة للصيانة والتطوير، مقسمة إلى وحدات (ES Modules) بدون الحاجة إلى React أو Vite أو Webpack:
+### 📊 1. Comprehensive Reading Dashboard
+- **Instant Metrics:** Real-time counters for total books, currently reading, completed, want to read, wishlist, favorites, and total pages read.
+- **Whole-Library Progress Bar:** Visual indicator calculating the overall completion percentage across your catalog.
+- **"Continue Reading" Shelf:** Quick-access shelf for books in progress featuring one-tap page update buttons (`+1 Page`).
+- **Reading Activity Timeline:** Six-month interactive chart tracking books completed month over month.
+
+### 📚 2. Intelligent Library Management
+- **Diacritics-Tolerant Search:** Fast search across titles, authors, and genres with intelligent Arabic letter normalization (unifying alef forms, yaa, and taa marbuta) and case-insensitive Latin matching.
+- **Multi-Criteria Filtering:** Filter instantly by custom section, reading status, or favorites.
+- **Flexible Sorting:** Sort by recently added, title (A–Z), personal star rating (1–5 ⭐), or reading percentage.
+- **Switchable Layouts:** One-click toggle between an editorial **Grid View** and a detailed **List View**.
+
+### 📖 3. Multi-Volume Book Series
+- Organize book series and novel sagas in their exact chronological or reading order (Volume 1 to N).
+- Automatic calculation of series completion percentage (by total books and pages).
+- Assign existing library books to series or spawn new books directly within a series.
+- Seamlessly reorder volumes up and down with instant position updates.
+
+### 🗂️ 4. Custom Shelves & Automated Behaviors
+- Create unlimited custom bookshelves with unique colors, names, and descriptions.
+- **Freeform Emoji & Icon Selector:** Choose from curated icons or paste any custom Unicode emoji directly.
+- **Automated Shelf Behaviors:** Optionally set a shelf action (e.g. moving a book into *"Currently Reading"* or *"Want to Buy"* automatically updates its reading status).
+
+### 🎨 5. Four Curated Literary Themes
+Carefully crafted palettes inspired by historic reading rooms and fine bookbinding:
+1. 📜 **Classic Parchment (Neutral):** Warm book-paper background (`#f7f4ed`), deep ink typography, and forest-green botanical accents (`#2c5e3b`).
+2. 🌸 **Burgundy & Rosewater (Elegant):** Soft blush tones and velvet-wine accents (`#912d5c`) for a refined literary salon aesthetic.
+3. 🖋️ **Editorial Slate (Modern):** High-contrast ivory, slate grey, and royal cobalt blue (`#1d4ed8`) with crisp typography.
+4. 🕯️ **Midnight Library (Dark Mode):** Deep obsidian reading room (`#0b0f15`) illuminated by the warm amber glow of a brass desk lamp (`#f59e0b`).
+
+### 🌍 6. Complete Bilingual Localization
+- Native **Arabic (RTL)** experience with literary **Amiri** typography, natural right-to-left layout flow, and optional Arabic-Indic numerals (`١٢٣٤`).
+- Crisp **English (LTR)** experience powered by **Plus Jakarta Sans** and classical **Cinzel** display lettering.
+- Automatic locale detection based on browser settings with one-tap instant switching.
+
+### 📱 7. Responsive & Ergonomic Interface
+- Fixed, elegant sidebar navigation on desktop monitors and tablets.
+- Off-canvas slide-in drawer with frosted backdrop for mobile devices.
+- Hardware safe-area support (`env(safe-area-inset-top)` / `bottom`) preventing clipping on notched screens and dynamic islands.
+- Generous touch targets (44px+) compliant with WCAG accessibility guidelines.
+
+### 🔒 8. 100% Local-First Privacy
+- **Zero Cloud Leakage:** All book metadata, notes, and reading progress reside strictly in your browser's `localStorage`.
+- **JSON Backup & Restore:** Export your entire library into an interoperable `.json` backup file at any time.
+- **Smart Import:** Choose between **Merge** (safely integrates new books without duplicates) or **Replace** (full restore).
+- **Client-Side Image Compression:** Uploaded cover photos are compressed in-memory via HTML5 Canvas to preserve local storage limits.
+
+---
+
+## 🏛️ Architecture
+
+Warraq is engineered around a clean, modular **Vanilla Web Architecture** utilizing modern ES6 Modules without external framework overhead:
 
 ```
 Warraq/
-├── index.html          # نقطة الدخول الرئيسية وتطبيق الويب المتكامل
-├── .nojekyll           # تعطيل معالجة Jekyll لدعم استضافة GitHub Pages
-├── README.md           # دليل التوثيق والتعريف الشامل
+├── index.html          # Application entry point & GitHub Pages root
+├── .nojekyll           # Bypasses Jekyll processing for pure static hosting
+├── README.md           # Documentation & project showcase
 ├── assets/
-│   └── logo.svg        # شعار ورّاق الفيكتوري الأصيل (كتاب مفتوح وريشة خط)
+│   └── logo.svg        # Scalable vector brand insignia (Open book & quill)
 ├── css/
-│   ├── variables.css   # رموز التصميم، لوحات الألوان الأربعة، ونسب الخطوط
-│   ├── base.css        # التنسيقات الأساسية، الخطوط (Amiri / Plus Jakarta)، ونظام الاتجاهات
-│   ├── components.css  # بطاقات الكتب التجسيدية، الأزرار، القوائم، والنوافذ
-│   └── responsive.css  # التوافق مع الهواتف والشاشات اللوحية وهوامش الأمان
+│   ├── variables.css   # Design tokens, CSS variables, and 4 theme palettes
+│   ├── base.css        # Base typography, layout resets, and RTL/LTR rules
+│   ├── components.css  # Book cards, dialogs, buttons, progress bars, and forms
+│   └── responsive.css  # Mobile breakpoints, drawers, and safe-area margins
 └── js/
-    ├── app.js          # ربط الأحداث، ضغط ومعالجة أغلفة الكتب، وبدء التشغيل
-    ├── store.js        # التخزين المحلي (localStorage)، التهيئة، والتحقق من البيانات
-    ├── services.js     # منطق الأعمال للكتب (Bk)، الأقسام (Sec)، والسلاسل (Ser)
-    ├── router.js       # التوجيه، إدارة تاريخ التصفح (History API)، وزر الرجوع
-    ├── i18n.js         # قاموس الترجمة الكامل، وتنسيق الأرقام والتواريخ
-    └── ui.js           # قوالب العرض وبناء واجهات المستخدم التفاعلية
+    ├── app.js          # App lifecycle, event delegation, and image processing
+    ├── store.js        # LocalStorage state management, schema, and normalization
+    ├── services.js     # Domain logic: Books (Bk), Sections (Sec), Series (Ser)
+    ├── router.js       # Client routing, History API integration, and navigation
+    ├── i18n.js         # Translation dictionaries, date and number formatters
+    └── ui.js           # View templates, card builders, and dialog renderers
 ```
 
 ---
 
-## 🔒 الخصوصية والأمان (Privacy & Offline First)
+## ⚡ Getting Started
 
-- **بياناتك على جهازك فقط:** لا يتم إرسال أي حرف أو صورة إلى أي خادم خارجي. كل شيء يُخزّن داخل `localStorage` في متصفحك.
-- **تصدير واستيراد مرن:** يمكنك تنزيل نسخة احتياطية كاملة من مكتبتك بصيغة `JSON` في أي وقت، واستعادتها على أي جهاز آخر مع خياري:
-  - **الدمج (Merge):** دمج الكتب الجديدة مع الحفاظ على البيانات الموجودة.
-  - **الاستبدال الكامل (Replace):** استعادة النسخة كما هي.
-- **ضغط أغلفة الكتب محلياً:** يتم ضغط أي صورة غلاف ترفعها تلقائياً داخل المتصفح عبر عنصر Canvas لتقليل حجمها وتوفير مساحة التخزين.
+Warraq requires **zero installations, zero build steps, and zero dependencies**.
 
----
+### Option A: Open Directly
+Simply clone the repository and open `index.html` in any modern web browser (Chrome, Firefox, Safari, Edge, Brave):
 
-## ⚡ التشغيل المحلي (Quick Start)
+```bash
+git clone https://github.com/Elhendawy-1/Warraq.git
+cd Warraq
+# Open index.html in your default browser
+open index.html        # macOS
+start index.html       # Windows
+xdg-open index.html    # Linux
+```
 
-لا تحتاج إلى تثبيت Node.js أو npm أو أي برامج إضافية لتشغيل المشروع محلياً:
+### Option B: Local HTTP Server
+Run a lightweight local development server using Python or Node:
 
-1. **استنساخ المستودع (Clone):**
-   ```bash
-   git clone https://github.com/Elhendawy-1/Warraq.git
-   cd Warraq
-   ```
+```bash
+# Using Python 3
+python -m http.server 8000
 
-2. **التشغيل:**
-   - انقر نقراً مزدوجاً على ملف **`index.html`** ليفتح في أي متصفح مباشرة.
-   - أو شغّل خادم محلي خفيف:
-     ```bash
-     # باستخدام بايثون
-     python -m http.server 8000
-     
-     # أو باستخدام Node.js
-     npx serve .
-     ```
-   ثم افتح الرابط: `http://localhost:8000`
+# Using Node.js
+npx serve .
+```
+Then navigate to `http://localhost:8000` in your browser.
 
 ---
 
-## 🤝 المساهمة والتطوير (Contributing)
+## 💾 Backup & Data Portability
 
-المشروع مفتوح المصدر ومرحب بجميع المساهمات والاقتراحات:
-1. Fork المستودع.
-2. أنشئ فرعاً لميزتك (`git checkout -b feature/AmazingFeature`).
-3. سجّل التعديلات (`git commit -m 'Add some AmazingFeature'`).
-4. ارفع الفرع (`git push origin feature/AmazingFeature`).
-5. افتح طلب دمج (Pull Request).
+Because Warraq does not rely on cloud databases, your data is completely under your control:
+1. Navigate to **⚙️ Settings** (`الإعدادات`).
+2. Under **Backup & Restore**, click **Export Backup (تصدير نسخة احتياطية)** to download your library as a versioned JSON file.
+3. To restore on another computer, tablet, or browser profile, click **Import Backup (استيراد نسخة احتياطية)** and select whether to merge or replace.
 
 ---
 
-## 📄 الترخيص (License)
+## 🛠️ Tech Stack
 
-هذا المشروع مرخص بموجب رخصة **MIT** — راجع ملف [LICENSE](LICENSE) للمزيد من التفاصيل.
+| Layer | Technology |
+|---|---|
+| **Markup** | HTML5 Semantic Elements (`<dialog>`, `<aside>`, `<main>`) |
+| **Styling** | Modern CSS3 (CSS Variables, Grid, Flexbox, Fluid Clamps) |
+| **Logic** | Vanilla JavaScript (ES6 Modules, Canvas API, History API) |
+| **Persistence** | Browser `localStorage` (Schema v1 with corruption recovery) |
+| **Typography** | Google Fonts: *Amiri* (Arabic Serif), *Cinzel* (Display), *Plus Jakarta Sans* (UI) |
+| **Hosting** | GitHub Pages (Static edge delivery) |
+
+---
+
+## 🤝 Contributing
+
+Contributions, feature requests, and suggestions are welcome!
+1. Fork the Project.
+2. Create your Feature Branch (`git checkout -b feature/NewFeature`).
+3. Commit your Changes (`git commit -m 'feat: add NewFeature'`).
+4. Push to the Branch (`git push origin feature/NewFeature`).
+5. Open a Pull Request.
+
+---
+
+## 📄 License
+
+Distributed under the **MIT License**. See [`LICENSE`](LICENSE) for more information.
 
 <div align="center">
-  <sub>صُنع بشغف وحب للقراءة والكتب 📖 · <b>ورّاق (Warraq)</b></sub>
+  <sub>Crafted with passion for books and quiet reading spaces 📖 · <b>Warraq (ورّاق)</b></sub>
 </div>
