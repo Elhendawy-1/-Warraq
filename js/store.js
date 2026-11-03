@@ -137,6 +137,19 @@
 
   const DEF = Object.fromEntries(defaults().sections.map((s) => [s.name, s.desc]));
 
+  const safeCover = (u) => {
+    if (!u || typeof u !== "string") return "";
+    const s = u.trim();
+    if (/^data:image\/(png|jpeg|jpg|webp|gif|svg\+xml);base64,[A-Za-z0-9+/=]+$/i.test(s)) return s;
+    if (/^https?:\/\/[^\s$.?#].[^\s]*$/i.test(s)) return s;
+    return "";
+  };
+
+  const safeId = (id, fallback) => {
+    const s = String(id ?? "").replace(/[^a-zA-Z0-9_-]/g, "");
+    return s || (fallback ? String(fallback) : uid());
+  };
+
   function normalize(d, warn) {
     if (
       !d ||
@@ -152,7 +165,7 @@
       (s) => s && typeof s === "object" && s.id && s.name
     );
     const secs = rawSecs.map((s) => ({
-      id: String(s.id),
+      id: safeId(s.id),
       name: String(s.name).slice(0, 60),
       desc: String(s.desc || "").slice(0, 200),
       icon: String(s.icon || "📖").slice(0, 16),
@@ -181,7 +194,8 @@
         else if (t === "number") o[k] = Math.max(0, Number(v) || 0);
         else o[k] = !!v;
       }
-      o.id = String(b.id || uid());
+      o.id = safeId(b.id);
+      o.cover = safeCover(o.cover);
       if (!ids.has(o.section)) o.section = defSec;
       if (!STAT[o.status]) o.status = "unread";
       if (!PUR[o.purchase]) o.purchase = "no";
@@ -223,15 +237,15 @@
             return;
           }
           seenMem.add(String(m.id));
-          mem.push({ id: String(m.id), ord: Number(m.ord) || idx + 1 });
+          mem.push({ id: safeId(m.id), ord: Number(m.ord) || idx + 1 });
         });
         mem.sort((a, b) => a.ord - b.ord);
         const sortedMem = mem.map((m, k) => ({ id: m.id, ord: k + 1 }));
         return {
-          id: String(s.id),
+          id: safeId(s.id),
           name: String(s.name).trim().slice(0, 80),
           desc: String(s.desc || "").slice(0, 300),
-          cover: String(s.cover || "").slice(0, 600),
+          cover: safeCover(s.cover),
           icon: String(s.icon || "📚").slice(0, 16),
           added: String(s.added || today()).slice(0, 10),
           books: sortedMem,

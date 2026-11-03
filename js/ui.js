@@ -46,9 +46,18 @@
     return new Promise((res) => {
       const c = $("#cfm");
       if (!c) return res({ btn: "x" });
+      const safeMsg = String(msg ?? "")
+        .replace(/[&<>"']/g, (ch) => ({
+          "&": "&amp;",
+          "<": "&lt;",
+          ">": "&gt;",
+          '"': "&quot;",
+          "'": "&#39;",
+        }[ch]))
+        .replace(/&lt;(\/?)b&gt;/g, "<$1b>");
       c.innerHTML = `<form method="dialog" class="db">
         <h2 style="margin-top:0">${esc(title)}</h2>
-        <p class="mut">${msg}</p>
+        <p class="mut">${safeMsg}</p>
         ${
           input
             ? `<input id="cin" type="${input.type || "text"}" value="${esc(
@@ -1389,7 +1398,7 @@
     }> ${T("Default for new books")}</label></div>
     <div class="acts"><button type="button" class="btn" data-act="close">${T(
       "Cancel"
-    )}</button><button class="btn pri">${T("Save section")}</button></div></form>`);
+    )}</button><button class="btn pri" type="submit">${T("Save section")}</button></div></form>`);
   }
 
   function serDlg(id) {
@@ -1424,7 +1433,7 @@
     ${iconPickerHtml(x.icon || "📚")}</div>
     <div class="acts"><button type="button" class="btn" data-act="close">${T(
       "Cancel"
-    )}</button><button class="btn pri">${T("Save series")}</button></div></form>`);
+    )}</button><button class="btn pri" type="submit">${T("Save series")}</button></div></form>`);
   }
 
   function pickRows(x) {
