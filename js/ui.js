@@ -90,10 +90,237 @@
       ],
     }).then((r) => r.btn === "ok");
 
+  /* Custom Accessible Dropdowns Enhancer */
+  function enhanceSelects(container = document) {
+    if (!container) return;
+    const selects = container.querySelectorAll(
+      "select:not([data-custom-enhanced])"
+    );
+    selects.forEach((sel) => {
+      sel.setAttribute("data-custom-enhanced", "1");
+
+      const wrap = document.createElement("div");
+      wrap.className = "c-select";
+      if (sel.dataset.f) wrap.dataset.f = sel.dataset.f;
+      if (sel.name) wrap.dataset.name = sel.name;
+
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "c-select-trigger";
+      btn.setAttribute("role", "combobox");
+      btn.setAttribute("aria-haspopup", "listbox");
+      btn.setAttribute("aria-expanded", "false");
+
+      const ariaLabel =
+        sel.getAttribute("aria-label") ||
+        sel.closest("label")?.firstChild?.textContent?.trim() ||
+        "";
+      if (ariaLabel) btn.setAttribute("aria-label", ariaLabel);
+
+      const labelSpan = document.createElement("span");
+      labelSpan.className = "c-select-label";
+
+      const arrowSvg = document.createElementNS(
+        "http://www.w3.org/2000/svg",
+        "svg"
+      );
+      arrowSvg.setAttribute("class", "c-select-arrow");
+      arrowSvg.setAttribute("viewBox", "0 0 20 20");
+      arrowSvg.setAttribute("fill", "none");
+      arrowSvg.setAttribute("stroke", "currentColor");
+      arrowSvg.setAttribute("stroke-width", "2");
+      arrowSvg.setAttribute("stroke-linecap", "round");
+      arrowSvg.setAttribute("stroke-linejoin", "round");
+      arrowSvg.setAttribute("aria-hidden", "true");
+      arrowSvg.innerHTML = '<path d="m5 7.5 5 5 5-5"/>';
+
+      btn.append(labelSpan, arrowSvg);
+
+      const menu = document.createElement("ul");
+      menu.className = "c-select-menu";
+      menu.setAttribute("role", "listbox");
+      menu.setAttribute("tabindex", "-1");
+
+      function syncOptions() {
+        menu.innerHTML = "";
+        const currentVal = String(sel.value ?? "");
+        let matchedText = "";
+
+        Array.from(sel.options).forEach((opt) => {
+          const isSel = String(opt.value) === currentVal;
+          if (isSel && !matchedText) matchedText = opt.text;
+
+          const li = document.createElement("li");
+          li.className = "c-select-opt" + (isSel ? " is-selected" : "");
+          li.setAttribute("role", "option");
+          li.setAttribute("data-val", opt.value);
+          li.setAttribute("aria-selected", isSel ? "true" : "false");
+          li.setAttribute("tabindex", "-1");
+
+          const textSpan = document.createElement("span");
+          textSpan.className = "c-opt-text";
+          textSpan.textContent = opt.text;
+
+          const checkSvg = document.createElementNS(
+            "http://www.w3.org/2000/svg",
+            "svg"
+          );
+          checkSvg.setAttribute("class", "c-opt-check");
+          checkSvg.setAttribute("viewBox", "0 0 20 20");
+          checkSvg.setAttribute("fill", "currentColor");
+          checkSvg.setAttribute("aria-hidden", "true");
+          checkSvg.innerHTML =
+            '<path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>';
+
+          li.append(textSpan, checkSvg);
+
+          li.addEventListener("click", (e) => {
+            e.stopPropagation();
+            const newVal = li.dataset.val;
+            if (sel.value !== newVal) {
+              sel.value = newVal;
+              sel.dispatchEvent(new Event("change", { bubbles: true }));
+              sel.dispatchEvent(new Event("input", { bubbles: true }));
+            }
+            closeMenu();
+            syncOptions();
+            btn.focus();
+          });
+
+          menu.appendChild(li);
+        });
+
+        labelSpan.textContent =
+          matchedText ||
+          (sel.selectedOptions && sel.selectedOptions[0]?.text) ||
+          (sel.options[0]?.text || "");
+      }
+
+      function openMenu() {
+        document.querySelectorAll(".c-select.is-open").forEach((el) => {
+          if (el !== wrap) {
+            el.classList.remove("is-open", "opens-up");
+            el.querySelector(".c-select-trigger")?.setAttribute(
+              "aria-expanded",
+              "false"
+            );
+          }
+        });
+
+        wrap.classList.add("is-open");
+        btn.setAttribute("aria-expanded", "true");
+
+        // Dynamic positioning detection: open upwards if near bottom
+        const rect = wrap.getBoundingClientRect();
+        const dlgParent = wrap.closest("dialog, .db");
+        const bottomEdge = dlgParent
+          ? dlgParent.getBoundingClientRect().bottom
+          : window.innerHeight;
+        const topEdge = dlgParent ? dlgParent.getBoundingClientRect().top : 0;
+        const spaceBelow = bottomEdge - rect.bottom;
+        const spaceAbove = rect.top - topEdge;
+
+        if (spaceBelow < 220 && spaceAbove > spaceBelow) {
+          wrap.classList.add("opens-up");
+        } else {
+          wrap.classList.remove("opens-up");
+        }
+
+        const selectedLi = menu.querySelector(".c-select-opt.is-selected");
+        if (selectedLi) {
+          selectedLi.scrollIntoView({ block: "nearest" });
+        }
+      }
+
+      function closeMenu() {
+        wrap.classList.remove("is-open", "opens-up");
+        btn.setAttribute("aria-expanded", "false");
+      }
+
+      btn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        if (wrap.classList.contains("is-open")) {
+          closeMenu();
+        } else {
+          openMenu();
+        }
+      });
+
+      btn.addEventListener("keydown", (e) => {
+        if (e.key === "ArrowDown" || e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          if (!wrap.classList.contains("is-open")) {
+            openMenu();
+            const activeLi =
+              menu.querySelector(".c-select-opt.is-selected") ||
+              menu.firstElementChild;
+            activeLi?.focus();
+          }
+        } else if (e.key === "Escape") {
+          closeMenu();
+        }
+      });
+
+      menu.addEventListener("keydown", (e) => {
+        const active = document.activeElement;
+        if (e.key === "ArrowDown") {
+          e.preventDefault();
+          const next = active?.nextElementSibling || menu.firstElementChild;
+          next?.focus();
+        } else if (e.key === "ArrowUp") {
+          e.preventDefault();
+          const prev = active?.previousElementSibling || menu.lastElementChild;
+          prev?.focus();
+        } else if (e.key === "Escape") {
+          e.preventDefault();
+          closeMenu();
+          btn.focus();
+        } else if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          if (active && active.classList.contains("c-select-opt")) {
+            active.click();
+          }
+        }
+      });
+
+      sel.addEventListener("change", syncOptions);
+
+      syncOptions();
+      wrap.append(btn, menu);
+      sel.parentNode.insertBefore(wrap, sel.nextSibling);
+    });
+  }
+
+  // Global listeners for closing dropdowns
+  document.addEventListener("click", (e) => {
+    if (!e.target.closest(".c-select")) {
+      document.querySelectorAll(".c-select.is-open").forEach((el) => {
+        el.classList.remove("is-open", "opens-up");
+        el.querySelector(".c-select-trigger")?.setAttribute(
+          "aria-expanded",
+          "false"
+        );
+      });
+    }
+  });
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") {
+      document.querySelectorAll(".c-select.is-open").forEach((el) => {
+        el.classList.remove("is-open", "opens-up");
+        el.querySelector(".c-select-trigger")?.setAttribute(
+          "aria-expanded",
+          "false"
+        );
+      });
+    }
+  });
+
   function openDlg(h) {
     const dlg = $("#dlg");
     if (!dlg) return;
     dlg.innerHTML = `<div class="db">${h}</div>`;
+    enhanceSelects(dlg);
     if (!dlg.open) dlg.showModal();
   }
 
@@ -994,6 +1221,12 @@
     const br = $(".brand");
     if (br) {
       const isAr = Warraq.i18n.getLang() === "ar";
+      br.setAttribute("data-act", "go");
+      br.setAttribute("data-r", "dash");
+      br.setAttribute("role", "button");
+      br.setAttribute("tabindex", "0");
+      br.setAttribute("title", T("Dashboard"));
+      br.setAttribute("aria-label", T("Dashboard"));
       br.innerHTML = `<img class="brand-logo" src="${Warraq.LOGO}" alt="" onerror="this.remove()"><span>${
         isAr ? "ورّاق" : "Warraq"
       }</span><span class="brand-ar">${isAr ? "Warraq" : "ورّاق"}</span>`;
@@ -1003,6 +1236,15 @@
     $(".top .pri")?.setAttribute("aria-label", T("Add book"));
     const bb = $("#bb");
     if (bb) bb.setAttribute("aria-label", T("Back"));
+    const ttl = $("#ttl");
+    if (ttl) {
+      ttl.setAttribute("data-act", "go");
+      ttl.setAttribute("data-r", "dash");
+      ttl.setAttribute("role", "button");
+      ttl.setAttribute("tabindex", "0");
+      ttl.setAttribute("title", T("Dashboard"));
+      ttl.setAttribute("aria-label", T("Dashboard"));
+    }
   }
 
   /* Main View Dispatcher */
@@ -1051,7 +1293,10 @@
     }
 
     const m = $("#main");
-    if (m) m.innerHTML = h;
+    if (m) {
+      m.innerHTML = h;
+      enhanceSelects(m);
+    }
     const ttl = $("#ttl");
     if (ttl) ttl.textContent = t;
     Warraq.updateBack();
@@ -1577,4 +1822,5 @@
   Warraq.pickRows = pickRows;
   Warraq.SORTS = SORTS;
   Warraq.closeForm = closeForm;
+  Warraq.enhanceSelects = enhanceSelects;
 })(window);

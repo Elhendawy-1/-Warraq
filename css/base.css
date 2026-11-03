@@ -163,6 +163,24 @@ aside {
   border-bottom: 1px solid color-mix(in srgb, var(--sbt) 14%, transparent);
   margin-bottom: 14px;
   letter-spacing: 0.03em;
+  cursor: pointer;
+  user-select: none;
+  transition: opacity var(--trans-fast), transform var(--trans-fast);
+}
+
+.brand:hover {
+  opacity: 0.88;
+  transform: translateY(-1px);
+}
+
+.brand:active {
+  transform: translateY(0);
+}
+
+.brand:focus-visible {
+  outline: 2px solid var(--ac);
+  outline-offset: 4px;
+  border-radius: 8px;
 }
 
 .brand img,

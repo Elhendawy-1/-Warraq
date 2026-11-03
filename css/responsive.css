@@ -106,12 +106,14 @@
     width: 100%;
   }
 
-  .grp select {
+  .grp select,
+  .grp .c-select {
     flex: 1 1 130px;
   }
 
   .set .ctl,
-  .set .ctl select {
+  .set .ctl select,
+  .set .ctl .c-select {
     width: 100%;
   }
 
