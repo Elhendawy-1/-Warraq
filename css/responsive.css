@@ -1,0 +1,169 @@
+/* ==========================================================================
+   WARRAQ (ورّاق) — Responsive Layout & Media Queries
+   ========================================================================== */
+
+/* Tablet (768px - 1023px) */
+@media (min-width: 768px) and (max-width: 1023px) {
+  aside {
+    width: 210px;
+    padding: 14px 8px;
+  }
+  
+  main {
+    padding: 20px;
+  }
+  
+  .grid {
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 12px;
+  }
+
+  .sgrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Mobile Devices (<= 767px) */
+@media (max-width: 767px) {
+  aside {
+    position: fixed;
+    z-index: 40;
+    inset-inline-start: 0;
+    top: 0;
+    width: 280px;
+    transform: translateX(-100%);
+    transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: 4px 0 24px rgba(0, 0, 0, 0.25);
+  }
+
+  [dir="rtl"] aside {
+    transform: translateX(100%);
+    box-shadow: -4px 0 24px rgba(0, 0, 0, 0.25);
+  }
+
+  .nv-open aside,
+  [dir="rtl"] .nv-open aside {
+    transform: none;
+  }
+
+  .nv-open #bd {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    backdrop-filter: blur(2px);
+    z-index: 30;
+  }
+
+  .top {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    background: var(--card);
+    border-bottom: 1px solid var(--bd);
+    padding: 8px 14px;
+    min-height: var(--header-h);
+  }
+
+  .top b {
+    flex: 1;
+    font-family: var(--ft);
+    font-size: 1.15rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  main {
+    padding: 14px 12px;
+  }
+
+  .grid {
+    grid-template-columns: repeat(auto-fill, minmax(136px, 1fr));
+    gap: 10px;
+  }
+
+  h1 {
+    font-size: 1.45rem;
+  }
+
+  .hd .btn.pri {
+    width: 100%;
+    margin-top: 6px;
+  }
+
+  .bar2 {
+    padding: 10px 12px;
+    gap: 10px;
+  }
+
+  .grp {
+    width: 100%;
+  }
+
+  .grp select {
+    flex: 1 1 130px;
+  }
+
+  .set .ctl,
+  .set .ctl select {
+    width: 100%;
+  }
+
+  dialog {
+    width: calc(100vw - 12px);
+    max-height: calc(100dvh - 12px);
+    border-radius: 16px;
+  }
+
+  .db {
+    padding: 16px 14px;
+  }
+
+  .sgrid {
+    grid-template-columns: 1fr;
+  }
+
+  .det {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .det .cv {
+    width: 130px;
+  }
+
+  .dl {
+    grid-template-columns: 1fr;
+    gap: 2px;
+    text-align: start;
+  }
+
+  .dl dt {
+    font-weight: 600;
+  }
+
+  .acts {
+    flex-direction: column;
+  }
+
+  .acts button {
+    width: 100%;
+  }
+
+  .acts.sticky {
+    bottom: -16px;
+  }
+}
+
+/* Wide screen refinements */
+@media (min-width: 1280px) {
+  .bar2 .grp {
+    border-inline-start: 1px solid var(--bd);
+    padding-inline-start: 14px;
+  }
+}

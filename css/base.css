@@ -1,0 +1,192 @@
+/* ==========================================================================
+   WARRAQ (ورّاق) — Base Styles, Typography & Layout
+   ========================================================================== */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  min-height: 100%;
+}
+
+body {
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-size: 15px;
+  line-height: 1.6;
+  background-color: var(--bg);
+  color: var(--tx);
+  overflow-x: hidden;
+  transition: background-color var(--trans-base), color var(--trans-base);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Arabic typography overrides */
+html[lang="ar"] body {
+  font-family: "Tajawal", "Cairo", "Segoe UI", Tahoma, "Noto Sans Arabic", system-ui, sans-serif;
+  line-height: 1.8;
+}
+
+html[lang="ar"][data-theme] {
+  --ft: "Tajawal", "Cairo", Tahoma, "Segoe UI", sans-serif;
+}
+
+/* Headings */
+h1, h2, h3, h4 {
+  font-family: var(--ft);
+  color: var(--tx);
+  margin: 0;
+  line-height: 1.25;
+  font-weight: 700;
+}
+
+h1 {
+  font-size: 1.75rem;
+  letter-spacing: -0.01em;
+}
+
+h2 {
+  font-size: 1.25rem;
+  margin: 28px 0 14px;
+}
+
+h3 {
+  font-size: 1.05rem;
+}
+
+p {
+  margin: 0;
+}
+
+/* Utilities */
+.mut {
+  color: var(--mut);
+}
+
+.sm {
+  font-size: 0.85rem;
+}
+
+.grow {
+  flex: 1;
+  min-width: 0;
+}
+
+h1, h2, h3, p, dd, .bi {
+  overflow-wrap: anywhere;
+}
+
+/* Form Controls Reset */
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+
+:focus-visible {
+  outline: 3px solid var(--ac);
+  outline-offset: 2px;
+}
+
+/* Scrollbar polish */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--bd2);
+  border-radius: 999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--mut);
+}
+
+/* App Skeleton Layout */
+#app {
+  display: flex;
+  min-height: 100vh;
+  position: relative;
+}
+
+aside {
+  width: var(--aside-w);
+  flex: none;
+  background: var(--sb);
+  color: var(--sbt);
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 16px 12px;
+  border-inline-end: 1px solid var(--bd);
+  transition: transform var(--trans-base), background var(--trans-base);
+  z-index: 25;
+}
+
+.brand {
+  font-family: var(--ft);
+  font-size: 1.25rem;
+  font-weight: 700;
+  padding: 8px 10px 18px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--sbt);
+  border-bottom: 1px solid color-mix(in srgb, var(--sbt) 12%, transparent);
+  margin-bottom: 10px;
+}
+
+.brand img,
+.brand svg {
+  width: 30px;
+  height: 30px;
+  flex: none;
+  border-radius: 8px;
+}
+
+main {
+  flex: 1;
+  min-width: 0;
+  padding: 24px 28px;
+  max-width: var(--content-max-w);
+  margin: 0 auto;
+}
+
+.top {
+  display: none;
+}
+
+#bd {
+  display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

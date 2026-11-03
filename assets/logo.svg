@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none">
+  <defs>
+    <linearGradient id="wq-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="var(--ac, #5f8a68)"/>
+      <stop offset="100%" stop-color="var(--tx, #2e2a22)"/>
+    </linearGradient>
+    <filter id="wq-shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-opacity="0.15"/>
+    </filter>
+  </defs>
+  <!-- Background Badge -->
+  <circle cx="50" cy="50" r="46" fill="var(--card, #fffdf8)" stroke="var(--bd, #e2dac8)" stroke-width="2.5" filter="url(#wq-shadow)"/>
+  
+  <!-- Open Book Base -->
+  <path d="M50 72 C42 66 28 65 20 68 L20 38 C28 35 42 36 50 42 C58 36 72 35 80 38 L80 68 C72 65 58 66 50 72 Z" 
+        fill="var(--bg, #f4f0e6)" stroke="var(--ac, #5f8a68)" stroke-width="2.5" stroke-linejoin="round"/>
+  
+  <!-- Book Spine / Center Line -->
+  <line x1="50" y1="42" x2="50" y2="72" stroke="var(--ac, #5f8a68)" stroke-width="2.5" stroke-linecap="round"/>
+  
+  <!-- Book Pages Accent Lines -->
+  <path d="M26 44 C33 42 43 43 47 47" stroke="var(--bd, #e2dac8)" stroke-width="1.8" stroke-linecap="round"/>
+  <path d="M26 51 C33 49 43 50 47 54" stroke="var(--bd, #e2dac8)" stroke-width="1.8" stroke-linecap="round"/>
+  <path d="M74 44 C67 42 57 43 53 47" stroke="var(--bd, #e2dac8)" stroke-width="1.8" stroke-linecap="round"/>
+  <path d="M74 51 C67 49 57 50 53 54" stroke="var(--bd, #e2dac8)" stroke-width="1.8" stroke-linecap="round"/>
+  
+  <!-- Quill / Pen Flourish -->
+  <path d="M68 22 C64 28 54 36 49 46 C48 48 48 50 49 50 C50 50 52 49 55 46 C60 41 68 31 72 25 C74 22 72 20 68 22 Z" 
+        fill="var(--ac, #5f8a68)"/>
+  <circle cx="48" cy="51" r="1.5" fill="var(--ac, #5f8a68)"/>
+</svg>

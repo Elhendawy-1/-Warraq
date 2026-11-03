@@ -1,19 +1,64 @@
 <!DOCTYPE html>
 <!--
-  GitHub Pages landing redirect for the Warraq project.
-  The actual application lives at ./app/index.html — this page just forwards visitors there.
+  Warraq (ورّاق) — Your Personal Reading Universe.
+  Modular Vanilla Web Application: HTML5, CSS3, Modern JavaScript.
+  Zero dependencies, zero build step, 100% offline local persistence.
 -->
-<html lang="en">
+<html lang="en" data-theme="neutral">
 <head>
-<meta charset="utf-8">
-<title>Warraq (ورّاق)</title>
-<meta name="robots" content="noindex">
-<meta http-equiv="refresh" content="0; url=./app/">
-<script>location.replace('./app/');</script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Warraq (ورّاق) — your personal novel and book universe: track reading progress, organize custom collections, book series, and keep your reading goals organized. Bilingual Arabic and English. All data stays in your browser.">
+  <link rel="icon" type="image/svg+xml" href="assets/logo.svg">
+  <title>Warraq (ورّاق)</title>
+
+  <!-- Modular Stylesheets -->
+  <link rel="stylesheet" href="css/variables.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/responsive.css">
 </head>
 <body>
-<p style="font-family:system-ui,sans-serif;padding:2rem;text-align:center">
-  <a href="./app/" style="font-size:1.1rem">Open Warraq (ورّاق) →</a>
-</p>
+  <div id="app">
+    <!-- Desktop & Mobile Drawer Sidebar Navigation -->
+    <aside aria-label="Main navigation">
+      <div class="brand">Warraq</div>
+      <nav id="nav"></nav>
+    </aside>
+
+    <!-- Backdrop for Mobile Off-Canvas Drawer -->
+    <div id="bd" data-act="menu"></div>
+
+    <div style="flex:1;min-width:0">
+      <!-- Mobile Top Bar -->
+      <div class="top">
+        <button class="btn" data-act="menu" aria-label="Open menu">☰</button>
+        <button class="btn ib" id="bb" data-act="back" hidden aria-label="Back">
+          <svg class="i" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M19 12H5m7 7-7-7 7-7"/>
+          </svg>
+        </button>
+        <b id="ttl">Warraq</b>
+        <button class="btn pri" data-act="add" aria-label="Add book">＋</button>
+      </div>
+
+      <!-- Main Content Stage -->
+      <main id="main"></main>
+    </div>
+  </div>
+
+  <!-- Native Accessible Dialogs -->
+  <dialog id="dlg" aria-label="Dialog"></dialog>
+  <dialog id="cfm" aria-label="Confirm"></dialog>
+  <input type="file" id="imp" accept="application/json,.json" hidden>
+  <div id="toast" role="status" aria-live="polite"></div>
+
+  <!-- Modular Vanilla JavaScript Layer (Loaded in strict dependency order) -->
+  <script src="js/i18n.js"></script>
+  <script src="js/store.js"></script>
+  <script src="js/services.js"></script>
+  <script src="js/router.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/app.js"></script>
 </body>
 </html>

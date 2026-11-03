@@ -1,0 +1,94 @@
+/* ==========================================================================
+   WARRAQ (ورّاق) — Theme Variables & Design Tokens
+   ========================================================================== */
+
+:root,
+[data-theme="neutral"] {
+  --bg: #f5f1e8;
+  --card: #fffdf9;
+  --tx: #2c271f;
+  --mut: #787063;
+  --ac: #4f7957;
+  --ac-hover: #43674a;
+  --on: #ffffff;
+  --bd: #e2d9c8;
+  --bd2: color-mix(in srgb, var(--tx) 22%, var(--bd));
+  --sb: #eae2d0;
+  --sbt: #352f26;
+  --ft: Georgia, "Palatino Linotype", "Times New Roman", serif;
+  --ring: 0 0 0 3px color-mix(in srgb, var(--ac) 28%, transparent);
+  --sh-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
+  --sh: 0 2px 8px rgba(0, 0, 0, 0.07), 0 8px 24px rgba(0, 0, 0, 0.04);
+  --sh-lg: 0 14px 40px rgba(0, 0, 0, 0.12);
+}
+
+[data-theme="elegant"] {
+  --bg: #fcf1f3;
+  --card: #fffafb;
+  --tx: #432b39;
+  --mut: #937286;
+  --ac: #ad4b7c;
+  --ac-hover: #983f6b;
+  --on: #ffffff;
+  --bd: #eed5df;
+  --bd2: color-mix(in srgb, var(--tx) 22%, var(--bd));
+  --sb: linear-gradient(180deg, #f7dbe7, #e8dcf5);
+  --sbt: #472c3d;
+  --ft: "Palatino Linotype", Palatino, Georgia, serif;
+  --ring: 0 0 0 3px color-mix(in srgb, var(--ac) 28%, transparent);
+  --sh-sm: 0 1px 3px rgba(67, 43, 57, 0.05);
+  --sh: 0 2px 8px rgba(67, 43, 57, 0.07), 0 8px 24px rgba(67, 43, 57, 0.04);
+  --sh-lg: 0 14px 40px rgba(67, 43, 57, 0.14);
+}
+
+[data-theme="modern"] {
+  --bg: #edf2f7;
+  --card: #ffffff;
+  --tx: #172133;
+  --mut: #5f6c80;
+  --ac: #2354a0;
+  --ac-hover: #1c4482;
+  --on: #ffffff;
+  --bd: #d6deea;
+  --bd2: color-mix(in srgb, var(--tx) 22%, var(--bd));
+  --sb: #142036;
+  --sbt: #eaf0fa;
+  --ft: "Segoe UI", -apple-system, BlinkMacSystemFont, "Inter", Roboto, sans-serif;
+  --ring: 0 0 0 3px color-mix(in srgb, var(--ac) 28%, transparent);
+  --sh-sm: 0 1px 3px rgba(20, 32, 54, 0.06);
+  --sh: 0 2px 8px rgba(20, 32, 54, 0.07), 0 8px 24px rgba(20, 32, 54, 0.05);
+  --sh-lg: 0 14px 40px rgba(20, 32, 54, 0.15);
+}
+
+[data-theme="dark"] {
+  --bg: #111319;
+  --card: #181b24;
+  --tx: #e7e5df;
+  --mut: #9695a0;
+  --ac: #7ba6f7;
+  --ac-hover: #6895eb;
+  --on: #0d1017;
+  --bd: #292d3b;
+  --bd2: color-mix(in srgb, var(--tx) 24%, var(--bd));
+  --sb: #0c0e14;
+  --sbt: #dad8d2;
+  --ft: Georgia, "Palatino Linotype", serif;
+  --ring: 0 0 0 3px color-mix(in srgb, var(--ac) 32%, transparent);
+  --sh-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
+  --sh: 0 2px 8px rgba(0, 0, 0, 0.4), 0 8px 24px rgba(0, 0, 0, 0.3);
+  --sh-lg: 0 16px 50px rgba(0, 0, 0, 0.6);
+}
+
+/* Global layout metrics */
+:root {
+  --r: 14px;
+  --r-sm: 8px;
+  --r-lg: 20px;
+  --h: 44px;
+  --header-h: 56px;
+  --aside-w: 256px;
+  --aside-w-collapsed: 72px;
+  --content-max-w: 1240px;
+  --trans-fast: 0.15s ease;
+  --trans-base: 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+}

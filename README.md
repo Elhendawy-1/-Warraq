@@ -1,126 +1,78 @@
-<div align="center">
-  <img src="assets/logo.jpg" width="120" alt="Warraq (ورّاق) logo">
-  <h1>Warraq (ورّاق)</h1>
-  <p><b>Your personal novel &amp; book library — مكتبتك الشخصية للروايات</b></p>
-  <p>
-    <a href="https://elhendawy-1.github.io/-Warraq/"><b>🌐 Open the live website</b></a>
-    ·
-    <a href="https://elhendawy-1.github.io/-Warraq/app/">Direct app link</a>
-  </p>
-  <p><i>No accounts · No servers · No dependencies — everything stays in your browser</i></p>
-</div>
+# Warraq (ورّاق) — Your Personal Reading Universe
+
+> **تطبيق خفيف، سريع، ومستقل لإدارة وتتبع قراءاتك، سلاسل الكتب، والأقسام المخصصة.**
+> يعتمد بالكامل على **HTML5 و CSS3 و Vanilla JavaScript** بدون أي فريم وورك، بدون أدوات بناء، وبدون أي تبعيات خارجية (Zero-Dependency). تعمل جميع ميزاته مباشرة في أي متصفح مع حفظ البيانات محلياً على جهازك.
 
 ---
 
-**Warraq (ورّاق)** is a personal novel and book library designed to organize your reading journey. Manage your books, track reading progress, create custom collections, and keep your reading goals organized — all in a beautiful, responsive, bilingual Arabic and English interface.
+## البنية المعمارية (Modular Architecture)
 
-In classical Arabic, a *warrāq* (ورّاق) was the bookseller and keeper of books — the person you visited to find your next read. This app carries that spirit: your own private library, always a click away.
-
-## ✨ Features
-
-### 📊 Dashboard
-- Quick-glance stats: total books, currently reading, completed, want to read, want to buy, favorites, and pages read
-- Overall reading-progress bar across your whole library
-- **Continue reading** cards with one-tap page updates
-- Recently added and recently completed shelves, plus a six-month reading-activity chart
-- Section overview tiles
-
-### 📚 Library
-- Instant search across title, author, and genre (diacritics-tolerant, including Arabic letter normalization)
-- Filter by section, reading status, or favorites
-- Sort by newest added, A to Z, rating, or progress
-- Switchable **grid** and **list** views
-
-### 🗂️ Custom sections
-- Create your own collections with a name, description, emoji icon, and color
-- Reorder sections, show or hide them from the main menu
-- Optional *behavior* per section (e.g. *Want to Buy*, *Currently Reading*) — moving a book there automatically updates its reading status
-- Built-in defaults: Currently Reading, Completed Books, Want to Read, Want to Buy, On Hold, Dropped, Favorites
-
-### 📖 Books
-- Rich details: title, author, genre, year, publisher, ISBN, language, description, and personal notes
-- **Reading progress**: total pages, current page with a live progress bar, and automatic completion when you reach the last page
-- **Completion is reversible**: marking a book as completed remembers the page you were on; undo the completion from *Edit book* and your previous reading position (and percentage) is restored automatically
-- **Cover images**: upload a file, drag & drop, or paste a URL — covers are auto-compressed and books without a cover get a tasteful generated placeholder
-- Purchase information (purchased, gift, borrowed) with price and date
-- Personal 1–5 ⭐ rating, favorite flag, and start/finish dates
-
-### 📈 Statistics
-- Totals, pages read, average rating, total spent on your library
-- Books completed over the last 12 months (monthly chart)
-- Breakdowns by reading status and by genre
-
-### 🎨 Appearance & languages
-- Four themes: **Neutral**, **Elegant**, **Modern**, and **Dark**
-- Full **English** and **Arabic** interface with automatic RTL/LTR switching
-- Optional **Arabic-Indic digits** (١٢٣٤) for numbers and long-form Arabic dates
-
-### ♿ Comfort & accessibility
-- Responsive layout: sidebar menu on desktop, slide-in drawer + top bar on mobile
-- Keyboard-operable book cards, visible focus states, ARIA labels, and screen-reader announcements
-- Honors the system *reduced motion* preference
-
-## 💾 Your data & privacy
-
-- Everything is stored **only in your browser** (localStorage) — no accounts, no tracking, no servers
-- Data is scoped to this site (origin) **inside the browser profile you use** — separate browser profiles (Chrome profiles, Edge profiles, incognito, different browsers) each hold their own separate library; there is no cross-user or cross-device sharing, but also no account system or sync
-- **Export** your library as a JSON backup from *Settings*, and **import** it on another browser or device (choose *merge* or *replace*) — this is the way to move data between users or devices
-- If saved data ever becomes unreadable, Warraq keeps the corrupted copy aside and starts a fresh library — nothing is silently lost
-- Opening the app on another device or browser starts an empty library; use the backup file to move your data
-
-## 🚀 Getting started
-
-1. Open [the live website](https://elhendawy-1.github.io/-Warraq/) — or download `app/index.html` and open it directly in any modern browser (it even works fully offline).
-2. Click **＋ Add book** and start building your library.
-3. Tune the experience in **⚙️ Settings**: theme, language, digits, default section/view/sorting, and backups.
-
-> Tip: your data lives per browser per origin, so exporting a backup before switching browsers or devices is the safe way to carry your library with you.
-
-## 🗂️ Repository structure
+تم تقسيم التطبيق معمارياً إلى طبقات منظمة وسهلة الصيانة:
 
 ```
-.
-├── app/
-│   └── index.html      # The Warraq application (single HTML file)
+Warraq/
+├── Warraq.html              # ملف التطبيق الرئيسي المستقل
+├── index.html               # نقطة الدخول لخوادم الويب واستضافة GitHub Pages
 ├── assets/
-│   └── logo.jpg        # Project logo
-├── tests/
-│   └── run-tests.html  # Self-running test harness (works locally and on GitHub Pages)
-├── index.html          # GitHub Pages entry point (redirects to app/)
-└── README.md
+│   └── logo.svg             # شعار التطبيق المتجهي (ريشة وقلم وورّاق)
+├── css/
+│   ├── variables.css        # متغيرات الثيمات (محايد، أنيق، عصري، داكن) والتصميم
+│   ├── base.css             # الأساسيات، الخطوط العربية/الإنجليزية، ونظام الاتجاهات RTL/LTR
+│   ├── components.css       # مكونات الواجهة: البطاقات، الأزرار، القوائم، مؤشرات التقدم
+│   └── responsive.css       # التصميم المتجاوب للهواتف والأجهزة اللوحية والحواسيب
+└── js/
+    ├── i18n.js              # قاموس الترجمة الكامل (عربي/إنجليزي) وتنسيق الأرقام والتواريخ
+    ├── store.js             # خدمة التخزين المحلي (localStorage)، التهيئة، والتحقق
+    ├── services.js          # منطق الأعمال: خدمة الكتب (Bk)، الأقسام (Sec)، السلاسل (Ser)
+    ├── router.js            # التوجيه، إدارة تاريخ المتصفح (History API)، وزر الرجوع
+    ├── ui.js                # قوالب العرض: لوحة التحكم، المكتبة، السلاسل، الإحصائيات، النوافذ
+    └── app.js               # ربط الأحداث، ضغط الصور ومعالجتها، وبدء التشغيل
 ```
 
-## 🧪 Tests
+---
 
-The repository ships a self-contained test harness, `tests/run-tests.html`, that loads the **real** app file over HTTP, executes it, and drives it through realistic scenarios (dialog flows, form submissions, persistence). It reports per-assertion results as JSON.
+## المميزات الرئيسية (Core Features)
 
-Coverage includes the critical reading-status workflow (288-page book marked completed at page 100 → edit → back to *Currently Reading* → page restored to 100 of 288, ≈34.7%), undo-completion edge cases (page 0, final page, no page count, repeated completion, in-dialog complete-then-backtrack), dialog keep-editing/discard flows, section-behavior moves, search/filter/sort, statistics, EN/AR + RTL switching, backup round-trips and invalid-record handling, erase-everything, corruption recovery, **persistence after refresh** (same browser profile), and **two-profile isolation** (separate browser profiles see only their own data). A built-in guard also verifies the app makes zero network calls at runtime.
+1. **لوحة التحكم (Dashboard):**
+   - ملخص شامل: إجمالي الكتب، المقروءة حالياً، المكتملة، رغبات القراءة والشراء، والمفضلة.
+   - رف متابعة القراءة السريعة مع زر لتحديث رقم الصفحة الحالية بنقرة واحدة.
+   - مخطط تفاعلي للنشاط القرائي وإحصائيات الكتب المكتملة شهرياً.
 
-Five modes run in order against the same profiles:
+2. **المكتبة (My Library):**
+   - عرض شبكي وعرض قائمة (Grid & List Views).
+   - بحث فوري يدعم اللغة العربية بدقة مع إزالة التشكيل وتوحيد الحروف (همزات، ياء، تاء مربوطة).
+   - تصفية متقدمة حسب القسم، حالة القراءة، والكتب المفضلة.
+   - ترتيب ديناميكي: الأحدث إضافة، أبجدياً، التقييم الشخصي، ونسبة الإنجاز.
 
-| Mode      | What it proves |
-|-----------|----------------|
-| `main`    | Full logic suite (104 assertions) + seeds canonical state for the refresh test |
-| `reload`  | Restarts the browser on the same profile — progress, status and settings survive |
-| `corrupt` | Corrupted stored JSON → clean recovery, corrupt copy kept aside |
-| `iso-a` / `iso-b` | Two separate browser profiles: B boots with an **empty** library and never sees A's data |
+3. **سلاسل الكتب (Book Series):**
+   - إدارة الروايات والسلاسل متعددة الأجزاء بترتيبها الزمني أو القرائي (1 إلى N).
+   - حساب فوري لنسبة تقدم قراءة السلسلة بالصفحات والكتب.
+   - إمكانية إضافة كتب من المكتبة للسلسلة أو إنشاء كتاب جديد داخل السلسلة مباشرة.
+   - إعادة ترتيب الأجزاء بسهولة للأعلى والأسفل.
 
-Run them locally (any static server + any Chromium browser):
+4. **الأقسام المخصصة (Custom Sections):**
+   - إنشاء أقسام غير محدودة مع ألوان مخصصة واختيار أيقونة من شبكة الرموز.
+   - منتقي إيموجي مخصص يتيح كتابة أو لصق أي رمز تعبيري وإضافته للقائمة.
+   - تحديد سلوك القسم (تلقائياً يحول الكتاب إلى: قيد القراءة، مكتمل، مؤجل، متروك...).
 
-```
-node server.cjs . 8931        # serve the repo root
-# open http://127.0.0.1:8931/tests/run-tests.html?run=main  (then ?run=reload, corrupt, iso-a, iso-b)
-```
+5. **الثيمات واللغات (Themes & Bilingual):**
+   - 4 ثيمات متناسقة وجميلة:
+     - **محايد (Neutral):** درجات الورق الكلاسيكي الدافئة مع لمسات خضراء مريحة.
+     - **أنيق (Elegant):** تدرجات وردية ناعمة مع طابع أدبي راقٍ.
+     - **عصري (Modern):** تصميم تقني نظيف بدرجات الرمادي الداكن والأزرق الملكي.
+     - **داكن (Dark Mode):** الوضع الليلي المريح للعين في الإضاءة الخافتة.
+   - تبديل فوري بين العربية (RTL) والإنجليزية (LTR).
+   - دعم التبديل بين الأرقام الغربية (1234) والأرقام العربية المشرقية (١٢٣٤).
 
-Or simply run them against GitHub Pages: <https://elhendawy-1.github.io/-Warraq/tests/run-tests.html?run=main>
+6. **إدارة البيانات والأمان (Data & Offline Privacy):**
+   - تصدير نسخة احتياطية كاملة بضغطة زر بصيغة JSON.
+   - استيراد مرن مع دعم **الدمج (Merge)** لإضافة ما ينقص دون تكرار، أو **الاستبدال (Replace)**.
+   - ضغط الصور تلقائياً عبر المتصفح باستخدام عنصر Canvas لتوفير مساحة التخزين.
 
-## 🛠️ Under the hood
+---
 
-- One self-contained HTML file: plain HTML, CSS, and vanilla JavaScript
-- Zero dependencies, zero build tools — open it and it works
-- Native `<dialog>` elements and a versioned, client-side JSON backup format
+## طريقة التشغيل
 
-## 📌 Links
-
-- 🌐 Live website: <https://elhendawy-1.github.io/-Warraq/>
-- 📦 Repository: <https://github.com/Elhendawy-1/-Warraq>
+لا تحتاج لتثبيت أي برامج أو تشغيل سيرفر:
+- يمكنك النقر المزدوج مباشرة على ملف `Warraq.html` أو `index.html` ليفتح في أي متصفح (Chrome, Firefox, Edge, Safari).
+- كما يمكنك استضافته مباشرة على أي سيرفر أو خدمة استضافة مجانية مثل GitHub Pages.
