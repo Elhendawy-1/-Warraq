@@ -1011,17 +1011,26 @@ button.srow {
 /* --- Dialogs & Modals --- */
 dialog {
   border: 0;
-  border-radius: var(--r-lg);
+  border-radius: 20px;
   padding: 0;
-  width: min(680px, calc(100vw - 24px));
-  max-height: calc(100dvh - 24px);
+  width: min(640px, calc(100vw - 32px));
+  max-height: min(840px, calc(100dvh - 32px));
   background: var(--card);
   color: var(--tx);
-  box-shadow: var(--sh-lg);
-  overflow: hidden;
+  box-shadow: 0 24px 64px -12px rgba(0, 0, 0, 0.45), 0 8px 24px rgba(0, 0, 0, 0.2);
+  overflow: hidden !important;
+  position: fixed;
+  inset: 0;
+  margin: auto;
+}
+
+dialog:not([open]) {
+  display: none !important;
 }
 
 dialog[open] {
+  display: flex;
+  flex-direction: column;
   animation: dlgIn 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
@@ -1037,15 +1046,21 @@ dialog[open] {
 }
 
 dialog::backdrop {
-  background: rgba(0, 0, 0, 0.48);
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
 }
 
 .db {
-  padding: 22px;
-  overflow-y: auto;
-  max-height: calc(100dvh - 24px);
+  flex: 1 1 auto;
+  padding: 24px 26px;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  overscroll-behavior: contain;
+  max-height: min(840px, calc(100dvh - 32px));
+  box-sizing: border-box;
+  scrollbar-width: thin;
+  scrollbar-color: var(--bd2) transparent;
 }
 
 .fh {
@@ -1147,12 +1162,20 @@ details.fc > .fg {
 
 .acts.sticky {
   position: sticky;
-  bottom: -22px;
+  bottom: -26px;
   background: var(--card);
-  padding: 14px 0 4px;
-  margin-top: 10px;
-  border-top: 1px solid var(--bd);
+  padding: 16px 0;
+  margin-top: 16px;
+  border-top: 1px solid var(--bd2);
   z-index: 10;
+  box-shadow: 0 -8px 20px -6px rgba(0, 0, 0, 0.16);
+}
+
+.c-select[data-name="rating"] .c-select-label,
+.c-select[data-name="rating"] .c-opt-text {
+  color: #eab308;
+  letter-spacing: 2px;
+  font-size: 1rem;
 }
 
 .det {

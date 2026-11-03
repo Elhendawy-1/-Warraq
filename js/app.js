@@ -513,7 +513,16 @@
       }
     },
     back() {
-      if (history.state && Number(history.state.depth) > 0) history.back();
+      const dlg = $("#dlg");
+      if (dlg && dlg.open) {
+        closeForm();
+        return;
+      }
+      if (history.state && Number(history.state.depth) > 0) {
+        history.back();
+      } else {
+        Warraq.nav("dash");
+      }
     },
     favf(t) {
       Warraq.UI.fav = !Warraq.UI.fav;

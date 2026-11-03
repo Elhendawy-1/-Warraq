@@ -184,7 +184,7 @@
             }
             closeMenu();
             syncOptions();
-            btn.focus();
+            btn.focus({ preventScroll: true });
           });
 
           menu.appendChild(li);
@@ -227,8 +227,8 @@
         }
 
         const selectedLi = menu.querySelector(".c-select-opt.is-selected");
-        if (selectedLi) {
-          selectedLi.scrollIntoView({ block: "nearest" });
+        if (selectedLi && menu.scrollHeight > menu.clientHeight) {
+          menu.scrollTop = selectedLi.offsetTop - menu.offsetTop;
         }
       }
 
@@ -322,6 +322,15 @@
     dlg.innerHTML = `<div class="db">${h}</div>`;
     enhanceSelects(dlg);
     if (!dlg.open) dlg.showModal();
+    dlg.scrollTop = 0;
+    dlg.scrollLeft = 0;
+    if (!dlg._scrollBound) {
+      dlg._scrollBound = true;
+      dlg.addEventListener("scroll", () => {
+        dlg.scrollTop = 0;
+        dlg.scrollLeft = 0;
+      });
+    }
   }
 
   function commit() {
@@ -442,6 +451,7 @@
       .map((x) => x[0]);
 
   const backBtnHtml = () => {
+    if (Warraq.UI.route === "dash") return "";
     const d = (history.state && Number(history.state.depth)) || 0;
     return d > 0
       ? `<button type="button" class="btn ib back-btn" data-act="back" aria-label="${T(
@@ -1442,7 +1452,6 @@
       fbf.op = String(v.page || 0);
       fbf.wasC = "";
     }
-    if (!fromHist) Warraq.syncHistDlg("edit", b ? b.id : "");
   }
 
   function saveForm(f) {
@@ -1601,8 +1610,6 @@
     )}</button><button class="btn dng" data-act="del" data-id="${b.id}">${T(
       "Delete"
     )}</button><button class="btn" data-act="close">${T("Close")}</button></div>`);
-
-    if (!fromHist) Warraq.syncHistDlg("show", id);
   }
 
   function secDlg(id) {

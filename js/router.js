@@ -37,8 +37,10 @@
   });
 
   function syncHist() {
+    const isDash = UI.route === "dash";
     const curDepth = (history.state && Number(history.state.depth)) || 0;
-    const s = { ...snap(), depth: curDepth + 1 };
+    const newDepth = isDash ? 0 : curDepth + 1;
+    const s = { ...snap(), depth: newDepth };
     const j = JSON.stringify(s);
     if (UI._hj === j) return;
     UI._hj = j;
@@ -49,20 +51,13 @@
   }
 
   function syncHistDlg(dlgType, did) {
-    const curDepth = (history.state && Number(history.state.depth)) || 0;
-    const s = { ...snap(), dlg: dlgType, did: did || "", depth: curDepth + 1 };
-    const j = JSON.stringify(s);
-    if (UI._hj === j) return;
-    UI._hj = j;
-    try {
-      history.pushState(s, "");
-    } catch (_) {}
-    updateBack();
+    // Dialogs are modal overlays on the current route; do not pollute page-to-page history depth
   }
 
   function syncState() {
     if (!history.state) return;
-    const curDepth = (history.state && Number(history.state.depth)) || 0;
+    const isDash = UI.route === "dash";
+    const curDepth = isDash ? 0 : (history.state && Number(history.state.depth)) || 0;
     const s = { ...snap(), depth: curDepth };
     const j = JSON.stringify(s);
     if (UI._hj === j) return;
@@ -73,8 +68,9 @@
   }
 
   function updateBack() {
+    const isDash = UI.route === "dash";
     const d = (history.state && Number(history.state.depth)) || 0;
-    const show = d > 0;
+    const show = !isDash && d > 0;
     const bb = document.getElementById("bb");
     if (bb) bb.hidden = !show;
     document.querySelectorAll(".back-btn").forEach((b) => {
@@ -137,13 +133,22 @@
   }
 
   function nav(r) {
+    const dlg = document.getElementById("dlg");
+    const isSameRoute = UI.route === r;
+    const hasActiveFilters = !!(UI.q || UI.sec || UI.st || UI.fav || UI.sq);
+    const isDlgOpen = dlg && dlg.open;
+
+    if (isSameRoute && !hasActiveFilters && !isDlgOpen) {
+      // Already on this route without active state or dialogs
+      return;
+    }
+
     UI.route = r;
     Object.assign(UI, { q: "", sec: "", st: "", fav: false, sq: "" });
     pendSer = null;
     pendPos = 0;
     document.body.classList.remove("nv-open");
-    const dlg = document.getElementById("dlg");
-    if (dlg && dlg.open) dlg.close();
+    if (isDlgOpen) dlg.close();
     syncHist();
     Warraq.render();
     window.scrollTo(0, 0);

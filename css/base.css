@@ -214,6 +214,10 @@ main {
   margin: 0 auto;
 }
 
+[hidden] {
+  display: none !important;
+}
+
 .top {
   display: none;
 }
