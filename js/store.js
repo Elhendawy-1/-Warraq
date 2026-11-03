@@ -122,7 +122,12 @@
         theme: "neutral",
         view: "grid",
         defSec: s[2].id,
-        lang: "en",
+        lang:
+          typeof navigator !== "undefined" &&
+          navigator.language &&
+          navigator.language.startsWith("ar")
+            ? "ar"
+            : "en",
         digits: "latn",
         sort: "added",
         ssort: "added",

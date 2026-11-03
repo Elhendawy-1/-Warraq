@@ -984,9 +984,10 @@
     $("aside")?.setAttribute("aria-label", T("Main navigation"));
     const br = $(".brand");
     if (br) {
-      br.innerHTML = `<img src="${Warraq.LOGO}" alt="" onerror="this.remove()">${T(
-        "Warraq"
-      )}`;
+      const isAr = Warraq.i18n.getLang() === "ar";
+      br.innerHTML = `<img class="brand-logo" src="${Warraq.LOGO}" alt="" onerror="this.remove()"><span>${
+        isAr ? "ورّاق" : "Warraq"
+      }</span><span class="brand-ar">${isAr ? "Warraq" : "ورّاق"}</span>`;
     }
     document.title = T("Warraq");
     $(".top button")?.setAttribute("aria-label", T("Open menu"));

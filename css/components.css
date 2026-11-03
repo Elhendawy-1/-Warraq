@@ -431,13 +431,18 @@ label:has(> input[type="checkbox"]) {
   cursor: pointer;
   overflow: hidden;
   display: block;
-  transition: transform var(--trans-fast), box-shadow var(--trans-fast), border-color var(--trans-fast);
+  border-radius: var(--r);
+  background: var(--card);
+  border: 1px solid var(--bd);
+  box-shadow: var(--sh-sm);
+  transition: transform var(--trans-base), box-shadow var(--trans-base), border-color var(--trans-base);
+  position: relative;
 }
 
 .bk:hover {
   border-color: var(--ac);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
-  transform: translateY(-2px);
+  box-shadow: var(--sh);
+  transform: translateY(-4px);
 }
 
 .cv {
@@ -446,28 +451,59 @@ label:has(> input[type="checkbox"]) {
   aspect-ratio: 2 / 3;
   object-fit: cover;
   background: var(--bd);
+  transition: transform var(--trans-base);
+}
+
+.bk:hover .cv {
+  transform: scale(1.02);
 }
 
 .ph {
-  background: linear-gradient(135deg, hsl(var(--h), 45%, 44%), hsl(calc(var(--h) + 40), 52%, 28%));
-  color: #ffffff;
-  display: grid;
-  place-items: center;
-  padding: 14px;
+  background: linear-gradient(145deg, hsl(var(--h), 55%, 26%), hsl(calc(var(--h) + 35), 45%, 16%));
+  color: #fffdfa;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 16px 12px;
   text-align: center;
   font-family: var(--ft);
-  font-weight: 600;
-  font-size: 0.9rem;
-  overflow: hidden;
+  font-weight: 700;
+  font-size: 0.95rem;
+  letter-spacing: -0.01em;
+  box-shadow: inset 0 0 35px rgba(0, 0, 0, 0.45);
+  position: relative;
+}
+
+.ph::before {
+  content: "";
+  position: absolute;
+  inset: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 4px;
+  pointer-events: none;
+}
+
+html[lang="ar"] .ph {
+  font-family: "Amiri", Georgia, serif;
+  font-size: 1.05rem;
 }
 
 .bi {
-  padding: 12px;
+  padding: 12px 14px 14px;
 }
 
 .bi h3 {
-  font-size: 0.95rem;
-  margin-bottom: 2px;
+  font-family: var(--ft);
+  font-size: 0.98rem;
+  font-weight: 600;
+  line-height: 1.35;
+  margin-bottom: 4px;
+}
+
+html[lang="ar"] .bi h3 {
+  font-family: "Amiri", Georgia, serif;
+  font-size: 1.08rem;
 }
 
 .st {
@@ -752,9 +788,25 @@ dialog {
   overflow: hidden;
 }
 
+dialog[open] {
+  animation: dlgIn 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes dlgIn {
+  from {
+    opacity: 0;
+    transform: scale(0.96) translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
 dialog::backdrop {
-  background: rgba(0, 0, 0, 0.45);
+  background: rgba(0, 0, 0, 0.48);
   backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
 }
 
 .db {

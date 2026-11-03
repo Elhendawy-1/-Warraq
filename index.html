@@ -12,6 +12,11 @@
   <link rel="icon" type="image/svg+xml" href="assets/logo.svg">
   <title>Warraq (ورّاق)</title>
 
+  <!-- Typography: Amiri (Arabic literary), Cinzel (Classical display), Plus Jakarta Sans (Crisp modern UI) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Cinzel:wght@600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
   <!-- Modular Stylesheets -->
   <link rel="stylesheet" href="css/variables.css">
   <link rel="stylesheet" href="css/base.css">
@@ -22,7 +27,11 @@
   <div id="app">
     <!-- Desktop & Mobile Drawer Sidebar Navigation -->
     <aside aria-label="Main navigation">
-      <div class="brand">Warraq</div>
+      <div class="brand">
+        <img src="assets/logo.svg" alt="" width="30" height="30" class="brand-logo">
+        <span class="brand-text">Warraq</span>
+        <span class="brand-ar">ورّاق</span>
+      </div>
       <nav id="nav"></nav>
     </aside>
 
